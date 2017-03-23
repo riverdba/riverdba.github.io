@@ -3,17 +3,18 @@
 <head>
   <meta charset="utf-8">
   
-  <title>DBA的博客</title>
+  <title>mysql查询优化技术之连接消除 | DBA的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="i am dba">
-<meta property="og:type" content="website">
-<meta property="og:title" content="DBA的博客">
-<meta property="og:url" content="http://riverdba.github.io/index.html">
+  <meta name="description" content="连接消除技术包括三种：外连接消除、连接消除、嵌套连接消除1、外连接消除外连接消除就是把外连接变为内连接。之所以要消除外连接，是因为查询优化器在处理外连接操作时所消耗的时间多于内连接，因此消除外连接后可以加快查询速度。同时可以减少不必要的I/O开销，加快算法执行速度。创建测试表并插入数据：CREATE TABLE t_1 (t_1_id INT UNIQUE, t_1_col_1 INT, t_1_">
+<meta property="og:type" content="article">
+<meta property="og:title" content="mysql查询优化技术之连接消除">
+<meta property="og:url" content="http://riverdba.github.io/2017/03/22/join-elimination-technique-of-mysql/index.html">
 <meta property="og:site_name" content="DBA的博客">
-<meta property="og:description" content="i am dba">
+<meta property="og:description" content="连接消除技术包括三种：外连接消除、连接消除、嵌套连接消除1、外连接消除外连接消除就是把外连接变为内连接。之所以要消除外连接，是因为查询优化器在处理外连接操作时所消耗的时间多于内连接，因此消除外连接后可以加快查询速度。同时可以减少不必要的I/O开销，加快算法执行速度。创建测试表并插入数据：CREATE TABLE t_1 (t_1_id INT UNIQUE, t_1_col_1 INT, t_1_">
+<meta property="og:updated_time" content="2017-03-22T08:39:44.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="DBA的博客">
-<meta name="twitter:description" content="i am dba">
+<meta name="twitter:title" content="mysql查询优化技术之连接消除">
+<meta name="twitter:description" content="连接消除技术包括三种：外连接消除、连接消除、嵌套连接消除1、外连接消除外连接消除就是把外连接变为内连接。之所以要消除外连接，是因为查询优化器在处理外连接操作时所消耗的时间多于内连接，因此消除外连接后可以加快查询速度。同时可以减少不必要的I/O开销，加快算法执行速度。创建测试表并插入数据：CREATE TABLE t_1 (t_1_id INT UNIQUE, t_1_col_1 INT, t_1_">
   
     <link rel="alternate" href="/atom.xml" title="DBA的博客" type="application/atom+xml">
   
@@ -66,9 +67,7 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main">
-  
-    <article id="post-join-elimination-technique-of-mysql" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-join-elimination-technique-of-mysql" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2017/03/22/join-elimination-technique-of-mysql/" class="article-date">
   <time datetime="2017-03-22T06:26:17.000Z" itemprop="datePublished">2017-03-22</time>
@@ -81,8 +80,8 @@
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/03/22/join-elimination-technique-of-mysql/">mysql查询优化技术之连接消除</a>
+    <h1 class="article-title" itemprop="name">
+      mysql查询优化技术之连接消除
     </h1>
   
 
@@ -118,59 +117,19 @@
     </footer>
   </div>
   
-</article>
-
-
+    
+<nav id="article-nav">
   
-    <article id="post-hello-world" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2017/03/21/hello-world/" class="article-date">
-  <time datetime="2017-03-21T08:44:04.680Z" itemprop="datePublished">2017-03-21</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/03/21/hello-world/">Hello World</a>
-    </h1>
+    <a href="/2017/03/21/hello-world/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Hello World</div>
+    </a>
   
+</nav>
 
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">$ hexo new <span class="string">"My New Post"</span></div></pre></td></tr></table></figure>
-<p>新建的文件放在：hexo当前目录/source/_posts中。<br>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">$ hexo server</div></pre></td></tr></table></figure>
-<p>这个命令是开启本地hexo服务用的，可以访问<a href="http://localhost:4000/进行本地预览。" target="_blank" rel="external">http://localhost:4000/进行本地预览。</a><br>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">$ hexo generate</div></pre></td></tr></table></figure>
-<p>一般部署上去的时候都需要编译一下，编译后，会出现一个 public 件夹，将所有的md文件编译成html文件 。<br>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">$ hexo deploy</div></pre></td></tr></table></figure>
-<p>执行这个命令可以将博客部署到git。<br>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
-<h3 id="清除-public"><a href="#清除-public" class="headerlink" title="清除 public"></a>清除 public</h3><figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">$ hexo clean</div></pre></td></tr></table></figure>
-<p>当 source 文件夹中的部分资源更改过之后，特别是对文件进行了删除或者路径的改变之后，需要执行这个命令，然后重新编译。 </p>
-<h3 id="Markdown语法"><a href="#Markdown语法" class="headerlink" title="Markdown语法"></a>Markdown语法</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">1、分段： 两个回车</div><div class="line">2、换行 两个空格 + 回车</div><div class="line">3、标题 # ~ ###### 井号的个数表示几级标题，即Markdown可以表示一级标题到六级标题</div><div class="line">4、引用 &gt;</div><div class="line">5、列表 * ， + ， - ， 1. ，选其中之一，注意后面有个空格</div><div class="line">6、代码区块 四个空格 开头</div><div class="line">7、链接 [文字](链接地址)</div><div class="line">8、图片 ![图片说明](图片地址) ，图片地址可以是本地路径，也可以是网络地址</div><div class="line">9、强调 **文字** ， __文字__ ， _文字_ ， *文字*</div><div class="line">10、代码 ```，``</div></pre></td></tr></table></figure>
-<p>More info: <a href="http://www.kancloud.cn/wizardforcel/markdown-simple-world/97373" target="_blank" rel="external">Markdown更多语法</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://riverdba.github.io/2017/03/21/hello-world/" data-id="cj0kpigqq00009s9ah6fu7tyy" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
   
 </article>
-
-
-  
 
 </section>
         
