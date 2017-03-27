@@ -15,15 +15,23 @@
 
 
 
-<meta name="description" content="i am a dba">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Yangtze River's blog">
-<meta property="og:url" content="http://riverdba.github.io/archives/2017/03/index.html">
+<meta name="description" content="本文介绍如何在博客中添加评论功能！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="实现hexo的评论功能">
+<meta property="og:url" content="http://riverdba.github.io/2017/03/27/hexo-s-comment/index.html">
 <meta property="og:site_name" content="Yangtze River's blog">
-<meta property="og:description" content="i am a dba">
+<meta property="og:description" content="本文介绍如何在博客中添加评论功能！">
+<meta property="og:image" content="http://riverdba.github.io/2017/03/27/hexo-s-comment/1.png">
+<meta property="og:image" content="http://riverdba.github.io/2017/03/27/hexo-s-comment/2.png">
+<meta property="og:image" content="http://riverdba.github.io/2017/03/27/hexo-s-comment/3.png">
+<meta property="og:image" content="http://riverdba.github.io/2017/03/27/hexo-s-comment/4.png">
+<meta property="og:image" content="http://riverdba.github.io/2017/03/27/hexo-s-comment/5.png">
+<meta property="og:image" content="http://riverdba.github.io/2017/03/27/hexo-s-comment/6.png">
+<meta property="og:updated_time" content="2017-03-27T14:40:58.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Yangtze River's blog">
-<meta name="twitter:description" content="i am a dba">
+<meta name="twitter:title" content="实现hexo的评论功能">
+<meta name="twitter:description" content="本文介绍如何在博客中添加评论功能！">
+<meta name="twitter:image" content="http://riverdba.github.io/2017/03/27/hexo-s-comment/1.png">
 
 <link rel="apple-touch-icon" href= "/apple-touch-icon.png">
 
@@ -55,7 +63,7 @@
 <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
 
 
-<title>Archives: 2017/3 | Yangtze River&#39;s blog</title>
+<title>实现hexo的评论功能 | Yangtze River&#39;s blog</title>
 
 <script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
 <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
@@ -65,8 +73,8 @@
         fancybox: true,
         animate: true,
         isHome: false,
-        isPost: false,
-        isArchive: true,
+        isPost: true,
+        isArchive: false,
         isTag: false,
         isCategory: false,
         fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
@@ -259,170 +267,192 @@
     </div>
     <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
 </nav>
-      <div class="body-wrap">
+      <div class="body-wrap"><article id="post-hexo-s-comment" class="article article-type-post" itemscope itemprop="blogPost">
   
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2017" class="archive-year">2017</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-          <div class="article-meta">
-              <a href="/2017/03/27/hexo-s-comment/" class="archive-article-date">
-      <time datetime="2017-03-27T13:41:13.000Z" itemprop="datePublished">03-27</time>
+    <div class="article-meta">
+      <a href="/2017/03/27/hexo-s-comment/" class="article-date">
+      <time datetime="2017-03-27T13:41:13.000Z" itemprop="datePublished">2017-03-27</time>
 </a>
 
 
-        </div>
-         
+    </div>
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/03/27/hexo-s-comment/">实现hexo的评论功能</a>
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      实现hexo的评论功能
     </h1>
   
 
-        <div class="article-info info-on-archive">
-          
+      </header>
+      
+      <div class="article-info article-info-post">
+        
     <div class="article-category tagcloud">
     <a class="article-category-link" href="/categories/Hexo/">Hexo</a>
     </div>
 
 
-          
+        
     <div class="article-tag tagcloud">
         <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/disqus/">disqus</a></li></ul>
     </div>
 
-        </div>
         <div class="clearfix"></div>
-    </header>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p><excerpt in="" index="" |="" 首页摘要=""><br>本文介绍如何在博客中添加评论功能！<a id="more"></a></excerpt></p>
+<p><the rest="" of="" contents="" |="" 余下全文=""><br>1、首先需要到<a href="https://disqus.com" target="_blank" rel="external">disqus官网</a>注册账号，然后使用账号登录。<br>2、通过账号登录 disqus后，点击“settings”–&gt;在下拉列表中选择“add disqus to site”如图：<br><img src="/2017/03/27/hexo-s-comment/1.png" alt="图1"><br>3、浏览到该网页最下方选择“get started”如图：<br><img src="/2017/03/27/hexo-s-comment/2.png" alt="图2"><br>4、然后点击“i want to install Disqus on my site”：<br><img src="/2017/03/27/hexo-s-comment/3.png" alt="图3"><br>5、创建站点：<br><img src="/2017/03/27/hexo-s-comment/4.png" alt="图4"><br>6、完成create site后就能看到shortname了：<br><img src="/2017/03/27/hexo-s-comment/5.png" alt="图5"><br>7、选择advanced，在Trusted Domains中添加：github.com,github.io<br><img src="/2017/03/27/hexo-s-comment/6.png" alt="图6"><br>注意：一次只能添加一个域名<br>8、最后将shortname填到hexo主题的配置文件中：D:\src\Git\imdba\themes\yelee_config.yml改成如下内容：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">disqus: </div><div class="line">  on: true</div><div class="line">  shortname: xxx</div></pre></td></tr></table></figure></the></p>
+<p>重新部署下博客，就可以看到每篇文章后面都有评论功能了。</p>
+
+      
+    </div>
+    
   </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2017/03/27/hexo-s-comment/">实现hexo的评论功能</a></p>
+        <p><span>文章作者:</span><a href="/" title="回到主页">一条大河</a></p>
+        <p><span>发布时间:</span>2017-03-27, 21:41:13</p>
+        <p><span>最后更新:</span>2017-03-27, 22:40:58</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2017/03/27/hexo-s-comment/" title="实现hexo的评论功能">http://riverdba.github.io/2017/03/27/hexo-s-comment/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://riverdba.github.io/2017/03/27/hexo-s-comment/　　作者: 一条大河" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2017/03/27/Performance-tuning-key-points-of-mysql/">
+                    mysql性能调优的关键点
+                </a>
+            </div>
+        
+    </nav>
+
+  
 </article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-          <div class="article-meta">
-              <a href="/2017/03/27/Performance-tuning-key-points-of-mysql/" class="archive-article-date">
-      <time datetime="2017-03-27T02:06:52.000Z" itemprop="datePublished">03-27</time>
-</a>
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">文章目录</strong>
+        
+            
+        
+    </div>
+    <style>
+        .left-col .switch-btn,
+        .left-col .switch-area {
+            display: none;
+        }
+        .toc-level-3 i,
+        .toc-level-3 ol {
+            display: none !important;
+        }
+    </style>
+
+    <input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+    <script>
+        yiliaConfig.toc = ["隐藏目录", "显示目录", !!"false"];
+    </script>
 
 
+
+    
+<div class="share">
+    
+        <div class="bdsharebuttonbox">
+            <a href="#" class="fa fa-twitter bds_twi" data-cmd="twi" title="分享到推特"></a>
+            <a href="#" class="fa fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+            <a href="#" class="fa fa-qq bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+            <a href="#" class="fa fa-files-o bds_copy" data-cmd="copy" title="复制网址"></a>
+            <a href="#" class="fa fa fa-envelope-o bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+            <a href="#" class="fa fa-weixin bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+            <a href="#" class="fa fa-share-alt bds_more" data-cmd="more"></i></a>
         </div>
-         
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/03/27/Performance-tuning-key-points-of-mysql/">mysql性能调优的关键点</a>
-    </h1>
-  
+        <script>
+            window._bd_share_config={
+                "common":{"bdSnsKey":{},"bdText":"实现hexo的评论功能　| Yangtze River's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+        </script>
+    
 
-        <div class="article-info info-on-archive">
-          
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/MySQL/">MySQL</a>
+    
+</div>
+
+
+
+
+
+
+
+    
+        <section id="comments">
+    <style> aside.comment-bar { margin: auto 30px; }</style>
+    <div id="disqus_thread"></div>
+    <script>
+        var disqus_config = function(){
+            this.page.url = 'http://riverdba.github.io/2017/03/27/hexo-s-comment/';
+            this.page.identifier = '2017/03/27/hexo-s-comment/';
+        };
+        var loadComment = function(){
+            var d = document, s = d.createElement('script');
+            s.src = '//https-riverdba-github-io.disqus.com/embed.js';
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        }
+    </script>
+    
+    <script> loadComment(); </script>
+
+</section>
+
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2017/03/27/Performance-tuning-key-points-of-mysql/" title="下一篇: mysql性能调优的关键点">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
     </div>
 
-
-          
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mysql的性能调优技术/">mysql的性能调优技术</a></li></ul>
-    </div>
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-          <div class="article-meta">
-              <a href="/2017/03/22/join-elimination-technique-of-mysql/" class="archive-article-date">
-      <time datetime="2017-03-22T06:26:17.000Z" itemprop="datePublished">03-22</time>
-</a>
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2017/03/27/hexo-s-comment/">实现hexo的评论功能</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/27/Performance-tuning-key-points-of-mysql/">mysql性能调优的关键点</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/22/join-elimination-technique-of-mysql/">mysql查询优化技术之连接消除</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/21/hello-world/">Hello World</a></li></ul>
 
 
-        </div>
-         
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/03/22/join-elimination-technique-of-mysql/">mysql查询优化技术之连接消除</a>
-    </h1>
-  
-
-        <div class="article-info info-on-archive">
-          
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/MySQL/">MySQL</a>
-    </div>
 
 
-          
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mysql的查询优化技术/">mysql的查询优化技术</a></li></ul>
-    </div>
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-          <div class="article-meta">
-              <a href="/2017/03/21/hello-world/" class="archive-article-date">
-      <time datetime="2017-03-21T08:44:04.680Z" itemprop="datePublished">03-21</time>
-</a>
-
-
-        </div>
-         
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/03/21/hello-world/">Hello World</a>
-    </h1>
-  
-
-        <div class="article-info info-on-archive">
-          
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/Hexo/">Hexo</a>
-    </div>
-
-
-          
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Hexo-Quick-Start/">Hexo Quick Start</a></li></ul>
-    </div>
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
+    <script>
+        
+    </script>
 </div>
       <footer id="footer">
     <div class="outer">

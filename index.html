@@ -1,85 +1,420 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="zh-Hans">
 <head>
-  <meta charset="utf-8">
-  
-  <title>DBA的博客</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="i am dba">
+
+    <!--[if lt IE 9]>
+        <style>body {display: none; background: none !important} </style>
+        <meta http-equiv="Refresh" Content="0; url=//outdatedbrowser.com/" />
+    <![endif]-->
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no" />
+<meta name="author" content="一条大河" />
+
+
+    
+    
+
+
+<meta name="description" content="i am a dba">
 <meta property="og:type" content="website">
-<meta property="og:title" content="DBA的博客">
+<meta property="og:title" content="Yangtze River's blog">
 <meta property="og:url" content="http://riverdba.github.io/index.html">
-<meta property="og:site_name" content="DBA的博客">
-<meta property="og:description" content="i am dba">
+<meta property="og:site_name" content="Yangtze River's blog">
+<meta property="og:description" content="i am a dba">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="DBA的博客">
-<meta name="twitter:description" content="i am dba">
-  
-    <link rel="alternative" href="/atom.xml" title="DBA的博客" type="application/atom+xml">
-  
-  
-    <link rel="icon" href="/favicon.png">
-  
-  <link rel="stylesheet" href="/css/style.css">
-  <!--[if lt IE 9]><script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7/html5shiv.min.js"></script><![endif]-->
-  
+<meta name="twitter:title" content="Yangtze River's blog">
+<meta name="twitter:description" content="i am a dba">
+
+<link rel="apple-touch-icon" href= "/apple-touch-icon.png">
+
+
+    <link rel="alternate" href="/atom.xml" title="Yangtze River&#39;s blog" type="application/atom+xml">
+
+
+
+    <link rel="shortcut icon" href="/yangtzeriver.jpg">
+
+
+
+    <link href="//cdn.bootcss.com/animate.css/3.5.1/animate.min.css" rel="stylesheet">
+
+
+
+    <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+
+
+
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+    <style> .article { opacity: 0;} </style>
+
+
+<link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+
+
+<title>Yangtze River&#39;s blog</title>
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+
+<script>
+    var yiliaConfig = {
+        fancybox: true,
+        animate: true,
+        isHome: true,
+        isPost: false,
+        isArchive: false,
+        isTag: false,
+        isCategory: false,
+        fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+        scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
+        search: true
+    }
+</script>
+
+
+    <script>
+        yiliaConfig.jquery_ui = [true, "//cdn.bootcss.com/jqueryui/1.10.4/jquery-ui.min.js", "//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css"];
+    </script>
+
+
+
+    <script> yiliaConfig.rootUrl = "\/";</script>
+
+
+
+
+
+
 </head>
 <body>
-<div id="container">
-  <div id="wrap">
-    <header id="header">
-  <div id="banner"></div>
-  <div id="header-outer" class="outer">
-    <div id="header-title" class="inner">
-      <h1 id="logo-wrap">
-        <a href="/" id="logo">DBA的博客</a>
-      </h1>
-      
-        <h2 id="subtitle-wrap">
-          <a href="/" id="subtitle">记录日常工作、学习和生活的点滴！</a>
-        </h2>
-      
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/img/yangtzeriver.jpg" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">一条大河</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">为学患无疑，疑则进也！</p>
+        
+
+        
+            <form id="search-form">
+            <input type="text" id="local-search-input" name="q" placeholder="search..." class="search form-control" autocomplete="off" autocorrect="off" searchonload="false" />
+            <i class="fa fa-times" onclick="resetSearch()"></i>
+            </form>
+            <div id="local-search-result"></div>
+            <p class='no-result'>No results found <i class='fa fa-spinner fa-pulse'></i></p>
+        
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" href="mailto:river_dba@foxmail.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" href="#" title="GitHub"></a>
+                            
+                                <a class="fa RSS" href="/atom.xml" title="RSS"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hexo-Quick-Start/">Hexo Quick Start</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/disqus/">disqus</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql的性能调优技术/">mysql的性能调优技术</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql的查询优化技术/">mysql的查询优化技术</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="http://moxfive.xyz/">MOxFIVE</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="http://moxfive.xyz/yelee/">yelee主题</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://dbanote.github.io">刘雅君</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+            </div>
+        </div>
+    </header>                
+</div>
     </div>
-    <div id="header-inner" class="inner">
-      <nav id="main-nav">
-        <a id="main-nav-toggle" class="nav-icon"></a>
-        
-          <a class="main-nav-link" href="/">Home</a>
-        
-          <a class="main-nav-link" href="/archives">Archives</a>
-        
-      </nav>
-      <nav id="sub-nav">
-        
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
-        
-        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
-      </nav>
-      <div id="search-form-wrap">
-        <form action="//www.baidu.com/baidu" method="get" accept-charset="utf-8" class="search-form">
-          <input type="search" name="word" maxlength="20" class="search-form-input" placeholder="Search">
-          <input type="submit" value="" class="search-form-submit">
-          <input name=tn type=hidden value="bds">
-          <input name=cl type=hidden value="3">
-          <input name=ct type=hidden value="2097152">
-          <input type="hidden" name="si" value="riverdba.github.io">
-        </form>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">一条大河</a></h1>
       </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/img/yangtzeriver.jpg" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">一条大河</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">为学患无疑，疑则进也！</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" target="_blank" href="mailto:river_dba@foxmail.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" target="_blank" href="#" title="GitHub"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
     </div>
-  </div>
-</header>
-    <div class="outer">
-      <section id="main">
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap">
   
-    <article id="post-join-elimination-technique-of-mysql" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2017/03/22/join-elimination-technique-of-mysql/" class="article-date">
-  <time datetime="2017-03-22T06:26:17.000Z" itemprop="datePublished">2017-03-22</time>
+    <article id="post-hexo-s-comment" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/03/27/hexo-s-comment/" class="article-date">
+      <time datetime="2017-03-27T13:41:13.000Z" itemprop="datePublished">2017-03-27</time>
 </a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/03/27/hexo-s-comment/">实现hexo的评论功能</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <p><Excerpt in="" index="" |="" 首页摘要=""><br>本文介绍如何在博客中添加评论功能！</Excerpt></p>
+          
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Hexo/">Hexo</a>
+    </div>
+
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/disqus/">disqus</a></li></ul>
+    </div>
+
+      
+        <p class="article-more-link">
+          <a href="/2017/03/27/hexo-s-comment/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
     
   </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-Performance-tuning-key-points-of-mysql" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/03/27/Performance-tuning-key-points-of-mysql/" class="article-date">
+      <time datetime="2017-03-27T02:06:52.000Z" itemprop="datePublished">2017-03-27</time>
+</a>
+
+
+    </div>
+  
   <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/03/27/Performance-tuning-key-points-of-mysql/">mysql性能调优的关键点</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <p><Excerpt in="" index="" |="" 首页摘要=""><br>本文记录了一些mysql性能调优相关知识。</Excerpt></p>
+          
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/MySQL/">MySQL</a>
+    </div>
+
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mysql的性能调优技术/">mysql的性能调优技术</a></li></ul>
+    </div>
+
+      
+        <p class="article-more-link">
+          <a href="/2017/03/27/Performance-tuning-key-points-of-mysql/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-join-elimination-technique-of-mysql" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/03/22/join-elimination-technique-of-mysql/" class="article-date">
+      <time datetime="2017-03-22T06:26:17.000Z" itemprop="datePublished">2017-03-22</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
     
     
       <header class="article-header">
@@ -91,55 +426,63 @@
   
 
       </header>
+      
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="连接消除技术包括三种：外连接消除、连接消除、嵌套连接消除"><a href="#连接消除技术包括三种：外连接消除、连接消除、嵌套连接消除" class="headerlink" title="连接消除技术包括三种：外连接消除、连接消除、嵌套连接消除"></a>连接消除技术包括三种：外连接消除、连接消除、嵌套连接消除</h3><p><font color="#0099ff" size="4" face="微软雅黑">1、外连接消除</font><br>外连接消除就是把外连接变为内连接。之所以要消除外连接，是因为查询优化器在处理外连接操作时所消耗的时间多于内连接，因此消除外连接后可以加快查询速度。同时可以减少不必要的I/O开销，加快算法执行速度。<br>创建测试表并插入数据：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">CREATE TABLE t_1 (t_1_id INT UNIQUE, t_1_col_1 INT, t_1_col_2 VARCHAR(10));</div><div class="line">CREATE TABLE t_2 (t_2_id INT UNIQUE, t_2_col_1 INT, t_2_col_2 VARCHAR(10));</div><div class="line">INSERT INTO t_1 VALUES (1, 11, &apos;t_1_1&apos;);   INSERT INTO t_1 VALUES (2, 12, NULL);</div><div class="line">INSERT INTO t_1 VALUES (3, NULL, &apos;t_1_3&apos;); INSERT INTO t_1 VALUES (4, 14, &apos;t_1_4&apos;);</div><div class="line">INSERT INTO t_1 VALUES (5, 15, NULL);      INSERT INTO t_1 VALUES (7, NULL, NULL);</div><div class="line">INSERT INTO t_2 VALUES (1, 11, &apos;t_2_1&apos;);   INSERT INTO t_2 VALUES (2, NULL, &apos;t_2_2&apos;);</div><div class="line">INSERT INTO t_2 VALUES (3, 13, NULL);      INSERT INTO t_2 VALUES (4, 14, &apos;t_2_4&apos;);</div><div class="line">INSERT INTO t_2 VALUES (6, 16, &apos;t_2_6&apos;);   INSERT INTO t_2 VALUES (7, NULL, NULL);</div><div class="line">root@testdb 02:21:55&gt;select * from t_1;</div><div class="line">+--------+-----------+-----------+</div><div class="line">| t_1_id | t_1_col_1 | t_1_col_2 |</div><div class="line">+--------+-----------+-----------+</div><div class="line">|      1 |        11 | t_1_1     |</div><div class="line">|      2 |        12 | NULL      |</div><div class="line">|      3 |      NULL | t_1_3     |</div><div class="line">|      4 |        14 | t_1_4     |</div><div class="line">|      5 |        15 | NULL      |</div><div class="line">|      7 |      NULL | NULL      |</div><div class="line">+--------+-----------+-----------+</div><div class="line">6 rows in set (0.00 sec)</div><div class="line">root@testdb 02:22:08&gt;select * from t_2;</div><div class="line">+--------+-----------+-----------+</div><div class="line">| t_2_id | t_2_col_1 | t_2_col_2 |</div><div class="line">+--------+-----------+-----------+</div><div class="line">|      1 |        11 | t_2_1     |</div><div class="line">|      2 |      NULL | t_2_2     |</div><div class="line">|      3 |        13 | NULL      |</div><div class="line">|      4 |        14 | t_2_4     |</div><div class="line">|      6 |        16 | t_2_6     |</div><div class="line">|      7 |      NULL | NULL      |</div><div class="line">+--------+-----------+-----------+</div><div class="line">6 rows in set (0.00 sec)</div></pre></td></tr></table></figure></p>
-<p>语句一：使用TRUE作为ON的子句，WHERE子句包括连接条件且WHERE条件可以保证从结果中排除外连接右侧（右表）生成的值为NULL的行。<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">root@testdb 02:48:44&gt;SELECT * FROM t_1 LEFT JOIN t_2 ON true WHERE t_1_id = t_2_id;</div><div class="line">+--------+-----------+-----------+--------+-----------+-----------+</div><div class="line">| t_1_id | t_1_col_1 | t_1_col_2 | t_2_id | t_2_col_1 | t_2_col_2 |</div><div class="line">+--------+-----------+-----------+--------+-----------+-----------+</div><div class="line">|      1 |        11 | t_1_1     |      1 |        11 | t_2_1     |</div><div class="line">|      2 |        12 | NULL      |      2 |      NULL | t_2_2     |</div><div class="line">|      3 |      NULL | t_1_3     |      3 |        13 | NULL      |</div><div class="line">|      4 |        14 | t_1_4     |      4 |        14 | t_2_4     |</div><div class="line">|      7 |      NULL | NULL      |      7 |      NULL | NULL      |</div><div class="line">+--------+-----------+-----------+--------+-----------+-----------+</div><div class="line">5 rows in set (0.00 sec)</div><div class="line">root@testdb 02:22:11&gt;explain extended SELECT * FROM t_1 LEFT JOIN t_2 ON true WHERE t_1_id = t_2_id;show warnings;</div><div class="line">+----+-------------+-------+------+---------------+--------+---------+-------------------+------+----------+-------+</div><div class="line">| id | select_type | table | type | possible_keys | key    | key_len | ref               | rows | filtered | Extra |</div><div class="line">+----+-------------+-------+------+---------------+--------+---------+-------------------+------+----------+-------+</div><div class="line">|  1 | SIMPLE      | t_1   | ALL  | t_1_id        | NULL   | NULL    | NULL              |    6 |   100.00 | NULL  |</div><div class="line">|  1 | SIMPLE      | t_2   | ref  | t_2_id        | t_2_id | 5       | testdb.t_1.t_1_id |    1 |   100.00 | NULL  |</div><div class="line">+----+-------------+-------+------+---------------+--------+---------+-------------------+------+----------+-------+</div><div class="line">2 rows in set, 1 warning (0.00 sec)</div><div class="line"></div><div class="line">+-------+------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</div><div class="line">| Level | Code | Message                                                                                                                                                                                                                                                                                                                                                                 |</div><div class="line">+-------+------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</div><div class="line">| Note  | 1003 | /* select#1 */ select `testdb`.`t_1`.`t_1_id` AS `t_1_id`,`testdb`.`t_1`.`t_1_col_1` AS `t_1_col_1`,`testdb`.`t_1`.`t_1_col_2` AS `t_1_col_2`,`testdb`.`t_2`.`t_2_id` AS `t_2_id`,`testdb`.`t_2`.`t_2_col_1` AS `t_2_col_1`,`testdb`.`t_2`.`t_2_col_2` AS `t_2_col_2` from `testdb`.`t_1` join `testdb`.`t_2` where (`testdb`.`t_2`.`t_2_id` = `testdb`.`t_1`.`t_1_id`) |</div><div class="line">+-------+------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</div><div class="line">1 row in set (0.00 sec)</div><div class="line">从执行计划看到被优化器处理后的语句由left join优化成了join。</div></pre></td></tr></table></figure></p>
-<p>语句二：使用ON子句包括连接条件，并不能保证从结果中排除外连接右侧（右表）生成的值为NULL的行。<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">root@testdb 02:53:25&gt;SELECT * FROM t_1 LEFT JOIN t_2 ON t_1_id = t_2_id;</div><div class="line">+--------+-----------+-----------+--------+-----------+-----------+</div><div class="line">| t_1_id | t_1_col_1 | t_1_col_2 | t_2_id | t_2_col_1 | t_2_col_2 |</div><div class="line">+--------+-----------+-----------+--------+-----------+-----------+</div><div class="line">|      1 |        11 | t_1_1     |      1 |        11 | t_2_1     |</div><div class="line">|      2 |        12 | NULL      |      2 |      NULL | t_2_2     |</div><div class="line">|      3 |      NULL | t_1_3     |      3 |        13 | NULL      |</div><div class="line">|      4 |        14 | t_1_4     |      4 |        14 | t_2_4     |</div><div class="line">|      5 |        15 | NULL      |   NULL |      NULL | NULL      |</div><div class="line">|      7 |      NULL | NULL      |      7 |      NULL | NULL      |</div><div class="line">+--------+-----------+-----------+--------+-----------+-----------+</div><div class="line">6 rows in set (0.01 sec)</div><div class="line">root@testdb 03:06:26&gt;explain extended SELECT * FROM t_1 LEFT JOIN t_2 ON t_1_id = t_2_id;show warnings;</div><div class="line">+----+-------------+-------+------+---------------+--------+---------+-------------------+------+----------+-------+</div><div class="line">| id | select_type | table | type | possible_keys | key    | key_len | ref               | rows | filtered | Extra |</div><div class="line">+----+-------------+-------+------+---------------+--------+---------+-------------------+------+----------+-------+</div><div class="line">|  1 | SIMPLE      | t_1   | ALL  | NULL          | NULL   | NULL    | NULL              |    6 |   100.00 | NULL  |</div><div class="line">|  1 | SIMPLE      | t_2   | ref  | t_2_id        | t_2_id | 5       | testdb.t_1.t_1_id |    1 |   100.00 | NULL  |</div><div class="line">+----+-------------+-------+------+---------------+--------+---------+-------------------+------+----------+-------+</div><div class="line">2 rows in set, 1 warning (0.00 sec)</div><div class="line"></div><div class="line">+-------+------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</div><div class="line">| Level | Code | Message                                                                                                                                                                                                                                                                                                                                                                            |</div><div class="line">+-------+------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</div><div class="line">| Note  | 1003 | /* select#1 */ select `testdb`.`t_1`.`t_1_id` AS `t_1_id`,`testdb`.`t_1`.`t_1_col_1` AS `t_1_col_1`,`testdb`.`t_1`.`t_1_col_2` AS `t_1_col_2`,`testdb`.`t_2`.`t_2_id` AS `t_2_id`,`testdb`.`t_2`.`t_2_col_1` AS `t_2_col_1`,`testdb`.`t_2`.`t_2_col_2` AS `t_2_col_2` from `testdb`.`t_1` left join `testdb`.`t_2` on((`testdb`.`t_1`.`t_1_id` = `testdb`.`t_2`.`t_2_id`)) where 1 |</div><div class="line">+-------+------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</div><div class="line">1 row in set (0.00 sec)</div><div class="line">可以看到这个结果集第5行的右侧结果集存在NULL的情况，其执行计划依然是left join，是没办法优化为join的。</div></pre></td></tr></table></figure></p>
-<p>语句三：使用ON和WHERE子句包括连接条件,可以保证从结果中排除外连接右侧（右表）生成的值为NULL的行。<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">root@testdb 03:06:42&gt;SELECT * FROM t_1 LEFT JOIN t_2 ON t_1_id = t_2_id WHERE t_1_id = t_2_id;</div><div class="line">+--------+-----------+-----------+--------+-----------+-----------+</div><div class="line">| t_1_id | t_1_col_1 | t_1_col_2 | t_2_id | t_2_col_1 | t_2_col_2 |</div><div class="line">+--------+-----------+-----------+--------+-----------+-----------+</div><div class="line">|      1 |        11 | t_1_1     |      1 |        11 | t_2_1     |</div><div class="line">|      2 |        12 | NULL      |      2 |      NULL | t_2_2     |</div><div class="line">|      3 |      NULL | t_1_3     |      3 |        13 | NULL      |</div><div class="line">|      4 |        14 | t_1_4     |      4 |        14 | t_2_4     |</div><div class="line">|      7 |      NULL | NULL      |      7 |      NULL | NULL      |</div><div class="line">+--------+-----------+-----------+--------+-----------+-----------+</div><div class="line">5 rows in set (0.00 sec)</div><div class="line"></div><div class="line">root@testdb 03:11:24&gt;explain extended SELECT * FROM t_1 LEFT JOIN t_2 ON t_1_id = t_2_id WHERE t_1_id = t_2_id;</div><div class="line">+----+-------------+-------+------+---------------+--------+---------+-------------------+------+----------+-------+</div><div class="line">| id | select_type | table | type | possible_keys | key    | key_len | ref               | rows | filtered | Extra |</div><div class="line">+----+-------------+-------+------+---------------+--------+---------+-------------------+------+----------+-------+</div><div class="line">|  1 | SIMPLE      | t_1   | ALL  | t_1_id        | NULL   | NULL    | NULL              |    6 |   100.00 | NULL  |</div><div class="line">|  1 | SIMPLE      | t_2   | ref  | t_2_id        | t_2_id | 5       | testdb.t_1.t_1_id |    1 |   100.00 | NULL  |</div><div class="line">+----+-------------+-------+------+---------------+--------+---------+-------------------+------+----------+-------+</div><div class="line">2 rows in set, 1 warning (0.00 sec)</div><div class="line"></div><div class="line">root@testdb 03:11:38&gt;show warnings;</div><div class="line">+-------+------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</div><div class="line">| Level | Code | Message                                                                                                                                                                                                                                                                                                                                                                 |</div><div class="line">+-------+------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</div><div class="line">| Note  | 1003 | /* select#1 */ select `testdb`.`t_1`.`t_1_id` AS `t_1_id`,`testdb`.`t_1`.`t_1_col_1` AS `t_1_col_1`,`testdb`.`t_1`.`t_1_col_2` AS `t_1_col_2`,`testdb`.`t_2`.`t_2_id` AS `t_2_id`,`testdb`.`t_2`.`t_2_col_1` AS `t_2_col_1`,`testdb`.`t_2`.`t_2_col_2` AS `t_2_col_2` from `testdb`.`t_1` join `testdb`.`t_2` where (`testdb`.`t_2`.`t_2_id` = `testdb`.`t_1`.`t_1_id`) |</div><div class="line">+-------+------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</div><div class="line">1 row in set (0.00 sec)</div><div class="line">可以看到语句三同语句一是一样的，被优化器处理后的语句由left join优化成了join。</div></pre></td></tr></table></figure></p>
-<p>语句四：当外表的索引列出现在WHERE子句中，可以看到依然是left join无法被优化。<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">root@testdb 03:11:38&gt;EXPLAIN EXTENDED SELECT * FROM t_1 LEFT JOIN t_2 ON t_1_id = t_2_id WHERE t_1_id&gt;0;show warnings;</div><div class="line">+----+-------------+-------+------+---------------+--------+---------+-------------------+------+----------+-------------+</div><div class="line">| id | select_type | table | type | possible_keys | key    | key_len | ref               | rows | filtered | Extra       |</div><div class="line">+----+-------------+-------+------+---------------+--------+---------+-------------------+------+----------+-------------+</div><div class="line">|  1 | SIMPLE      | t_1   | ALL  | t_1_id        | NULL   | NULL    | NULL              |    6 |   100.00 | Using where |</div><div class="line">|  1 | SIMPLE      | t_2   | ref  | t_2_id        | t_2_id | 5       | testdb.t_1.t_1_id |    1 |   100.00 | NULL        |</div><div class="line">+----+-------------+-------+------+---------------+--------+---------+-------------------+------+----------+-------------+</div><div class="line">2 rows in set, 1 warning (0.00 sec)</div><div class="line">注：左向外连接的结果集包括左表(t_1)所有的行，不仅是连接所匹配的行，还包括左表某行在右表中没有匹配的行用NULL表示。</div><div class="line">+-------+------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</div><div class="line">| Level | Code | Message                                                                                                                                                                                                                                                                                                                                                                                                        |</div><div class="line">+-------+------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</div><div class="line">| Note  | 1003 | /* select#1 */ select `testdb`.`t_1`.`t_1_id` AS `t_1_id`,`testdb`.`t_1`.`t_1_col_1` AS `t_1_col_1`,`testdb`.`t_1`.`t_1_col_2` AS `t_1_col_2`,`testdb`.`t_2`.`t_2_id` AS `t_2_id`,`testdb`.`t_2`.`t_2_col_1` AS `t_2_col_1`,`testdb`.`t_2`.`t_2_col_2` AS `t_2_col_2` from `testdb`.`t_1` left join `testdb`.`t_2` on((`testdb`.`t_2`.`t_2_id` = `testdb`.`t_1`.`t_1_id`)) where (`testdb`.`t_1`.`t_1_id` &gt; 0) |</div><div class="line">+-------+------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</div><div class="line">1 row in set (0.00 sec)</div></pre></td></tr></table></figure></p>
-<p>语句五：当内表的索引列出现在WHERE子句中，left join可以被优化join。<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">root@testdb 03:21:22&gt;EXPLAIN EXTENDED SELECT * FROM t_1 LEFT JOIN t_2 ON t_1_id = t_2_id WHERE t_2_id&gt;0;show warnings;</div><div class="line">+----+-------------+-------+------+---------------+--------+---------+-------------------+------+----------+-------------+</div><div class="line">| id | select_type | table | type | possible_keys | key    | key_len | ref               | rows | filtered | Extra       |</div><div class="line">+----+-------------+-------+------+---------------+--------+---------+-------------------+------+----------+-------------+</div><div class="line">|  1 | SIMPLE      | t_1   | ALL  | t_1_id        | NULL   | NULL    | NULL              |    6 |   100.00 | Using where |</div><div class="line">|  1 | SIMPLE      | t_2   | ref  | t_2_id        | t_2_id | 5       | testdb.t_1.t_1_id |    1 |   100.00 | NULL        |</div><div class="line">+----+-------------+-------+------+---------------+--------+---------+-------------------+------+----------+-------------+</div><div class="line">2 rows in set, 1 warning (0.00 sec)</div><div class="line"></div><div class="line">+-------+------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</div><div class="line">| Level | Code | Message                                                                                                                                                                                                                                                                                                                                                                                                     |</div><div class="line">+-------+------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</div><div class="line">| Note  | 1003 | /* select#1 */ select `testdb`.`t_1`.`t_1_id` AS `t_1_id`,`testdb`.`t_1`.`t_1_col_1` AS `t_1_col_1`,`testdb`.`t_1`.`t_1_col_2` AS `t_1_col_2`,`testdb`.`t_2`.`t_2_id` AS `t_2_id`,`testdb`.`t_2`.`t_2_col_1` AS `t_2_col_1`,`testdb`.`t_2`.`t_2_col_2` AS `t_2_col_2` from `testdb`.`t_1` join `testdb`.`t_2` where ((`testdb`.`t_2`.`t_2_id` = `testdb`.`t_1`.`t_1_id`) and (`testdb`.`t_1`.`t_1_id` &gt; 0)) |</div><div class="line">+-------+------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</div><div class="line">1 row in set (0.00 sec)</div></pre></td></tr></table></figure></p>
-<p>综上实例可以知道外连接优化的本质：语义上是外连接，但WHER条件使得外连接可以蜕化为内连接</p>
-<p><font color="#0099ff" size="4" face="微软雅黑">2、连接消除</font><br>连接消除就是去掉不必要的连接对象，减少连接操作。<br>准备测试数据：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">root@testdb 03:44:52&gt;select * from t1 limit 1;</div><div class="line">+----+------+</div><div class="line">| a1 | b1   |</div><div class="line">+----+------+</div><div class="line">|  1 | 1    |</div><div class="line">+----+------+</div><div class="line">1 row in set (0.00 sec)</div><div class="line">root@testdb 03:45:05&gt;select * from t2 limit 1; </div><div class="line">+----+------+</div><div class="line">| a2 | b2   |</div><div class="line">+----+------+</div><div class="line">|  1 |    1 |</div><div class="line">+----+------+</div><div class="line">1 row in set (0.00 sec)</div><div class="line">root@testdb 03:45:10&gt;select * from t3 limit 1; </div><div class="line">+----+------+</div><div class="line">| a3 | b3   |</div><div class="line">+----+------+</div><div class="line">|  1 |    1 |</div><div class="line">+----+------+</div><div class="line">1 row in set (0.00 sec)</div></pre></td></tr></table></figure></p>
-<p>语句1：唯一键/主键作为连接条件，三表内连接可以去掉中间表（mysql优化器不支持，需人工去掉）<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">root@testdb 03:47:24&gt;select t1.*,t3.* from t1 join t2 on (a1=a2) join t3 on (a2=a3) limit 1;</div><div class="line">+----+------+----+------+</div><div class="line">| a1 | b1   | a3 | b3   |</div><div class="line">+----+------+----+------+</div><div class="line">|  1 | 1    |  1 |    1 |</div><div class="line">+----+------+----+------+</div><div class="line">1 row in set (0.00 sec)</div><div class="line">root@testdb 04:04:24&gt;explain extended select t1.*,t3.* from t1 join t2 on (a1=a2) join t3 on (a2=a3) limit 1;show warnings;</div><div class="line">+----+-------------+-------+--------+---------------+---------+---------+--------------+------+----------+-------------+</div><div class="line">| id | select_type | table | type   | possible_keys | key     | key_len | ref          | rows | filtered | Extra       |</div><div class="line">+----+-------------+-------+--------+---------------+---------+---------+--------------+------+----------+-------------+</div><div class="line">|  1 | SIMPLE      | t1    | index  | PRIMARY       | idx_b1  | 21      | NULL         | 9977 |   100.00 | Using index |</div><div class="line">|  1 | SIMPLE      | t2    | eq_ref | PRIMARY       | PRIMARY | 4       | testdb.t1.a1 |    1 |   100.00 | Using index |</div><div class="line">|  1 | SIMPLE      | t3    | eq_ref | PRIMARY       | PRIMARY | 4       | testdb.t1.a1 |    1 |   100.00 | NULL        |</div><div class="line">+----+-------------+-------+--------+---------------+---------+---------+--------------+------+----------+-------------+</div><div class="line">3 rows in set, 1 warning (0.00 sec)</div><div class="line"></div><div class="line">+-------+------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</div><div class="line">| Level | Code | Message                                                                                                                                                                                                                                                                                            |</div><div class="line">+-------+------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</div><div class="line">| Note  | 1003 | /* select#1 */ select `testdb`.`t1`.`a1` AS `a1`,`testdb`.`t1`.`b1` AS `b1`,`testdb`.`t3`.`a3` AS `a3`,`testdb`.`t3`.`b3` AS `b3` from `testdb`.`t1` join `testdb`.`t2` join `testdb`.`t3` where ((`testdb`.`t2`.`a2` = `testdb`.`t1`.`a1`) and (`testdb`.`t3`.`a3` = `testdb`.`t1`.`a1`)) limit 1 |</div><div class="line">+-------+------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</div><div class="line">1 row in set (0.00 sec)</div><div class="line">可以看到这个语句中的t2表仅仅作为连接条件，查询目标列没有t2的列，它属于多余的对象，但是优化器依然去连接它。</div><div class="line">我们实际工作中可以人工去掉t2表，改写为：</div><div class="line">root@testdb 03:47:40&gt;select t1.*,t3.* from t1 join t3 on (a1=a3) limit 1;</div><div class="line">+----+------+----+------+</div><div class="line">| a1 | b1   | a3 | b3   |</div><div class="line">+----+------+----+------+</div><div class="line">|  1 | 1    |  1 |    1 |</div><div class="line">+----+------+----+------+</div><div class="line">1 row in set (0.00 sec)</div></pre></td></tr></table></figure></p>
-<p>语句2：可去除的表，除了作为连接对象外，不出现在任何子句中比如：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">root@testdb 03:48:00&gt;select max(b1) from t1,t2;</div><div class="line">+---------+</div><div class="line">| max(b1) |</div><div class="line">+---------+</div><div class="line">| 9999    |</div><div class="line">+---------+</div><div class="line">1 row in set (2.74 sec)</div><div class="line">可以去掉t2：</div><div class="line">root@testdb 03:54:56&gt;select max(b1) from t1;</div><div class="line">+---------+</div><div class="line">| max(b1) |</div><div class="line">+---------+</div><div class="line">| 9999    |</div><div class="line">+---------+</div><div class="line">1 row in set (0.00 sec)</div><div class="line">还有select a1 from t1,t2 group by a1可以改为select a1 from t1 group by a1等类似写法</div></pre></td></tr></table></figure></p>
-<p><font color="#0099ff" size="4" face="微软雅黑">3、嵌套连接消除</font><br>连接存在多个层次，用括号标识连接的优先次序。嵌套连接消除，就是消除嵌套的连接层次，把多个层次的连接减少为较少层次的连接，尽量“扁平化”。<br>创建测试表及数据：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">CREATE TABLE B (b1 INT, b2 VARCHAR(9));</div><div class="line">CREATE TABLE A (a1 INT, a2 VARCHAR(9));</div><div class="line">CREATE TABLE C (c1 INT, c2 VARCHAR(9));</div><div class="line">INSERT INTO B VALUES(1, &apos;B1&apos;), (NULL, &apos;B2&apos;), (31, &apos;B31&apos;), (32, &apos;B32&apos;), (NULL, &apos;B4&apos;),(5, &apos;B5&apos;), (6, &apos;B6&apos;);</div><div class="line">INSERT INTO A VALUES(1, &apos;A1&apos;), (null, &apos;A2&apos;), (NULL, &apos;A31&apos;), (32, &apos;A32&apos;), (4, &apos;A4&apos;), (5, &apos;A5&apos;), (NULL, &apos;A6&apos;);</div><div class="line">INSERT INTO C VALUES(1, &apos;C1&apos;), (NULL, &apos;C2&apos;), (31, &apos;C31&apos;), (NULL, &apos;C32&apos;), (4, &apos;C4&apos;), (NULL, &apos;C5&apos;),(6, &apos;A6&apos;);</div></pre></td></tr></table></figure></p>
-<p>语句示例：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">root@testdb 04:17:29&gt;EXPLAIN EXTENDED SELECT * FROM A JOIN (B JOIN C ON B.b1=C.c1) ON A.a1=B.b1 </div><div class="line">    -&gt; WHERE A.a1 &gt; 1;</div><div class="line">+----+-------------+-------+------+---------------+------+---------+------+------+----------+----------------------------------------------------+</div><div class="line">| id | select_type | table | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra                                              |</div><div class="line">+----+-------------+-------+------+---------------+------+---------+------+------+----------+----------------------------------------------------+</div><div class="line">|  1 | SIMPLE      | A     | ALL  | NULL          | NULL | NULL    | NULL |    7 |   100.00 | Using where                                        |</div><div class="line">|  1 | SIMPLE      | B     | ALL  | NULL          | NULL | NULL    | NULL |    7 |   100.00 | Using where; Using join buffer (Block Nested Loop) |</div><div class="line">|  1 | SIMPLE      | C     | ALL  | NULL          | NULL | NULL    | NULL |    7 |   100.00 | Using where; Using join buffer (Block Nested Loop) |</div><div class="line">+----+-------------+-------+------+---------------+------+---------+------+------+----------+----------------------------------------------------+</div><div class="line">3 rows in set, 1 warning (0.00 sec)</div><div class="line"></div><div class="line">root@testdb 04:18:20&gt;show warnings;</div><div class="line">+-------+------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</div><div class="line">| Level | Code | Message                                                                                                                                                                                                                                                                                                                                                         |</div><div class="line">+-------+------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</div><div class="line">| Note  | 1003 | /* select#1 */ select `testdb`.`a`.`a1` AS `a1`,`testdb`.`a`.`a2` AS `a2`,`testdb`.`b`.`b1` AS `b1`,`testdb`.`b`.`b2` AS `b2`,`testdb`.`c`.`c1` AS `c1`,`testdb`.`c`.`c2` AS `c2` from `testdb`.`a` join `testdb`.`b` join `testdb`.`c` where ((`testdb`.`b`.`b1` = `testdb`.`a`.`a1`) and (`testdb`.`c`.`c1` = `testdb`.`a`.`a1`) and (`testdb`.`a`.`a1` &gt; 1)) |</div><div class="line">+-------+------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</div><div class="line">1 row in set (0.00 sec)</div><div class="line">从该SQL语义上看，是希望先执行B和C连接，然后再和A连接。但是执行计划上看到连接顺序依次是先A和B再和C，说明mysql优化器是支持对嵌套连接的消除的。</div></pre></td></tr></table></figure></p>
-<p>针对三种连接技术做个简单的总结：</p>
-<ul>
-<li>连接消除是去掉被连接的某个对象。</li>
-<li>外连接消除是去掉外连接的语义使其变为内连接。</li>
-<li>嵌套连接消除是一种连接的语义顺序的变化。</li>
-</ul>
-
+          
+              <p><Excerpt in="" index="" |="" 首页摘要=""><br>本文是关于mysql的连接消除技术：外连接消除、连接消除、嵌套连接消除。</Excerpt></p>
+          
       
     </div>
-    <footer class="article-footer">
+    
+    <div class="article-info article-info-index">
       
-        <a data-url="http://riverdba.github.io/2017/03/22/join-elimination-technique-of-mysql/" data-id="cj0p551e60002jo9an1gp7n3f" class="article-share-link" data-share="baidu" data-title="mysql查询优化技术之连接消除">分享到</a>
       
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/MySQL/">MySQL</a>
+    </div>
+
 
       
-        <a href="http://riverdba.github.io/2017/03/22/join-elimination-technique-of-mysql/#ds-thread" class="article-comment-link">评论</a>
-      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mysql的查询优化技术/">mysql的查询优化技术</a></li></ul>
+    </div>
 
       
-    </footer>
+        <p class="article-more-link">
+          <a href="/2017/03/22/join-elimination-technique-of-mysql/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
   </div>
   
 </article>
 
 
+
+
+
+
+
+
+
   
     <article id="post-hello-world" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2017/03/21/hello-world/" class="article-date">
-  <time datetime="2017-03-21T08:44:04.680Z" itemprop="datePublished">2017-03-21</time>
+  
+    <div class="article-meta">
+      <a href="/2017/03/21/hello-world/" class="article-date">
+      <time datetime="2017-03-21T08:44:04.680Z" itemprop="datePublished">2017-03-21</time>
 </a>
-    
-  </div>
+
+
+    </div>
+  
   <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
     
     
       <header class="article-header">
@@ -151,184 +494,137 @@
   
 
       </header>
+      
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">$ hexo new <span class="string">"My New Post"</span></div><div class="line">简写命令：hexo n <span class="string">"My New Post"</span></div></pre></td></tr></table></figure>
-<p>新建一篇博文，新建的md文件位于：hexo当前目录/source/_posts中。<br>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">$ hexo server</div><div class="line">简写命令：hexo s</div></pre></td></tr></table></figure>
-<p>这个命令是开启本地hexo服务用的，可以访问<a href="http://localhost:4000/进行本地预览。" target="_blank" rel="external">http://localhost:4000/进行本地预览。</a><br>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">$ hexo generate</div><div class="line">简写命令：hexo g</div></pre></td></tr></table></figure>
-<p>一般部署上去的时候都需要编译一下，编译后，会出现一个 public 件夹，将所有的md文件编译成html文件 。<br>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">$ hexo deploy</div><div class="line">简写命令：hexo d</div></pre></td></tr></table></figure>
-<p>执行这个命令可以将博客部署到git。<br>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
-<h3 id="清除-public"><a href="#清除-public" class="headerlink" title="清除 public"></a>清除 public</h3><figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">$ hexo clean</div></pre></td></tr></table></figure>
-<p>当 source 文件夹中的部分资源更改过之后，特别是对文件进行了删除或者路径的改变之后，需要执行这个命令，然后重新编译。 </p>
-<h3 id="Tips"><a href="#Tips" class="headerlink" title="Tips"></a>Tips</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">1、当执行hexo d部署博客时遇到被hang住没反应的时候，按Crtl + C退出然后执行：hexo clean再执行：hexo d -g即可！</div><div class="line">2、hexo d -g组合命令代表先执行hexo g再执行hexo d</div></pre></td></tr></table></figure>
-<h3 id="Markdown语法"><a href="#Markdown语法" class="headerlink" title="Markdown语法"></a>Markdown语法</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">1、分段： 两个回车</div><div class="line">2、换行 两个空格 + 回车</div><div class="line">3、标题 # ~ ###### 井号的个数表示几级标题，即Markdown可以表示一级标题到六级标题</div><div class="line">4、引用 &gt;</div><div class="line">5、列表 * ， + ， - ， 1. ，选其中之一，注意后面有个空格</div><div class="line">6、代码区块 四个空格 开头</div><div class="line">7、链接 [文字](链接地址)</div><div class="line">8、图片 ![图片说明](图片地址) ，图片地址可以是本地路径，也可以是网络地址</div><div class="line">9、强调 **文字** ， __文字__ ， _文字_ ， *文字*</div><div class="line">10、代码 ```，``</div></pre></td></tr></table></figure>
-<p>More info: <a href="http://www.kancloud.cn/wizardforcel/markdown-simple-world/97373" target="_blank" rel="external">Markdown更多语法</a></p>
-
+          
+              <p><Excerpt in="" index="" |="" 首页摘要=""><br>从这里开始，快速开启博客之旅！</Excerpt></p>
+          
       
     </div>
-    <footer class="article-footer">
+    
+    <div class="article-info article-info-index">
       
-        <a data-url="http://riverdba.github.io/2017/03/21/hello-world/" data-id="cj0p551dy0000jo9ashx5x44d" class="article-share-link" data-share="baidu" data-title="Hello World">分享到</a>
       
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Hexo/">Hexo</a>
+    </div>
+
 
       
-        <a href="http://riverdba.github.io/2017/03/21/hello-world/#ds-thread" class="article-comment-link">评论</a>
-      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Hexo-Quick-Start/">Hexo Quick Start</a></li></ul>
+    </div>
 
       
-    </footer>
+        <p class="article-more-link">
+          <a href="/2017/03/21/hello-world/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
   </div>
   
 </article>
 
 
-  
 
-</section>
-      
-      <aside id="sidebar">
-  
-    
-  
-    
-  
-    
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">归档</h3>
-    <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">2</span></li></ul>
-    </div>
-  </div>
+
+
+
+
+
 
   
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">近期文章</h3>
-    <div class="widget">
-      <ul>
-        
-          <li>
-            <a href="/2017/03/22/join-elimination-technique-of-mysql/">mysql查询优化技术之连接消除</a>
-          </li>
-        
-          <li>
-            <a href="/2017/03/21/hello-world/">Hello World</a>
-          </li>
-        
-      </ul>
-    </div>
-  </div>
-
   
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">友情链接</h3>
-    <div class="widget">
-      <ul>
-        
-          <li>
-            <a href="http://arvinxiang.com" target="_blank">主题作者</a>
-          </li>
-        
-          <li>
-            <a href="http://reqianduan.com" target="_blank">热前端</a>
-          </li>
-        
-          <li>
-            <a href="http://yuancheng.work" target="_blank">远程.work</a>
-          </li>
-        
-      </ul>
-    </div>
-  </div>
-
-  
-</aside>
-      
-    </div>
-    <footer id="footer">
-  
-  <div class="outer">
-    <div id="footer-info" class="inner">
-      &copy; 2017 river_dba@foxmail.com<br>
-      Powered by <a href="//hexo.io/" target="_blank">Hexo</a>
-      .
-      Theme by <a href="https://github.com/xiangming/landscape-plus" target="_blank">Landscape-plus</a>
-    </div>
-  </div>
-</footer>
-  </div>
-  <nav id="mobile-nav">
-  
-    <a href="/" class="mobile-nav-link">Home</a>
-  
-    <a href="/archives" class="mobile-nav-link">Archives</a>
-  
-</nav>
-  <!-- totop start -->
-<div id="totop">
-<a title="返回顶部"><img src="/img/scrollup.png"/></a>
 </div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2017 一条大河
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题  v3.5">Yelee</a> by MOxFIVE <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" title="本站到访数"><i class="fa fa-user" aria-hidden="true"></i><span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>| </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit"  title="本页阅读量"><i class="fa fa-eye animated infinite pulse" aria-hidden="true"></i><span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+    </div>
+    
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.2.0/require.min.js"></script>
 
-<!-- totop end -->
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
 
-<!-- 多说公共js代码 start -->
-<script type="text/javascript">
-var duoshuoQuery = {short_name:"reqianduan"};
-  (function() {
-    var ds = document.createElement('script');
-    ds.type = 'text/javascript';ds.async = true;
-    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-    ds.charset = 'UTF-8';
-    (document.getElementsByTagName('head')[0]
-     || document.getElementsByTagName('body')[0]).appendChild(ds);
-  })();
-  </script>
-<!-- 多说公共js代码 end -->
 
 
-<!-- 百度分享 start -->
 
-<div id="article-share-box" class="article-share-box">
-  <div id="bdshare" class="bdsharebuttonbox article-share-links">
-    <a class="article-share-weibo" data-cmd="tsina" title="分享到新浪微博"></a>
-    <a class="article-share-weixin" data-cmd="weixin" title="分享到微信"></a>
-    <a class="article-share-qq" data-cmd="sqq" title="分享到QQ"></a>
-    <a class="article-share-renren" data-cmd="renren" title="分享到人人网"></a>
-    <a class="article-share-more" data-cmd="more" title="更多"></a>
-  </div>
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" onclick="load$hide();" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
 </div>
 <script>
-  function SetShareData(cmd, config) {
-    if (shareDataTitle && shareDataUrl) {
-      config.bdText = shareDataTitle;
-      config.bdUrl = shareDataUrl;
-    }
-    return config;
-  }
-  window._bd_share_config={
-    "common":{onBeforeClick: SetShareData},
-    "share":{"bdCustomStyle":"/css/bdshare.css"}
-  };
-  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='//bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+    // Open in New Window
+    
+        var oOpenInNew = {
+            
+            
+            
+            
+            
+            
+             archives: ".archive-article-title", 
+             miniArchives: "a.post-list-link", 
+            
+             friends: "#js-friends a", 
+             socail: ".social a" 
+        }
+        for (var x in oOpenInNew) {
+            $(oOpenInNew[x]).attr("target", "_blank");
+        }
+    
 </script>
 
-<!-- 百度分享 end -->
-
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-
-
-
-
-<script src="/js/script.js"></script>
-
-</div>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  </div>
 </body>
 </html>

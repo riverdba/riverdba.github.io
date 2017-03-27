@@ -1,310 +1,69 @@
-<!DOCTYPE html>
-<html lang="zh-Hans">
-<head>
-
-    <!--[if lt IE 9]>
-        <style>body {display: none; background: none !important} </style>
-        <meta http-equiv="Refresh" Content="0; url=//outdatedbrowser.com/" />
-    <![endif]-->
-
-<meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="format-detection" content="telephone=no" />
-<meta name="author" content="一条大河" />
-
-
-
-<meta name="description" content="本文是关于mysql的连接消除技术：外连接消除、连接消除、嵌套连接消除。">
-<meta property="og:type" content="article">
-<meta property="og:title" content="mysql查询优化技术之连接消除">
-<meta property="og:url" content="http://riverdba.github.io/2017/03/22/join-elimination-technique-of-mysql/index.html">
-<meta property="og:site_name" content="Yangtze River's blog">
-<meta property="og:description" content="本文是关于mysql的连接消除技术：外连接消除、连接消除、嵌套连接消除。">
-<meta property="og:updated_time" content="2017-03-27T09:07:18.000Z">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="mysql查询优化技术之连接消除">
-<meta name="twitter:description" content="本文是关于mysql的连接消除技术：外连接消除、连接消除、嵌套连接消除。">
-
-<link rel="apple-touch-icon" href= "/apple-touch-icon.png">
-
-
-    <link rel="alternate" href="/atom.xml" title="Yangtze River&#39;s blog" type="application/atom+xml">
-
-
-
-    <link rel="shortcut icon" href="/yangtzeriver.jpg">
-
-
-
-    <link href="//cdn.bootcss.com/animate.css/3.5.1/animate.min.css" rel="stylesheet">
-
-
-
-    <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
-
-
-
-    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
-    <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
-
-
-<link rel="stylesheet" href="/css/style.css">
-
-
-
-<link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
-
-
-<title>mysql查询优化技术之连接消除 | Yangtze River&#39;s blog</title>
-
-<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
-<script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
-
-<script>
-    var yiliaConfig = {
-        fancybox: true,
-        animate: true,
-        isHome: false,
-        isPost: true,
-        isArchive: false,
-        isTag: false,
-        isCategory: false,
-        fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
-        scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
-        search: true
-    }
-</script>
-
-
-    <script>
-        yiliaConfig.jquery_ui = [true, "//cdn.bootcss.com/jqueryui/1.10.4/jquery-ui.min.js", "//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css"];
-    </script>
-
-
-
-    <script> yiliaConfig.rootUrl = "\/";</script>
-
-
-
-
-
-
-</head>
-<body>
-  <div id="container">
-    <div class="left-col">
-    <div class="overlay"></div>
-<div class="intrude-less">
-    <header id="header" class="inner">
-        <a href="/" class="profilepic">
-            <img src="/img/yangtzeriver.jpg" class="animated zoomIn">
-        </a>
-        <hgroup>
-          <h1 class="header-author"><a href="/">一条大河</a></h1>
-        </hgroup>
-
-        
-        <p class="header-subtitle">为学患无疑，疑则进也！</p>
-        
-
-        
-            <form id="search-form">
-            <input type="text" id="local-search-input" name="q" placeholder="search..." class="search form-control" autocomplete="off" autocorrect="off" searchonload="false" />
-            <i class="fa fa-times" onclick="resetSearch()"></i>
-            </form>
-            <div id="local-search-result"></div>
-            <p class='no-result'>No results found <i class='fa fa-spinner fa-pulse'></i></p>
-        
-
-
-        
-            <div id="switch-btn" class="switch-btn">
-                <div class="icon">
-                    <div class="icon-ctn">
-                        <div class="icon-wrap icon-house" data-idx="0">
-                            <div class="birdhouse"></div>
-                            <div class="birdhouse_holes"></div>
-                        </div>
-                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
-                            <div class="ribbon"></div>
-                        </div>
-                        
-                        <div class="icon-wrap icon-link hide" data-idx="2">
-                            <div class="loopback_l"></div>
-                            <div class="loopback_r"></div>
-                        </div>
-                        
-                        
-                    </div>
-                    
-                </div>
-                <div class="tips-box hide">
-                    <div class="tips-arrow"></div>
-                    <ul class="tips-inner">
-                        <li>菜单</li>
-                        <li>标签</li>
-                        
-                        <li>友情链接</li>
-                        
-                        
-                    </ul>
-                </div>
-            </div>
-        
-
-        <div id="switch-area" class="switch-area">
-            <div class="switch-wrap">
-                <section class="switch-part switch-part1">
-                    <nav class="header-menu">
-                        <ul>
-                        
-                            <li><a href="/">主页</a></li>
-                        
-                            <li><a href="/archives/">所有文章</a></li>
-                        
-                            <li><a href="/tags/">标签云</a></li>
-                        
-                            <li><a href="/about/">关于我</a></li>
-                        
-                        </ul>
-                    </nav>
-                    <nav class="header-nav">
-                        <ul class="social">
-                            
-                                <a class="fa Email" href="mailto:river_dba@foxmail.com" title="Email"></a>
-                            
-                                <a class="fa GitHub" href="#" title="GitHub"></a>
-                            
-                                <a class="fa RSS" href="/atom.xml" title="RSS"></a>
-                            
-                        </ul>
-                    </nav>
-                </section>
-                
-                
-                <section class="switch-part switch-part2">
-                    <div class="widget tagcloud" id="js-tagcloud">
-                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hexo-Quick-Start/">Hexo Quick Start</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/disqus/">disqus</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql的性能调优技术/">mysql的性能调优技术</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql的查询优化技术/">mysql的查询优化技术</a></li></ul>
-                    </div>
-                </section>
-                
-                
-                
-                <section class="switch-part switch-part3">
-                    <div id="js-friends">
-                    
-                      <a class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
-                    
-                      <a class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
-                    
-                      <a class="main-nav-link switch-friends-link" href="http://moxfive.xyz/">MOxFIVE</a>
-                    
-                      <a class="main-nav-link switch-friends-link" href="http://moxfive.xyz/yelee/">yelee主题</a>
-                    
-                      <a class="main-nav-link switch-friends-link" href="https://dbanote.github.io">刘雅君</a>
-                    
-                    </div>
-                </section>
-                
-
-                
-            </div>
-        </div>
-    </header>                
-</div>
-    </div>
-    <div class="mid-col">
-      <nav id="mobile-nav">
-      <div class="overlay">
-          <div class="slider-trigger"></div>
-          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">一条大河</a></h1>
-      </div>
-    <div class="intrude-less">
-        <header id="header" class="inner">
-            <a href="/" class="profilepic">
-                <img src="/img/yangtzeriver.jpg" class="animated zoomIn">
-            </a>
-            <hgroup>
-              <h1 class="header-author"><a href="/" title="回到主页">一条大河</a></h1>
-            </hgroup>
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  
+  
+    
+    <entry>
+      <title><![CDATA[实现hexo的评论功能]]></title>
+      <url>http://riverdba.github.io/2017/03/27/hexo-s-comment/</url>
+      <content type="html"><![CDATA[<p><excerpt in="" index="" |="" 首页摘要=""><br>本文介绍如何在博客中添加评论功能！<a id="more"></a></excerpt></p>
+<p><the rest="" of="" contents="" |="" 余下全文=""><br>1、首先需要到<a href="https://disqus.com" target="_blank" rel="external">disqus官网</a>注册账号，然后使用账号登录。<br>2、通过账号登录 disqus后，点击“settings”–&gt;在下拉列表中选择“add disqus to site”如图：<br><img src="/2017/03/27/hexo-s-comment/1.png" alt="图1"><br>3、浏览到该网页最下方选择“get started”如图：<br><img src="/2017/03/27/hexo-s-comment/2.png" alt="图2"><br>4、然后点击“i want to install Disqus on my site”：<br><img src="/2017/03/27/hexo-s-comment/3.png" alt="图3"><br>5、创建站点：<br><img src="/2017/03/27/hexo-s-comment/4.png" alt="图4"><br>6、完成create site后就能看到shortname了：<br><img src="/2017/03/27/hexo-s-comment/5.png" alt="图5"><br>7、选择advanced，在Trusted Domains中添加：github.com,github.io<br><img src="/2017/03/27/hexo-s-comment/6.png" alt="图6"><br>注意：一次只能添加一个域名<br>8、最后将shortname填到hexo主题的配置文件中：D:\src\Git\imdba\themes\yelee_config.yml改成如下内容：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">disqus: </div><div class="line">  on: true</div><div class="line">  shortname: xxx</div></pre></td></tr></table></figure></the></p>
+<p>重新部署下博客，就可以看到每篇文章后面都有评论功能了。</p>
+]]></content>
+      
+        <categories>
             
-            <p class="header-subtitle">为学患无疑，疑则进也！</p>
+            <category> Hexo </category>
             
-            <nav class="header-menu">
-                <ul>
-                
-                    <li><a href="/">主页</a></li>
-                
-                    <li><a href="/archives/">所有文章</a></li>
-                
-                    <li><a href="/tags/">标签云</a></li>
-                
-                    <li><a href="/about/">关于我</a></li>
-                
-                <div class="clearfix"></div>
-                </ul>
-            </nav>
-            <nav class="header-nav">
-                        <ul class="social">
-                            
-                                <a class="fa Email" target="_blank" href="mailto:river_dba@foxmail.com" title="Email"></a>
-                            
-                                <a class="fa GitHub" target="_blank" href="#" title="GitHub"></a>
-                            
-                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
-                            
-                        </ul>
-            </nav>
-        </header>                
-    </div>
-    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
-</nav>
-      <div class="body-wrap"><article id="post-join-elimination-technique-of-mysql" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2017/03/22/join-elimination-technique-of-mysql/" class="article-date">
-      <time datetime="2017-03-22T06:26:17.000Z" itemprop="datePublished">2017-03-22</time>
-</a>
-
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
+        </categories>
         
-  
-    <h1 class="article-title" itemprop="name">
-      mysql查询优化技术之连接消除
-    </h1>
-  
-
-      </header>
-      
-      <div class="article-info article-info-post">
         
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/MySQL/">MySQL</a>
-    </div>
-
-
+        <tags>
+            
+            <tag> disqus </tag>
+            
+        </tags>
         
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mysql的查询优化技术/">mysql的查询优化技术</a></li></ul>
-    </div>
-
-        <div class="clearfix"></div>
-      </div>
-      
+    </entry>
     
-    <div class="article-entry" itemprop="articleBody">
+    <entry>
+      <title><![CDATA[mysql性能调优的关键点]]></title>
+      <url>http://riverdba.github.io/2017/03/27/Performance-tuning-key-points-of-mysql/</url>
+      <content type="html"><![CDATA[<p><excerpt in="" index="" |="" 首页摘要=""><br>本文记录了一些mysql性能调优相关知识。<a id="more"></a></excerpt></p>
+<p><the rest="" of="" contents="" |="" 余下全文=""></the></p>
+<h2 id="服务器参数调优，有哪些关键点？"><a href="#服务器参数调优，有哪些关键点？" class="headerlink" title="服务器参数调优，有哪些关键点？"></a>服务器参数调优，有哪些关键点？</h2><h3 id="操作系统的选择"><a href="#操作系统的选择" class="headerlink" title="操作系统的选择"></a>操作系统的选择</h3><p>建议安装在64bit的linux平台（centos\linux\suse）。</p>
+<h3 id="关闭SWAP"><a href="#关闭SWAP" class="headerlink" title="关闭SWAP"></a>关闭SWAP</h3><p>设置vm.swappiness = 10，如果设置为0当内存不足时会导致OOM。</p>
+<h3 id="关闭NUMA"><a href="#关闭NUMA" class="headerlink" title="关闭NUMA"></a>关闭NUMA</h3><p>如果是单实例部署，需要关闭NUMA。关闭NUMA有3种方式：BIOS中关闭、OS内核中关闭、启动MYSQL时关闭。</p>
+<h3 id="多网卡绑定"><a href="#多网卡绑定" class="headerlink" title="多网卡绑定"></a>多网卡绑定</h3><p>一定要做双网卡绑定。关键网络参数调整：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">net.ipv4.tcp_keepalive_time = 120  #用于减少失效tcp连接占用的资源，加快资源回收的效率</div><div class="line">net.ipv4.tcp_keepalive_intvl = 30  #用于减少失效tcp连接占用的资源，加快资源回收的效率</div><div class="line">net.ipv4.tcp_keepalive_probes = 3  #用于减少失效tcp连接占用的资源，加快资源回收的效率</div><div class="line">net.core.rmem_max = 4194304 #最大socket读buffer（单位：字节数）</div><div class="line">net.core.wmem_max = 4194304 #最大socket写buffer（单位：字节数）</div><div class="line">net.ipv4.tcp_moderate_rcvbuf = 1 #开启recv buffer自动调节机制</div><div class="line">net.ipv4.tcp_wmem = 4096        16384   4194304 #为socket发送缓冲区分配的字节数（依次是最小值、默认值、最大值）</div><div class="line">net.ipv4.tcp_rmem = 4096        87380   4194304 #为socket接受缓冲区分配的字节数（依次是最小值、默认值、最大值）</div></pre></td></tr></table></figure></p>
+<h3 id="磁盘调度算法"><a href="#磁盘调度算法" class="headerlink" title="磁盘调度算法"></a>磁盘调度算法</h3><p>建议采用deadline。磁盘调度设置：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">echo deadline &gt; /sys/block/fioa/queue/schedule</div></pre></td></tr></table></figure></p>
+<p>查看设置：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mysql_42 ~]# cat /sys/block/sda/queue/scheduler </div><div class="line">noop anticipatory deadline [cfq]</div></pre></td></tr></table></figure></p>
+<h3 id="文件系统"><a href="#文件系统" class="headerlink" title="文件系统"></a>文件系统</h3><p>推荐选择xfs\ext4，格式化时记得添加noatime,nobarrier参数。<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mysql_42 ~]# mount</div><div class="line">/dev/sda3 on / type ext4 (rw)</div><div class="line">proc on /proc type proc (rw)</div><div class="line">sysfs on /sys type sysfs (rw)</div><div class="line">devpts on /dev/pts type devpts (rw,gid=5,mode=620)</div><div class="line">tmpfs on /dev/shm type tmpfs (rw)</div><div class="line">/dev/sda1 on /boot type ext4 (rw)</div><div class="line">/dev/sdb on /data type ext4 (rw)</div><div class="line">/dev/sdc on /log type ext4 (rw)</div><div class="line">none on /proc/sys/fs/binfmt_misc type binfmt_misc (rw)</div></pre></td></tr></table></figure></p>
+<h3 id="调大open-files"><a href="#调大open-files" class="headerlink" title="调大open files"></a>调大open files</h3><p>一定要调大open files，可以通过命令：ulimit -n查看。</p>
+<h3 id="修改-etc-hosts绑定IP和主机名。"><a href="#修改-etc-hosts绑定IP和主机名。" class="headerlink" title="修改/etc/hosts绑定IP和主机名。"></a>修改/etc/hosts绑定IP和主机名。</h3><h2 id="MySQL性能调优有哪些关键点-经验？"><a href="#MySQL性能调优有哪些关键点-经验？" class="headerlink" title="MySQL性能调优有哪些关键点/经验？"></a>MySQL性能调优有哪些关键点/经验？</h2><h3 id="实例参数调优"><a href="#实例参数调优" class="headerlink" title="实例参数调优"></a>实例参数调优</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">innodb_buffer_pool_size=物理内存的60%-80%  #总IO能力</div><div class="line">innodb_thread_concurrency=CPU的核数  #线程的并发数</div><div class="line">query_cache_type=0  #禁用结果集缓存，一般通过redis\memcache缓存</div><div class="line">query_cache_size=0  #禁用结果集缓存</div><div class="line">max_user_connections=应用连接池大小X应用服务器的数量 #连接数设置要考虑每个会话占用的内存</div><div class="line">interactive_timeout=8小时 #交互连接空闲超时</div><div class="line">wait_timeout=8小时 #非交互的连接空闲超时</div><div class="line">innodb_io_capacity=20000（SSD盘） #innodb每秒后台进程处理IO操作的数据页（page）上限</div><div class="line">innodb_flush_log_at_trx_commit=1 #每次事务提交都刷盘，可保证数据安全。若设置为0的话是每秒刷盘，和提交没关系，不建议。设置为2的话每次提交会把数据存到操作系统的缓存中，然后定期刷盘。如果操作系统挂掉了数据就丢了。5.6以后该参数没有性能问题了。</div><div class="line">sync_binlog=1#1个提交就把日志从缓存写到日志文件</div><div class="line">innodb_log_file_size=1-2G（SAS盘）；4-8G（SSD盘）#日志文件的大小，若设置太小日志文件会频繁切换产生新文件，影响IO能力。</div><div class="line">innodb_log_files_in_group=4-8 #日志组的数量</div><div class="line">innodb_flush_method=O_DIRECT #刷脏块的方式：直接落盘，避免数据多次被cache</div><div class="line">innodb_max_dirty_pages_pct=50 #innodb buffer cache中的脏块刷到磁盘的比例</div><div class="line">innodb_flush_neighbors=0 #合并相邻页数据为1个IO：SAS建议开启，SSD可以关闭</div><div class="line">transaction-isolation = READ-COMMITTED #隔离级别</div></pre></td></tr></table></figure>
+<h3 id="SQL调优"><a href="#SQL调优" class="headerlink" title="SQL调优"></a>SQL调优</h3><p>1、制定SQL编写规范，约束开发人员从项目开始阶段就编写出高效的SQL：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">1、禁止多于3表的join</div><div class="line">2、不要select *</div><div class="line">3、count(*) 尽量用redis缓存去做</div><div class="line">4、避免多作的排序  比如group by 时不用 排序 order by null</div><div class="line">5、模糊查询前缀不用要%  如 like &apos;ss%&apos;</div><div class="line">6、使用in 代替 or</div><div class="line">7、禁止隐式转换</div><div class="line">8、禁止负向查询 如 not in, != ,not like等</div><div class="line">9、尽量用union all 代替  union  ,union 会排序去重</div><div class="line">10、where尽量早过滤</div><div class="line">11、不做计算 如select id*10.2 from t1 </div><div class="line">12、用id条件过滤数据后再分页where id&gt;10000 limit 10，不要用 limit 10000,10</div></pre></td></tr></table></figure></p>
+<p>2、实时监控慢查询，通过分析执行计划优化SQL语句<br>3、合理的进行索引设计<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">覆盖索引</div><div class="line">1、查询谓词都能通过index进行扫描</div><div class="line">2、排序谓词都能利用index的有序性</div><div class="line">3、index包含了查询所需要的所有字段，这样只用索引就不用查表了</div><div class="line">不能使用索引</div><div class="line">1、不要给选择率低的字段建索引（通过索引扫描记录超30%就全表扫描了） 如 性别 男和女 直接查表快走索引更慢</div><div class="line">2、联合索引中，第一个索引不要使用范围查询，第一个查询条件不要是最左索引列</div><div class="line">3、like 查询最左 不要是%开始</div><div class="line">4、两个独立索引，一个用于检索，一个用于排序，（索引不是越多越好，尽量合并）</div><div class="line">5、表关联字段类型不一样（长度不一样）不会走索引</div><div class="line">6、索引字段使用函数</div><div class="line">7、不要使用外键约束</div></pre></td></tr></table></figure></p>
+<h3 id="架构调优"><a href="#架构调优" class="headerlink" title="架构调优"></a>架构调优</h3><p>实时监控大表，合理制定拆分方案实施分库分表。</p>
+]]></content>
       
-          
-        <p><excerpt in="" index="" |="" 首页摘要=""><br>本文是关于mysql的连接消除技术：外连接消除、连接消除、嵌套连接消除。<a id="more"></a></excerpt></p>
+        <categories>
+            
+            <category> MySQL </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> mysql的性能调优技术 </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[mysql查询优化技术之连接消除]]></title>
+      <url>http://riverdba.github.io/2017/03/22/join-elimination-technique-of-mysql/</url>
+      <content type="html"><![CDATA[<p><excerpt in="" index="" |="" 首页摘要=""><br>本文是关于mysql的连接消除技术：外连接消除、连接消除、嵌套连接消除。<a id="more"></a></excerpt></p>
 <p><the rest="" of="" contents="" |="" 余下全文=""></the></p>
 <h3 id="连接消除技术包括三种：外连接消除、连接消除、嵌套连接消除"><a href="#连接消除技术包括三种：外连接消除、连接消除、嵌套连接消除" class="headerlink" title="连接消除技术包括三种：外连接消除、连接消除、嵌套连接消除"></a>连接消除技术包括三种：外连接消除、连接消除、嵌套连接消除</h3><p><font color="#0099ff" size="4" face="微软雅黑">1、外连接消除</font><br>外连接消除就是把外连接变为内连接。之所以要消除外连接，是因为查询优化器在处理外连接操作时所消耗的时间多于内连接，因此消除外连接后可以加快查询速度。同时可以减少不必要的I/O开销，加快算法执行速度。<br>创建测试表并插入数据：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">CREATE TABLE t_1 (t_1_id INT UNIQUE, t_1_col_1 INT, t_1_col_2 VARCHAR(10));</div><div class="line">CREATE TABLE t_2 (t_2_id INT UNIQUE, t_2_col_1 INT, t_2_col_2 VARCHAR(10));</div><div class="line">INSERT INTO t_1 VALUES (1, 11, &apos;t_1_1&apos;);   INSERT INTO t_1 VALUES (2, 12, NULL);</div><div class="line">INSERT INTO t_1 VALUES (3, NULL, &apos;t_1_3&apos;); INSERT INTO t_1 VALUES (4, 14, &apos;t_1_4&apos;);</div><div class="line">INSERT INTO t_1 VALUES (5, 15, NULL);      INSERT INTO t_1 VALUES (7, NULL, NULL);</div><div class="line">INSERT INTO t_2 VALUES (1, 11, &apos;t_2_1&apos;);   INSERT INTO t_2 VALUES (2, NULL, &apos;t_2_2&apos;);</div><div class="line">INSERT INTO t_2 VALUES (3, 13, NULL);      INSERT INTO t_2 VALUES (4, 14, &apos;t_2_4&apos;);</div><div class="line">INSERT INTO t_2 VALUES (6, 16, &apos;t_2_6&apos;);   INSERT INTO t_2 VALUES (7, NULL, NULL);</div><div class="line">root@testdb 02:21:55&gt;select * from t_1;</div><div class="line">+--------+-----------+-----------+</div><div class="line">| t_1_id | t_1_col_1 | t_1_col_2 |</div><div class="line">+--------+-----------+-----------+</div><div class="line">|      1 |        11 | t_1_1     |</div><div class="line">|      2 |        12 | NULL      |</div><div class="line">|      3 |      NULL | t_1_3     |</div><div class="line">|      4 |        14 | t_1_4     |</div><div class="line">|      5 |        15 | NULL      |</div><div class="line">|      7 |      NULL | NULL      |</div><div class="line">+--------+-----------+-----------+</div><div class="line">6 rows in set (0.00 sec)</div><div class="line">root@testdb 02:22:08&gt;select * from t_2;</div><div class="line">+--------+-----------+-----------+</div><div class="line">| t_2_id | t_2_col_1 | t_2_col_2 |</div><div class="line">+--------+-----------+-----------+</div><div class="line">|      1 |        11 | t_2_1     |</div><div class="line">|      2 |      NULL | t_2_2     |</div><div class="line">|      3 |        13 | NULL      |</div><div class="line">|      4 |        14 | t_2_4     |</div><div class="line">|      6 |        16 | t_2_6     |</div><div class="line">|      7 |      NULL | NULL      |</div><div class="line">+--------+-----------+-----------+</div><div class="line">6 rows in set (0.00 sec)</div></pre></td></tr></table></figure></p>
 <p>语句一：使用TRUE作为ON的子句，WHERE子句包括连接条件且WHERE条件可以保证从结果中排除外连接右侧（右表）生成的值为NULL的行。<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">root@testdb 02:48:44&gt;SELECT * FROM t_1 LEFT JOIN t_2 ON true WHERE t_1_id = t_2_id;</div><div class="line">+--------+-----------+-----------+--------+-----------+-----------+</div><div class="line">| t_1_id | t_1_col_1 | t_1_col_2 | t_2_id | t_2_col_1 | t_2_col_2 |</div><div class="line">+--------+-----------+-----------+--------+-----------+-----------+</div><div class="line">|      1 |        11 | t_1_1     |      1 |        11 | t_2_1     |</div><div class="line">|      2 |        12 | NULL      |      2 |      NULL | t_2_2     |</div><div class="line">|      3 |      NULL | t_1_3     |      3 |        13 | NULL      |</div><div class="line">|      4 |        14 | t_1_4     |      4 |        14 | t_2_4     |</div><div class="line">|      7 |      NULL | NULL      |      7 |      NULL | NULL      |</div><div class="line">+--------+-----------+-----------+--------+-----------+-----------+</div><div class="line">5 rows in set (0.00 sec)</div><div class="line">root@testdb 02:22:11&gt;explain extended SELECT * FROM t_1 LEFT JOIN t_2 ON true WHERE t_1_id = t_2_id;show warnings;</div><div class="line">+----+-------------+-------+------+---------------+--------+---------+-------------------+------+----------+-------+</div><div class="line">| id | select_type | table | type | possible_keys | key    | key_len | ref               | rows | filtered | Extra |</div><div class="line">+----+-------------+-------+------+---------------+--------+---------+-------------------+------+----------+-------+</div><div class="line">|  1 | SIMPLE      | t_1   | ALL  | t_1_id        | NULL   | NULL    | NULL              |    6 |   100.00 | NULL  |</div><div class="line">|  1 | SIMPLE      | t_2   | ref  | t_2_id        | t_2_id | 5       | testdb.t_1.t_1_id |    1 |   100.00 | NULL  |</div><div class="line">+----+-------------+-------+------+---------------+--------+---------+-------------------+------+----------+-------+</div><div class="line">2 rows in set, 1 warning (0.00 sec)</div><div class="line"></div><div class="line">+-------+------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</div><div class="line">| Level | Code | Message                                                                                                                                                                                                                                                                                                                                                                 |</div><div class="line">+-------+------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</div><div class="line">| Note  | 1003 | /* select#1 */ select `testdb`.`t_1`.`t_1_id` AS `t_1_id`,`testdb`.`t_1`.`t_1_col_1` AS `t_1_col_1`,`testdb`.`t_1`.`t_1_col_2` AS `t_1_col_2`,`testdb`.`t_2`.`t_2_id` AS `t_2_id`,`testdb`.`t_2`.`t_2_col_1` AS `t_2_col_1`,`testdb`.`t_2`.`t_2_col_2` AS `t_2_col_2` from `testdb`.`t_1` join `testdb`.`t_2` where (`testdb`.`t_2`.`t_2_id` = `testdb`.`t_1`.`t_1_id`) |</div><div class="line">+-------+------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</div><div class="line">1 row in set (0.00 sec)</div><div class="line">从执行计划看到被优化器处理后的语句由left join优化成了join。</div></pre></td></tr></table></figure></p>
@@ -324,239 +83,58 @@
 <li>外连接消除是去掉外连接的语义使其变为内连接。</li>
 <li>嵌套连接消除是一种连接的语义顺序的变化。</li>
 </ul>
-
+]]></content>
       
-    </div>
+        <categories>
+            
+            <category> MySQL </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> mysql的查询优化技术 </tag>
+            
+        </tags>
+        
+    </entry>
     
-  </div>
+    <entry>
+      <title><![CDATA[Hello World]]></title>
+      <url>http://riverdba.github.io/2017/03/21/hello-world/</url>
+      <content type="html"><![CDATA[<p><excerpt in="" index="" |="" 首页摘要=""><br>从这里开始，快速开启博客之旅！<a id="more"></a></excerpt></p>
+<p><the rest="" of="" contents="" |="" 余下全文=""><br>Welcome to <a href="https://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</the></p>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">$ hexo new <span class="string">"My New Post"</span></div><div class="line">简写命令：hexo n <span class="string">"My New Post"</span></div></pre></td></tr></table></figure>
+<p>新建一篇博文，新建的md文件位于：hexo当前目录/source/_posts中。<br>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">$ hexo server</div><div class="line">简写命令：hexo s</div></pre></td></tr></table></figure>
+<p>这个命令是开启本地hexo服务用的，可以访问<a href="http://localhost:4000/进行本地预览。" target="_blank" rel="external">http://localhost:4000/进行本地预览。</a><br>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">$ hexo generate</div><div class="line">简写命令：hexo g</div></pre></td></tr></table></figure>
+<p>一般部署上去的时候都需要编译一下，编译后，会出现一个 public 件夹，将所有的md文件编译成html文件 。<br>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">$ hexo deploy</div><div class="line">简写命令：hexo d</div></pre></td></tr></table></figure>
+<p>执行这个命令可以将博客部署到git。<br>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
+<h3 id="清除-public"><a href="#清除-public" class="headerlink" title="清除 public"></a>清除 public</h3><figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">$ hexo clean</div></pre></td></tr></table></figure>
+<p>当 source 文件夹中的部分资源更改过之后，特别是对文件进行了删除或者路径的改变之后，需要执行这个命令，然后重新编译。 </p>
+<h3 id="Tips"><a href="#Tips" class="headerlink" title="Tips"></a>Tips</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">1、当执行hexo d部署博客时遇到被hang住没反应的时候，按Crtl + C退出然后执行：hexo clean再执行：hexo d -g即可！</div><div class="line">2、hexo d -g组合命令代表先执行hexo g再执行hexo d</div></pre></td></tr></table></figure>
+<h3 id="Markdown语法"><a href="#Markdown语法" class="headerlink" title="Markdown语法"></a>Markdown语法</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">1、分段： 两个回车</div><div class="line">2、换行 两个空格 + 回车</div><div class="line">3、标题 # ~ ###### 井号的个数表示几级标题，即Markdown可以表示一级标题到六级标题</div><div class="line">4、引用 &gt;</div><div class="line">5、列表 * ， + ， - ， 1. ，选其中之一，注意后面有个空格</div><div class="line">6、代码区块 四个空格 开头</div><div class="line">7、链接 [文字](链接地址)</div><div class="line">8、图片 ![图片说明](图片地址) ，图片地址可以是本地路径，也可以是网络地址</div><div class="line">9、强调 **文字** ， __文字__ ， _文字_ ， *文字*</div><div class="line">10、代码 ```，``</div></pre></td></tr></table></figure>
+<p>More info: <a href="http://www.kancloud.cn/wizardforcel/markdown-simple-world/97373" target="_blank" rel="external">Markdown更多语法</a></p>
+]]></content>
+      
+        <categories>
+            
+            <category> Hexo </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> Hexo Quick Start </tag>
+            
+        </tags>
+        
+    </entry>
+    
   
-    
-    <div class="copyright">
-        <p><span>本文标题:</span><a href="/2017/03/22/join-elimination-technique-of-mysql/">mysql查询优化技术之连接消除</a></p>
-        <p><span>文章作者:</span><a href="/" title="回到主页">一条大河</a></p>
-        <p><span>发布时间:</span>2017-03-22, 14:26:17</p>
-        <p><span>最后更新:</span>2017-03-27, 17:07:18</p>
-        <p>
-            <span>原始链接:</span><a class="post-url" href="/2017/03/22/join-elimination-technique-of-mysql/" title="mysql查询优化技术之连接消除">http://riverdba.github.io/2017/03/22/join-elimination-technique-of-mysql/</a>
-            <span class="copy-path" data-clipboard-text="原文: http://riverdba.github.io/2017/03/22/join-elimination-technique-of-mysql/　　作者: 一条大河" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
-            <script> var clipboard = new Clipboard('.copy-path'); </script>
-        </p>
-        <p>
-            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
-        </p>
-    </div>
-
-
-
-    <nav id="article-nav">
-        
-            <div id="article-nav-newer" class="article-nav-title">
-                <a href="/2017/03/27/Performance-tuning-key-points-of-mysql/">
-                    mysql性能调优的关键点
-                </a>
-            </div>
-        
-        
-            <div id="article-nav-older" class="article-nav-title">
-                <a href="/2017/03/21/hello-world/">
-                    Hello World
-                </a>
-            </div>
-        
-    </nav>
-
   
-</article>
-
-    <div id="toc" class="toc-article">
-        <strong class="toc-title">文章目录</strong>
-        
-            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#连接消除技术包括三种：外连接消除、连接消除、嵌套连接消除"><span class="toc-number">1.</span> <span class="toc-text">连接消除技术包括三种：外连接消除、连接消除、嵌套连接消除</span></a></li></ol>
-        
-    </div>
-    <style>
-        .left-col .switch-btn,
-        .left-col .switch-area {
-            display: none;
-        }
-        .toc-level-3 i,
-        .toc-level-3 ol {
-            display: none !important;
-        }
-    </style>
-
-    <input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
-
-    <script>
-        yiliaConfig.toc = ["隐藏目录", "显示目录", !!"false"];
-    </script>
-
-
-
-    
-<div class="share">
-    
-        <div class="bdsharebuttonbox">
-            <a href="#" class="fa fa-twitter bds_twi" data-cmd="twi" title="分享到推特"></a>
-            <a href="#" class="fa fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
-            <a href="#" class="fa fa-qq bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
-            <a href="#" class="fa fa-files-o bds_copy" data-cmd="copy" title="复制网址"></a>
-            <a href="#" class="fa fa fa-envelope-o bds_mail" data-cmd="mail" title="通过邮件分享"></a>
-            <a href="#" class="fa fa-weixin bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
-            <a href="#" class="fa fa-share-alt bds_more" data-cmd="more"></i></a>
-        </div>
-        <script>
-            window._bd_share_config={
-                "common":{"bdSnsKey":{},"bdText":"mysql查询优化技术之连接消除　| Yangtze River's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
-        </script>
-    
-
-    
-</div>
-
-
-
-
-
-
-
-    
-        <section id="comments">
-    <style> aside.comment-bar { margin: auto 30px; }</style>
-    <div id="disqus_thread"></div>
-    <script>
-        var disqus_config = function(){
-            this.page.url = 'http://riverdba.github.io/2017/03/22/join-elimination-technique-of-mysql/';
-            this.page.identifier = '2017/03/22/join-elimination-technique-of-mysql/';
-        };
-        var loadComment = function(){
-            var d = document, s = d.createElement('script');
-            s.src = '//https-riverdba-github-io.disqus.com/embed.js';
-            s.setAttribute('data-timestamp', +new Date());
-            (d.head || d.body).appendChild(s);
-        }
-    </script>
-    
-    <script> loadComment(); </script>
-
-</section>
-
-
-    
-
-
-
-
-    <div class="scroll" id="post-nav-button">
-        
-            <a href="/2017/03/27/Performance-tuning-key-points-of-mysql/" title="上一篇: mysql性能调优的关键点">
-                <i class="fa fa-angle-left"></i>
-            </a>
-        
-
-        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
-
-        
-            <a href="/2017/03/21/hello-world/" title="下一篇: Hello World">
-                <i class="fa fa-angle-right"></i>
-            </a>
-        
-    </div>
-
-    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2017/03/27/hexo-s-comment/">实现hexo的评论功能</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/27/Performance-tuning-key-points-of-mysql/">mysql性能调优的关键点</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/22/join-elimination-technique-of-mysql/">mysql查询优化技术之连接消除</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/21/hello-world/">Hello World</a></li></ul>
-
-
-
-
-    <script>
-        
-    </script>
-</div>
-      <footer id="footer">
-    <div class="outer">
-        <div id="footer-info">
-            <div class="footer-left">
-                <i class="fa fa-copyright"></i> 
-                2017 一条大河
-            </div>
-            <div class="footer-right">
-                <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题  v3.5">Yelee</a> by MOxFIVE <i class="fa fa-heart animated infinite pulse"></i>
-            </div>
-        </div>
-        
-            <div class="visit">
-                
-                    <span id="busuanzi_container_site_pv" style='display:none'>
-                        <span id="site-visit" title="本站到访数"><i class="fa fa-user" aria-hidden="true"></i><span id="busuanzi_value_site_uv"></span>
-                        </span>
-                    </span>
-                
-                
-                    <span>| </span>
-                
-                
-                    <span id="busuanzi_container_page_pv" style='display:none'>
-                        <span id="page-visit"  title="本页阅读量"><i class="fa fa-eye animated infinite pulse" aria-hidden="true"></i><span id="busuanzi_value_page_pv"></span>
-                        </span>
-                    </span>
-                
-            </div>
-        
-    </div>
-</footer>
-    </div>
-    
-<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.2.0/require.min.js"></script>
-
-    <script>
-        $(document).ready(function() {
-            var iPad = window.navigator.userAgent.indexOf('iPad');
-            if (iPad > -1 || $(".left-col").css("display") === "none") {
-                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
-                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
-                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
-            }
-            else {
-                var backgroundnum = 5;
-                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
-                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
-            }
-        })
-    </script>
-
-
-
-
-
-<div class="scroll" id="scroll">
-    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
-    <a href="#comments" onclick="load$hide();" title="查看评论"><i class="fa fa-comments-o"></i></a>
-    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
-</div>
-<script>
-    // Open in New Window
-    
-        var oOpenInNew = {
-            
-            
-            
-            
-            
-            
-             archives: ".archive-article-title", 
-             miniArchives: "a.post-list-link", 
-            
-             friends: "#js-friends a", 
-             socail: ".social a" 
-        }
-        for (var x in oOpenInNew) {
-            $(oOpenInNew[x]).attr("target", "_blank");
-        }
-    
-</script>
-
-<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
-</script>
-  </div>
-</body>
-</html>
+</search>
