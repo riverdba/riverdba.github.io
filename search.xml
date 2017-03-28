@@ -4,6 +4,55 @@
   
     
     <entry>
+      <title><![CDATA[mysql查询优化技术之语义优化]]></title>
+      <url>http://riverdba.github.io/2017/03/28/Sematic-Optimization-of-mysql/</url>
+      <content type="html"><![CDATA[<p><excerpt in="" index="" |="" 首页摘要=""><br>摘要：工作中遇到的SQL语义优化案例<a id="more"></a></excerpt></p>
+<the rest="" of="" contents="" |="" 余下全文="">
+
+<h3 id="发现慢SQL"><a href="#发现慢SQL" class="headerlink" title="发现慢SQL"></a>发现慢SQL</h3><p>通过监控慢查询，执行时间在1秒以上的SQL如下：<br><img src="/2017/03/28/Sematic-Optimization-of-mysql/图片1.png" alt="图片1"><br>完整SQL：<br><img src="/2017/03/28/Sematic-Optimization-of-mysql/图片2.png" alt="图片2"><br>查看表结构：<br><img src="/2017/03/28/Sematic-Optimization-of-mysql/图片3.png" alt="图片3"><br>查看执行计划：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">EXPLAIN extended</div><div class="line">SELECT id, content, content_type, receiver_id, TYPE, function_type, function_id,</div><div class="line">read_status, send_time, read_time, STATUS</div><div class="line">FROM</div><div class="line">xxxtable</div><div class="line">WHERE receiver_id = &apos;1667510020&apos;</div><div class="line">AND STATUS = 1</div><div class="line">AND TYPE = 2</div><div class="line">AND send_time &lt; &apos;2017-03-22 08:35:50.553&apos; </div><div class="line">AND DATE_SUB(CURDATE(), INTERVAL 12 MONTH ) &lt;= DATE(send_time) </div><div class="line">ORDER BY send_time DESC LIMIT 1; </div><div class="line">/* select#1 */</div><div class="line">select </div><div class="line">`xxxxdb`.`xxxxtable`.`id` AS `id`,</div><div class="line">`xxxxdb`.`xxxxtable`.`content` AS `content`,</div><div class="line">`xxxxdb`.`xxxxtable`.`content_type` AS `content_type`,</div><div class="line">`xxxxdb`.`xxxxtable`.`receiver_id` AS `receiver_id`,</div><div class="line">`xxxxdb`.`xxxxtable`.`type` AS `TYPE`,</div><div class="line">`xxxxdb`.`xxxxtable`.`function_type` AS `function_type`,</div><div class="line">`xxxxdb`.`xxxxtable`.`function_id` AS `function_id`,</div><div class="line">`xxxxdb`.`xxxxtable`.`read_status` AS `read_status`,</div><div class="line">`xxxxdb`.`xxxxtable`.`send_time` AS `send_time`,</div><div class="line">`xxxxdb`.`xxxxtable`.`read_time` AS `read_time`,</div><div class="line">`xxxxdb`.`xxxxtable`.`status` AS `STATUS` </div><div class="line">from</div><div class="line">`xxxxdb`.`xxxxtable` </div><div class="line">where (</div><div class="line">(</div><div class="line">`xxxxdb`.`xxxxtable`.`type` = 2</div><div class="line">) </div><div class="line">and (</div><div class="line">`xxxxdb`.`xxxxtable`.`status` = 1</div><div class="line">) </div><div class="line">and (</div><div class="line">`xxxxdb`.`xxxxtable`.`receiver_id` = &apos;1667510020&apos;</div><div class="line">) </div><div class="line">and (</div><div class="line">`xxxxdb`.`xxxxtable`.`send_time` &lt; &apos;2017-03-22 08:35:50.553&apos;</div><div class="line">) </div><div class="line">and (</div><div class="line">&lt; cache &gt; ((curdate() - interval 12 month)) &lt;= cast(</div><div class="line">`xxxxdb`.`xxxxtable`.`send_time` as date</div><div class="line">)</div><div class="line">)</div><div class="line">) </div><div class="line">order by `xxxxdb`.`xxxxtable`.`send_time` desc </div><div class="line">limit 1</div></pre></td></tr></table></figure></p>
+<h3 id="优化一"><a href="#优化一" class="headerlink" title="优化一"></a>优化一</h3><p>从表结构定义上看，已经有receiver_id和send_time的联合索引就没必要单独再需要receiver_id索引了。因此可以先drop掉索引idx_receiverid！</p>
+<h3 id="优化二"><a href="#优化二" class="headerlink" title="优化二"></a>优化二</h3><p>从SQL语义上看，最关键的是发送时间条件：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">AND send_time &lt; &apos;2017-03-22 08:35:50.553&apos; </div><div class="line">AND DATE_SUB(CURDATE(), INTERVAL 12 MONTH ) &lt;= DATE(send_time)</div></pre></td></tr></table></figure></p>
+<p>初步判断业务需求是要查询发送时间小于当前时间，且发送时间在最近12个月内的数据。<br>Send_time数据库中的时间戳格式是：年月日时分秒毫秒，这里却对send_time字段做了date函数转换，开发者目的是为了和12个月前的年月日格式进行比对。为什么不直接让send_time和12个月前的年月日时分秒毫秒格式进行比对呢？这样不就可以去掉对索引字段做函数了吗。因此，我们可以将这2个条件改写为如下：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">AND send_time &lt; &apos;2017-03-22 08:35:50.553&apos; </div><div class="line">AND send_time &gt;= DATE_SUB(NOW(), INTERVAL 12 MONTH )</div></pre></td></tr></table></figure></p>
+<p>优化后的执行计划：<br><img src="/2017/03/28/Sematic-Optimization-of-mysql/图片4.png" alt="图片4"><br>这句SQL在优化前的执行计划中是：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">and (</div><div class="line">&lt; cache &gt; ((curdate() - interval 12 month)) &lt;= cast(</div><div class="line">`xxxxdb`.`xxxxtable`.`send_time` as date</div><div class="line">)</div></pre></td></tr></table></figure></p>
+<p>通过对比可以看到优化后省去了mysql对字段做类型转换的工作，同时可以充分利用该字段的索引。</p>
+</the>]]></content>
+      
+        <categories>
+            
+            <category> MySQL </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> mysql查询优化技术 </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[hexo's tips]]></title>
+      <url>http://riverdba.github.io/2017/03/28/hexo-s-tips/</url>
+      <content type="html"><![CDATA[<p><excerpt in="" index="" |="" 首页摘要=""><br>摘要：hexo小技巧汇总<a id="more"></a></excerpt></p>
+<the rest="" of="" contents="" |="" 余下全文="">
+
+<h3 id="如何修改新建文章模板"><a href="#如何修改新建文章模板" class="headerlink" title="如何修改新建文章模板"></a>如何修改新建文章模板</h3><p>一般文章都需要添加分类和摘要，我们可以加到模板中。进入到hexo根目录的scaffolds下可以看到三个md文件：draft.md\page.md\post.md<br>在post.md中添加分类和摘要后：<br><img src="/2017/03/28/hexo-s-tips/1.png" alt="图片1"><br>这样新建文章的时候就包含分类和摘要了。</p>
+<h3 id="如何在博客中引用本地图片"><a href="#如何在博客中引用本地图片" class="headerlink" title="如何在博客中引用本地图片"></a>如何在博客中引用本地图片</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">首先修改_config.yml中参数 post_asset_folder:true，这样设置后在新建文章时，Hexo会自动创建一个与文章同名的文件夹用来存放图片</div><div class="line">然后安装插件：npm install https://github.com/CodeFalling/hexo-asset-image --save</div><div class="line">引用图片：将图片放在文章同名的文件夹中，比如图片名称：1.png，在md中书写：![图1](hexo-s-comment/1.png)即可。</div></pre></td></tr></table></figure>
+<h3 id="报错日志及解决"><a href="#报错日志及解决" class="headerlink" title="报错日志及解决"></a>报错日志及解决</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">YAMLException: can not read a block mapping entry; a multiline key may not be an implicit key at line 5, column 1:</div><div class="line">报错原因：根据日志定位到第5行，第1列的内容是：categories:Hexo。分类冒号后面需要加个空格再写内容！</div><div class="line">解决办法：改成categories: Hexo即可！</div></pre></td></tr></table></figure>
+</the>]]></content>
+      
+        <categories>
+            
+            <category> Hexo </category>
+            
+        </categories>
+        
+        
+    </entry>
+    
+    <entry>
       <title><![CDATA[实现hexo的评论功能]]></title>
       <url>http://riverdba.github.io/2017/03/27/hexo-s-comment/</url>
       <content type="html"><![CDATA[<p><excerpt in="" index="" |="" 首页摘要=""><br>本文介绍如何在博客中添加评论功能！<a id="more"></a></excerpt></p>
@@ -54,7 +103,7 @@
         
         <tags>
             
-            <tag> mysql的性能调优技术 </tag>
+            <tag> mysql性能调优技术 </tag>
             
         </tags>
         
@@ -94,7 +143,7 @@
         
         <tags>
             
-            <tag> mysql的查询优化技术 </tag>
+            <tag> mysql查询优化技术 </tag>
             
         </tags>
         

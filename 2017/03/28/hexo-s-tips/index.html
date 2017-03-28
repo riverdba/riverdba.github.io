@@ -15,22 +15,18 @@
 
 
 
-<meta name="description" content="大家好，我是一条大河。欢迎来到我的个人技术博客。
-本人热衷于运维自动化和数据库技术，希望可以和大家一起交流学习！
-个人邮箱：river_dba@foxmail.com">
-<meta property="og:type" content="website">
-<meta property="og:title" content="个人简介">
-<meta property="og:url" content="http://riverdba.github.io/about/index.html">
+<meta name="description" content="摘要：hexo小技巧汇总">
+<meta property="og:type" content="article">
+<meta property="og:title" content="hexo's tips">
+<meta property="og:url" content="http://riverdba.github.io/2017/03/28/hexo-s-tips/index.html">
 <meta property="og:site_name" content="Yangtze River's blog">
-<meta property="og:description" content="大家好，我是一条大河。欢迎来到我的个人技术博客。
-本人热衷于运维自动化和数据库技术，希望可以和大家一起交流学习！
-个人邮箱：river_dba@foxmail.com">
-<meta property="og:updated_time" content="2017-03-27T09:13:16.000Z">
+<meta property="og:description" content="摘要：hexo小技巧汇总">
+<meta property="og:image" content="http://riverdba.github.io/2017/03/28/hexo-s-tips/1.png">
+<meta property="og:updated_time" content="2017-03-28T02:11:10.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="个人简介">
-<meta name="twitter:description" content="大家好，我是一条大河。欢迎来到我的个人技术博客。
-本人热衷于运维自动化和数据库技术，希望可以和大家一起交流学习！
-个人邮箱：river_dba@foxmail.com">
+<meta name="twitter:title" content="hexo's tips">
+<meta name="twitter:description" content="摘要：hexo小技巧汇总">
+<meta name="twitter:image" content="http://riverdba.github.io/2017/03/28/hexo-s-tips/1.png">
 
 <link rel="apple-touch-icon" href= "/apple-touch-icon.png">
 
@@ -62,7 +58,7 @@
 <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
 
 
-<title>个人简介 | Yangtze River&#39;s blog</title>
+<title>hexo&#39;s tips | Yangtze River&#39;s blog</title>
 
 <script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
 <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
@@ -72,7 +68,7 @@
         fancybox: true,
         animate: true,
         isHome: false,
-        isPost: false,
+        isPost: true,
         isArchive: false,
         isTag: false,
         isCategory: false,
@@ -266,11 +262,11 @@
     </div>
     <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
 </nav>
-      <div class="body-wrap"><article id="about-undefined" class="article article-type-about" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-hexo-s-tips" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/about/index.html" class="article-date">
-      <time datetime="1940-10-24T02:26:18.955Z" itemprop="datePublished">1940-10-24</time>
+      <a href="/2017/03/28/hexo-s-tips/" class="article-date">
+      <time datetime="2017-03-28T01:04:36.000Z" itemprop="datePublished">2017-03-28</time>
 </a>
 
 
@@ -285,7 +281,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      个人简介
+      hexo&#39;s tips
     </h1>
   
 
@@ -293,6 +289,10 @@
       
       <div class="article-info article-info-post">
         
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Hexo/">Hexo</a>
+    </div>
+
 
         
         <div class="clearfix"></div>
@@ -302,39 +302,78 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-              <style>
-    .article-meta { display: none; }
-    #container .article .article-title { padding-right: 0; }
-    .article-header {
-        padding: 0;
-        padding-top: 26px;
-        border-left: none;
-        text-align: center;
-    }
-    .article-header:hover { border-left: none; }
-    .article-title { font-size: 1.6em }
-    .article-entry hr { margin: 0;}
-    .article-meta,
-    #container .article-info-post.article-info { display: none;}
-    #container .article .article-title { padding: 0; }
-</style>
+        <p><excerpt in="" index="" |="" 首页摘要=""><br>摘要：hexo小技巧汇总<a id="more"></a></excerpt></p>
+<the rest="" of="" contents="" |="" 余下全文="">
 
-
-          
-        <p>大家好，我是一条大河。欢迎来到我的个人技术博客。</p>
-<p>本人热衷于运维自动化和数据库技术，希望可以和大家一起交流学习！</p>
-<p>个人邮箱：river_dba@foxmail.com</p>
-
+<h3 id="如何修改新建文章模板"><a href="#如何修改新建文章模板" class="headerlink" title="如何修改新建文章模板"></a>如何修改新建文章模板</h3><p>一般文章都需要添加分类和摘要，我们可以加到模板中。进入到hexo根目录的scaffolds下可以看到三个md文件：draft.md\page.md\post.md<br>在post.md中添加分类和摘要后：<br><img src="/2017/03/28/hexo-s-tips/1.png" alt="图片1"><br>这样新建文章的时候就包含分类和摘要了。</p>
+<h3 id="如何在博客中引用本地图片"><a href="#如何在博客中引用本地图片" class="headerlink" title="如何在博客中引用本地图片"></a>如何在博客中引用本地图片</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">首先修改_config.yml中参数 post_asset_folder:true，这样设置后在新建文章时，Hexo会自动创建一个与文章同名的文件夹用来存放图片</div><div class="line">然后安装插件：npm install https://github.com/CodeFalling/hexo-asset-image --save</div><div class="line">引用图片：将图片放在文章同名的文件夹中，比如图片名称：1.png，在md中书写：![图1](hexo-s-comment/1.png)即可。</div></pre></td></tr></table></figure>
+<h3 id="报错日志及解决"><a href="#报错日志及解决" class="headerlink" title="报错日志及解决"></a>报错日志及解决</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">YAMLException: can not read a block mapping entry; a multiline key may not be an implicit key at line 5, column 1:</div><div class="line">报错原因：根据日志定位到第5行，第1列的内容是：categories:Hexo。分类冒号后面需要加个空格再写内容！</div><div class="line">解决办法：改成categories: Hexo即可！</div></pre></td></tr></table></figure>
+</the>
       
     </div>
     
   </div>
   
     
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2017/03/28/hexo-s-tips/">hexo&#39;s tips</a></p>
+        <p><span>文章作者:</span><a href="/" title="回到主页">一条大河</a></p>
+        <p><span>发布时间:</span>2017-03-28, 09:04:36</p>
+        <p><span>最后更新:</span>2017-03-28, 10:11:10</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2017/03/28/hexo-s-tips/" title="hexo&#39;s tips">http://riverdba.github.io/2017/03/28/hexo-s-tips/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://riverdba.github.io/2017/03/28/hexo-s-tips/　　作者: 一条大河" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
 
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/2017/03/28/Sematic-Optimization-of-mysql/">
+                    mysql查询优化技术之语义优化
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2017/03/27/hexo-s-comment/">
+                    实现hexo的评论功能
+                </a>
+            </div>
+        
+    </nav>
 
   
 </article>
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">文章目录</strong>
+        
+            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#如何修改新建文章模板"><span class="toc-number">1.</span> <span class="toc-text">如何修改新建文章模板</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#如何在博客中引用本地图片"><span class="toc-number">2.</span> <span class="toc-text">如何在博客中引用本地图片</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#报错日志及解决"><span class="toc-number">3.</span> <span class="toc-text">报错日志及解决</span></a></li></ol>
+        
+    </div>
+    <style>
+        .left-col .switch-btn,
+        .left-col .switch-area {
+            display: none;
+        }
+        .toc-level-3 i,
+        .toc-level-3 ol {
+            display: none !important;
+        }
+    </style>
+
+    <input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+    <script>
+        yiliaConfig.toc = ["隐藏目录", "显示目录", !!"false"];
+    </script>
 
 
 
@@ -352,7 +391,7 @@
         </div>
         <script>
             window._bd_share_config={
-                "common":{"bdSnsKey":{},"bdText":"个人简介　| Yangtze River's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+                "common":{"bdSnsKey":{},"bdText":"hexo's tips　| Yangtze River's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
         </script>
     
 
@@ -371,8 +410,8 @@
     <div id="disqus_thread"></div>
     <script>
         var disqus_config = function(){
-            this.page.url = 'http://riverdba.github.io/about/index.html';
-            this.page.identifier = 'about/index.html';
+            this.page.url = 'http://riverdba.github.io/2017/03/28/hexo-s-tips/';
+            this.page.identifier = '2017/03/28/hexo-s-tips/';
         };
         var loadComment = function(){
             var d = document, s = d.createElement('script');
@@ -389,6 +428,26 @@
 
     
 
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/2017/03/28/Sematic-Optimization-of-mysql/" title="上一篇: mysql查询优化技术之语义优化">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2017/03/27/hexo-s-comment/" title="下一篇: 实现hexo的评论功能">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2017/03/28/Sematic-Optimization-of-mysql/">mysql查询优化技术之语义优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/28/hexo-s-tips/">hexo's tips</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/27/hexo-s-comment/">实现hexo的评论功能</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/27/Performance-tuning-key-points-of-mysql/">mysql性能调优的关键点</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/22/join-elimination-technique-of-mysql/">mysql查询优化技术之连接消除</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/21/hello-world/">Hello World</a></li></ul>
 
 
 
