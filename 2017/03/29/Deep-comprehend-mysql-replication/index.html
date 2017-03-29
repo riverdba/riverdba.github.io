@@ -15,21 +15,20 @@
 
 
 
-<meta name="description" content="摘要：工作中遇到的SQL语义优化案例">
+<meta name="description" content="摘要：mysql主从复制原理学习笔记">
 <meta property="og:type" content="article">
-<meta property="og:title" content="mysql查询优化技术之语义优化">
-<meta property="og:url" content="http://riverdba.github.io/2017/03/28/Sematic-Optimization-of-mysql/index.html">
+<meta property="og:title" content="深入理解mysql的主从复制">
+<meta property="og:url" content="http://riverdba.github.io/2017/03/29/Deep-comprehend-mysql-replication/index.html">
 <meta property="og:site_name" content="Yangtze River's blog">
-<meta property="og:description" content="摘要：工作中遇到的SQL语义优化案例">
-<meta property="og:image" content="http://riverdba.github.io/2017/03/28/Sematic-Optimization-of-mysql/图片1.png">
-<meta property="og:image" content="http://riverdba.github.io/2017/03/28/Sematic-Optimization-of-mysql/图片2.png">
-<meta property="og:image" content="http://riverdba.github.io/2017/03/28/Sematic-Optimization-of-mysql/图片3.png">
-<meta property="og:image" content="http://riverdba.github.io/2017/03/28/Sematic-Optimization-of-mysql/图片4.png">
-<meta property="og:updated_time" content="2017-03-28T09:33:28.000Z">
+<meta property="og:description" content="摘要：mysql主从复制原理学习笔记">
+<meta property="og:image" content="http://riverdba.github.io/2017/03/29/Deep-comprehend-mysql-replication/0.png">
+<meta property="og:image" content="http://riverdba.github.io/2017/03/29/Deep-comprehend-mysql-replication/1.png">
+<meta property="og:image" content="http://riverdba.github.io/2017/03/29/Deep-comprehend-mysql-replication/2.png">
+<meta property="og:updated_time" content="2017-03-29T09:56:10.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="mysql查询优化技术之语义优化">
-<meta name="twitter:description" content="摘要：工作中遇到的SQL语义优化案例">
-<meta name="twitter:image" content="http://riverdba.github.io/2017/03/28/Sematic-Optimization-of-mysql/图片1.png">
+<meta name="twitter:title" content="深入理解mysql的主从复制">
+<meta name="twitter:description" content="摘要：mysql主从复制原理学习笔记">
+<meta name="twitter:image" content="http://riverdba.github.io/2017/03/29/Deep-comprehend-mysql-replication/0.png">
 
 <link rel="apple-touch-icon" href= "/apple-touch-icon.png">
 
@@ -61,7 +60,7 @@
 <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
 
 
-<title>mysql查询优化技术之语义优化 | Yangtze River&#39;s blog</title>
+<title>深入理解mysql的主从复制 | Yangtze River&#39;s blog</title>
 
 <script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
 <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
@@ -265,11 +264,11 @@
     </div>
     <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
 </nav>
-      <div class="body-wrap"><article id="post-Sematic-Optimization-of-mysql" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-Deep-comprehend-mysql-replication" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2017/03/28/Sematic-Optimization-of-mysql/" class="article-date">
-      <time datetime="2017-03-28T09:04:15.000Z" itemprop="datePublished">2017-03-28</time>
+      <a href="/2017/03/29/Deep-comprehend-mysql-replication/" class="article-date">
+      <time datetime="2017-03-29T05:11:37.000Z" itemprop="datePublished">2017-03-29</time>
 </a>
 
 
@@ -284,7 +283,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      mysql查询优化技术之语义优化
+      深入理解mysql的主从复制
     </h1>
   
 
@@ -299,7 +298,7 @@
 
         
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mysql查询优化技术/">mysql查询优化技术</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mysql主从复制/">mysql主从复制</a></li></ul>
     </div>
 
         <div class="clearfix"></div>
@@ -309,15 +308,16 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-        <p><excerpt in="" index="" |="" 首页摘要=""><br>摘要：工作中遇到的SQL语义优化案例<a id="more"></a></excerpt></p>
+        <p><excerpt in="" index="" |="" 首页摘要=""><br>摘要：mysql主从复制原理学习笔记<a id="more"></a></excerpt></p>
 <the rest="" of="" contents="" |="" 余下全文="">
 
-<h3 id="发现慢SQL"><a href="#发现慢SQL" class="headerlink" title="发现慢SQL"></a>发现慢SQL</h3><p>通过监控慢查询，执行时间在1秒以上的SQL如下：<br><img src="/2017/03/28/Sematic-Optimization-of-mysql/图片1.png" alt="图片1"><br>完整SQL：<br><img src="/2017/03/28/Sematic-Optimization-of-mysql/图片2.png" alt="图片2"><br>查看表结构：<br><img src="/2017/03/28/Sematic-Optimization-of-mysql/图片3.png" alt="图片3"><br>查看执行计划：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">EXPLAIN extended</div><div class="line">SELECT id, content, content_type, receiver_id, TYPE, function_type, function_id,</div><div class="line">read_status, send_time, read_time, STATUS</div><div class="line">FROM</div><div class="line">xxxtable</div><div class="line">WHERE receiver_id = &apos;1667510020&apos;</div><div class="line">AND STATUS = 1</div><div class="line">AND TYPE = 2</div><div class="line">AND send_time &lt; &apos;2017-03-22 08:35:50.553&apos; </div><div class="line">AND DATE_SUB(CURDATE(), INTERVAL 12 MONTH ) &lt;= DATE(send_time) </div><div class="line">ORDER BY send_time DESC LIMIT 1; </div><div class="line">/* select#1 */</div><div class="line">select </div><div class="line">`xxxxdb`.`xxxxtable`.`id` AS `id`,</div><div class="line">`xxxxdb`.`xxxxtable`.`content` AS `content`,</div><div class="line">`xxxxdb`.`xxxxtable`.`content_type` AS `content_type`,</div><div class="line">`xxxxdb`.`xxxxtable`.`receiver_id` AS `receiver_id`,</div><div class="line">`xxxxdb`.`xxxxtable`.`type` AS `TYPE`,</div><div class="line">`xxxxdb`.`xxxxtable`.`function_type` AS `function_type`,</div><div class="line">`xxxxdb`.`xxxxtable`.`function_id` AS `function_id`,</div><div class="line">`xxxxdb`.`xxxxtable`.`read_status` AS `read_status`,</div><div class="line">`xxxxdb`.`xxxxtable`.`send_time` AS `send_time`,</div><div class="line">`xxxxdb`.`xxxxtable`.`read_time` AS `read_time`,</div><div class="line">`xxxxdb`.`xxxxtable`.`status` AS `STATUS` </div><div class="line">from</div><div class="line">`xxxxdb`.`xxxxtable` </div><div class="line">where (</div><div class="line">(</div><div class="line">`xxxxdb`.`xxxxtable`.`type` = 2</div><div class="line">) </div><div class="line">and (</div><div class="line">`xxxxdb`.`xxxxtable`.`status` = 1</div><div class="line">) </div><div class="line">and (</div><div class="line">`xxxxdb`.`xxxxtable`.`receiver_id` = &apos;1667510020&apos;</div><div class="line">) </div><div class="line">and (</div><div class="line">`xxxxdb`.`xxxxtable`.`send_time` &lt; &apos;2017-03-22 08:35:50.553&apos;</div><div class="line">) </div><div class="line">and (</div><div class="line">&lt; cache &gt; ((curdate() - interval 12 month)) &lt;= cast(</div><div class="line">`xxxxdb`.`xxxxtable`.`send_time` as date</div><div class="line">)</div><div class="line">)</div><div class="line">) </div><div class="line">order by `xxxxdb`.`xxxxtable`.`send_time` desc </div><div class="line">limit 1</div></pre></td></tr></table></figure></p>
-<h3 id="优化一"><a href="#优化一" class="headerlink" title="优化一"></a>优化一</h3><p>从表结构定义上看，已经有receiver_id和send_time的联合索引就没必要单独再需要receiver_id索引了。因此可以先drop掉索引idx_receiverid！</p>
-<h3 id="优化二"><a href="#优化二" class="headerlink" title="优化二"></a>优化二</h3><p>从SQL语义上看，最关键的是发送时间条件：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">AND send_time &lt; &apos;2017-03-22 08:35:50.553&apos; </div><div class="line">AND DATE_SUB(CURDATE(), INTERVAL 12 MONTH ) &lt;= DATE(send_time)</div></pre></td></tr></table></figure></p>
-<p>初步判断业务需求是要查询发送时间小于当前时间，且发送时间在最近12个月内的数据。<br>Send_time数据库中的时间戳格式是：年月日时分秒毫秒，这里却对send_time字段做了date函数转换，开发者目的是为了和12个月前的年月日格式进行比对。为什么不直接让send_time和12个月前的年月日时分秒毫秒格式进行比对呢？这样不就可以去掉对索引字段做函数了吗。因此，我们可以将这2个条件改写为如下：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">AND send_time &lt; &apos;2017-03-22 08:35:50.553&apos; </div><div class="line">AND send_time &gt;= DATE_SUB(NOW(), INTERVAL 12 MONTH )</div></pre></td></tr></table></figure></p>
-<p>优化后的执行计划：<br><img src="/2017/03/28/Sematic-Optimization-of-mysql/图片4.png" alt="图片4"><br>这句SQL在优化前的执行计划中是：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">and (</div><div class="line">&lt; cache &gt; ((curdate() - interval 12 month)) &lt;= cast(</div><div class="line">`xxxxdb`.`xxxxtable`.`send_time` as date</div><div class="line">)</div></pre></td></tr></table></figure></p>
-<p>通过对比可以看到优化后省去了mysql对字段做类型转换的工作，同时可以充分利用该字段的索引。</p>
+<h3 id="主从复制的过程"><a href="#主从复制的过程" class="headerlink" title="主从复制的过程"></a>主从复制的过程</h3><p>当主库上发生事务提交动作时，会记录到主库的binlog中，然后由主库的dump线程发送日志到从库。从库的IO线程负责接收主库的binlog日志并记录到自己的relay log日志。SQL线程负责读取relay log并将数据写入从库。<br>主库的dump线程：<br><img src="/2017/03/29/Deep-comprehend-mysql-replication/0.png" alt="图0"><br>dump线程时刻的等待binlog的变化，一旦变化就将日志发送给从库。<br>从库的IO线程和SQL线程：<br><img src="/2017/03/29/Deep-comprehend-mysql-replication/1.png" alt="图1"><br>从库的IO线程在时刻等待主库的事件发送过来，如果有的话就接受并写入本地的relay log中。<br>从库的SQL线程在时刻等待relay log的变化，一旦有变化就读取并写入数据库。</p>
+<p>在主库上看一个事务：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">mysql&gt; show master status \G;</div><div class="line">*************************** 1. row ***************************</div><div class="line">             File: mysql-bin.000952</div><div class="line">         Position: 567035014</div><div class="line">     Binlog_Do_DB: </div><div class="line"> Binlog_Ignore_DB: </div><div class="line">Executed_Gtid_Set: 8ac65959-4cb3-11e5-81af-005056a311e0:1-345390234,</div><div class="line">9bc86bd5-a8a0-11e5-991c-005056a3bf07:4-233053957:233053959-572579981</div><div class="line">1 row in set (0.00 sec)</div><div class="line"></div><div class="line">ERROR: </div><div class="line">No query specified</div><div class="line"></div><div class="line">mysql&gt; show binlog events in &apos;mysql-bin.000952&apos;;</div><div class="line">| mysql-bin.000952 |    236240 | Query          |       706 |      236317 | BEGIN</div><div class="line">| mysql-bin.000952 |    236317 | Rows_query     |       706 |      236630 | # insert into t_table (task_set_id, user_id, task_set_date,task_terminal,</div><div class="line">      task_set_status, day_tast_id, week_task_id, </div><div class="line">      month_task_id)</div><div class="line">    values (&apos;9edd6ca5ff98443f8981a01dc5eae397&apos;, &apos;37728258&apos;, &apos;2017-03-29&apos;, </div><div class="line">      0,2, &apos;1ecf32416e7711e5ad54005056a3bad5&apos;, &apos;&apos;,</div><div class="line">      &apos;&apos;)                                          </div><div class="line">| mysql-bin.000952 |    236630 | Table_map      |       706 |      236712 | table_id: 82476 (t_db.t_table)  </div><div class="line">| mysql-bin.000952 |    236712 | Write_rows     |       706 |      236839 | table_id: 82476 flags: STMT_END_F              </div><div class="line">| mysql-bin.000952 |    236839 | Xid            |       706 |      236870 | COMMIT /* xid=146158662 */          </div><div class="line">| mysql-bin.000952 |    236870 | Gtid           |       706 |      236918 | SET @@SESSION.GTID_NEXT= &apos;9bc86bd5-a8a0-11e5-991c-005056a3bf07:572102075&apos;</div></pre></td></tr></table></figure></p>
+<p>注意该事务COMMIT操作后面的<strong>/* xid=146158662 */</strong> ：这是innodb的内部事务号，用于commit的二阶段提交！<br>单实例mysql（内部XA,需设置innodb_support_xa=on）的commit操作要写2个日志：一个是innodb的redo日志（也就是ib_logfile）是没有归档的，因此会被覆盖掉。另一个是mysql的binlog日志，binlog是不会被覆盖的。<br>开始提交阶段：binlog不提交，redo提交<br>正式提交阶段：binlog提交，如果提交成功，则redo完成！如果提交失败，则redo回滚！</p>
+<h3 id="主从复制相关参数"><a href="#主从复制相关参数" class="headerlink" title="主从复制相关参数"></a>主从复制相关参数</h3><p>1、server-id：主从要设置不一样<br>2、read_only：主库设为off，从库设为on<br>3、sql_log_bin：主从都开启<br>4、log_slave_updates：如果要做级联复制(M-S-S)就要开启<br>5、binlog_format：row<br>6、binlog_cache_size：<br>7、max_binlog_size：<br>8、expire_logs_days：binlog保存时间<br>9、binlog-do-db：<br>10、binlog-ignore-db：</p>
+<h3 id="半同步复制"><a href="#半同步复制" class="headerlink" title="半同步复制"></a>半同步复制</h3><p>半同步复制的作用：可以保证主库将日志先传输到备库，然后再返回给应用事务提交成功。这个功能对网络要求较高，如果要使用的话建议把网络优化好一点，比如机器配置千M网卡且将同一组主从服务器位于同一交换机下。<br>查看源码包中是否支持半同步：<br><img src="/2017/03/29/Deep-comprehend-mysql-replication/2.png" alt="图2"><br>使用方法：主库安装semisync_master.so，从库安装semisync_slave.so然后开启rpl_semi_sync_master_enabled=on即可<br>主库安装：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mongohost2 semisync]# /opt/mysql/bin/mysql</div><div class="line">Welcome to the MySQL monitor.  Commands end with ; or \g.</div><div class="line">Your MySQL connection id is 243535</div><div class="line">Server version: 5.6.35-log Source distribution</div><div class="line">Copyright (c) 2000, 2016, Oracle and/or its affiliates. All rights reserved.</div><div class="line">Oracle is a registered trademark of Oracle Corporation and/or its</div><div class="line">affiliates. Other names may be trademarks of their respective</div><div class="line">owners.</div><div class="line">Type &apos;help;&apos; or &apos;\h&apos; for help. Type &apos;\c&apos; to clear the current input statement.</div><div class="line">mysql&gt; show variables like &apos;%rpl_semi%&apos;;</div><div class="line">Empty set (0.00 sec)</div><div class="line">mysql&gt; install plugin rpl_semi_sync_master soname &apos;semisync_master.so&apos;;</div><div class="line">Query OK, 0 rows affected (0.04 sec)</div><div class="line">mysql&gt; show variables like &apos;%rpl_semi%&apos;;</div><div class="line">+------------------------------------+-------+</div><div class="line">| Variable_name                      | Value |</div><div class="line">+------------------------------------+-------+</div><div class="line">| rpl_semi_sync_master_enabled       | OFF   |</div><div class="line">| rpl_semi_sync_master_timeout       | 10000 |  #默认是10秒，可以自己调整</div><div class="line">| rpl_semi_sync_master_trace_level   | 32    |</div><div class="line">| rpl_semi_sync_master_wait_no_slave | ON    |</div><div class="line">+------------------------------------+-------+</div><div class="line">4 rows in set (0.00 sec)</div><div class="line">mysql&gt; set global rpl_semi_sync_master_enabled=on;</div><div class="line">Query OK, 0 rows affected (0.00 sec)</div><div class="line">从库：</div><div class="line">mysql&gt; install plugin rpl_semi_sync_slave soname &apos;semisync_slave.so&apos;;</div><div class="line">Query OK, 0 rows affected (0.04 sec)</div></pre></td></tr></table></figure></p>
+<h3 id="主从复制常见问题"><a href="#主从复制常见问题" class="headerlink" title="主从复制常见问题"></a>主从复制常见问题</h3><p>1、主库挂了，如何判断从库是否同步完成？<br>从库执行：show slave status \G;<br>查看IO线程读取到主库的binlog日志文件及位置：<br>              Master_Log_File: mysql-bin.000952<br>          Read_Master_Log_Pos: 637762421<br>查看SQL线程执行的文件及位置：<br>        Relay_Master_Log_File: mysql-bin.000952<br>          Exec_Master_Log_Pos: 637762421<br>比较以上两者是否相等。如果都相等说明同步完成，否则没有完成同步！<br>还可以参考：<br>        Seconds_Behind_Master: 0</p>
+<p>如果主库重启了。可以通过show master status查看binlog和位置与从库的binlog文件和位置比较是否一致。<br>2、mysql主从库同步错误<br>1032：主从数据不一致<br>1062：主键冲突<br>1060：主从DDL不一致<br>解决办法：<br>如果仅有少数数据不一致可以设置跳过事务然后再手动同步数据。<br>set sql_slave_skip_counter=1;跳过1个事务<br>如果大量数据不一致的话就需要重做备库。</p>
 </the>
       
     </div>
@@ -326,13 +326,13 @@
   
     
     <div class="copyright">
-        <p><span>本文标题:</span><a href="/2017/03/28/Sematic-Optimization-of-mysql/">mysql查询优化技术之语义优化</a></p>
+        <p><span>本文标题:</span><a href="/2017/03/29/Deep-comprehend-mysql-replication/">深入理解mysql的主从复制</a></p>
         <p><span>文章作者:</span><a href="/" title="回到主页">一条大河</a></p>
-        <p><span>发布时间:</span>2017-03-28, 17:04:15</p>
-        <p><span>最后更新:</span>2017-03-28, 17:33:28</p>
+        <p><span>发布时间:</span>2017-03-29, 13:11:37</p>
+        <p><span>最后更新:</span>2017-03-29, 17:56:10</p>
         <p>
-            <span>原始链接:</span><a class="post-url" href="/2017/03/28/Sematic-Optimization-of-mysql/" title="mysql查询优化技术之语义优化">http://riverdba.github.io/2017/03/28/Sematic-Optimization-of-mysql/</a>
-            <span class="copy-path" data-clipboard-text="原文: http://riverdba.github.io/2017/03/28/Sematic-Optimization-of-mysql/　　作者: 一条大河" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <span>原始链接:</span><a class="post-url" href="/2017/03/29/Deep-comprehend-mysql-replication/" title="深入理解mysql的主从复制">http://riverdba.github.io/2017/03/29/Deep-comprehend-mysql-replication/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://riverdba.github.io/2017/03/29/Deep-comprehend-mysql-replication/　　作者: 一条大河" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
             <script> var clipboard = new Clipboard('.copy-path'); </script>
         </p>
         <p>
@@ -344,16 +344,10 @@
 
     <nav id="article-nav">
         
-            <div id="article-nav-newer" class="article-nav-title">
-                <a href="/2017/03/29/Deep-comprehend-mysql-replication/">
-                    深入理解mysql的主从复制
-                </a>
-            </div>
-        
         
             <div id="article-nav-older" class="article-nav-title">
-                <a href="/2017/03/28/hexo-s-tips/">
-                    hexo&#39;s tips
+                <a href="/2017/03/28/Sematic-Optimization-of-mysql/">
+                    mysql查询优化技术之语义优化
                 </a>
             </div>
         
@@ -365,7 +359,7 @@
     <div id="toc" class="toc-article">
         <strong class="toc-title">文章目录</strong>
         
-            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#发现慢SQL"><span class="toc-number">1.</span> <span class="toc-text">发现慢SQL</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#优化一"><span class="toc-number">2.</span> <span class="toc-text">优化一</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#优化二"><span class="toc-number">3.</span> <span class="toc-text">优化二</span></a></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#主从复制的过程"><span class="toc-number">1.</span> <span class="toc-text">主从复制的过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#主从复制相关参数"><span class="toc-number">2.</span> <span class="toc-text">主从复制相关参数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#半同步复制"><span class="toc-number">3.</span> <span class="toc-text">半同步复制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#主从复制常见问题"><span class="toc-number">4.</span> <span class="toc-text">主从复制常见问题</span></a></li></ol>
         
     </div>
     <style>
@@ -401,7 +395,7 @@
         </div>
         <script>
             window._bd_share_config={
-                "common":{"bdSnsKey":{},"bdText":"mysql查询优化技术之语义优化　| Yangtze River's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+                "common":{"bdSnsKey":{},"bdText":"深入理解mysql的主从复制　| Yangtze River's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
         </script>
     
 
@@ -420,8 +414,8 @@
     <div id="disqus_thread"></div>
     <script>
         var disqus_config = function(){
-            this.page.url = 'http://riverdba.github.io/2017/03/28/Sematic-Optimization-of-mysql/';
-            this.page.identifier = '2017/03/28/Sematic-Optimization-of-mysql/';
+            this.page.url = 'http://riverdba.github.io/2017/03/29/Deep-comprehend-mysql-replication/';
+            this.page.identifier = '2017/03/29/Deep-comprehend-mysql-replication/';
         };
         var loadComment = function(){
             var d = document, s = d.createElement('script');
@@ -443,15 +437,13 @@
 
     <div class="scroll" id="post-nav-button">
         
-            <a href="/2017/03/29/Deep-comprehend-mysql-replication/" title="上一篇: 深入理解mysql的主从复制">
-                <i class="fa fa-angle-left"></i>
-            </a>
+            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
         
 
         <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
 
         
-            <a href="/2017/03/28/hexo-s-tips/" title="下一篇: hexo&#39;s tips">
+            <a href="/2017/03/28/Sematic-Optimization-of-mysql/" title="下一篇: mysql查询优化技术之语义优化">
                 <i class="fa fa-angle-right"></i>
             </a>
         
