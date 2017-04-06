@@ -15,21 +15,16 @@
 
 
 
-<meta name="description" content="摘要：工作中遇到的SQL语义优化案例">
+<meta name="description" content="摘要：记一次字符串字段数据更新的过程">
 <meta property="og:type" content="article">
-<meta property="og:title" content="mysql查询优化技术之语义优化">
-<meta property="og:url" content="http://riverdba.github.io/2017/03/28/Sematic-Optimization-of-mysql/index.html">
+<meta property="og:title" content="MySQL字符串处理一则">
+<meta property="og:url" content="http://riverdba.github.io/2017/04/06/String-handling-of-mysql/index.html">
 <meta property="og:site_name" content="Yangtze River's blog">
-<meta property="og:description" content="摘要：工作中遇到的SQL语义优化案例">
-<meta property="og:image" content="http://riverdba.github.io/2017/03/28/Sematic-Optimization-of-mysql/图片1.png">
-<meta property="og:image" content="http://riverdba.github.io/2017/03/28/Sematic-Optimization-of-mysql/图片2.png">
-<meta property="og:image" content="http://riverdba.github.io/2017/03/28/Sematic-Optimization-of-mysql/图片3.png">
-<meta property="og:image" content="http://riverdba.github.io/2017/03/28/Sematic-Optimization-of-mysql/图片4.png">
-<meta property="og:updated_time" content="2017-03-28T09:33:28.000Z">
+<meta property="og:description" content="摘要：记一次字符串字段数据更新的过程">
+<meta property="og:updated_time" content="2017-04-06T09:16:24.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="mysql查询优化技术之语义优化">
-<meta name="twitter:description" content="摘要：工作中遇到的SQL语义优化案例">
-<meta name="twitter:image" content="http://riverdba.github.io/2017/03/28/Sematic-Optimization-of-mysql/图片1.png">
+<meta name="twitter:title" content="MySQL字符串处理一则">
+<meta name="twitter:description" content="摘要：记一次字符串字段数据更新的过程">
 
 <link rel="apple-touch-icon" href= "/apple-touch-icon.png">
 
@@ -61,7 +56,7 @@
 <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
 
 
-<title>mysql查询优化技术之语义优化 | Yangtze River&#39;s blog</title>
+<title>MySQL字符串处理一则 | Yangtze River&#39;s blog</title>
 
 <script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
 <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
@@ -265,11 +260,11 @@
     </div>
     <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
 </nav>
-      <div class="body-wrap"><article id="post-Sematic-Optimization-of-mysql" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-String-handling-of-mysql" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2017/03/28/Sematic-Optimization-of-mysql/" class="article-date">
-      <time datetime="2017-03-28T09:04:15.000Z" itemprop="datePublished">2017-03-28</time>
+      <a href="/2017/04/06/String-handling-of-mysql/" class="article-date">
+      <time datetime="2017-04-06T08:20:51.000Z" itemprop="datePublished">2017-04-06</time>
 </a>
 
 
@@ -284,7 +279,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      mysql查询优化技术之语义优化
+      MySQL字符串处理一则
     </h1>
   
 
@@ -299,7 +294,7 @@
 
         
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mysql查询优化技术/">mysql查询优化技术</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/工作笔记/">工作笔记</a></li></ul>
     </div>
 
         <div class="clearfix"></div>
@@ -309,15 +304,17 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-        <p><excerpt in="" index="" |="" 首页摘要=""><br>摘要：工作中遇到的SQL语义优化案例<a id="more"></a></excerpt></p>
+        <p><excerpt in="" index="" |="" 首页摘要=""><br>摘要：记一次字符串字段数据更新的过程<a id="more"></a></excerpt></p>
 <the rest="" of="" contents="" |="" 余下全文="">
 
-<h3 id="发现慢SQL"><a href="#发现慢SQL" class="headerlink" title="发现慢SQL"></a>发现慢SQL</h3><p>通过监控慢查询，执行时间在1秒以上的SQL如下：<br><img src="/2017/03/28/Sematic-Optimization-of-mysql/图片1.png" alt="图片1"><br>完整SQL：<br><img src="/2017/03/28/Sematic-Optimization-of-mysql/图片2.png" alt="图片2"><br>查看表结构：<br><img src="/2017/03/28/Sematic-Optimization-of-mysql/图片3.png" alt="图片3"><br>查看执行计划：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">EXPLAIN extended</div><div class="line">SELECT id, content, content_type, receiver_id, TYPE, function_type, function_id,</div><div class="line">read_status, send_time, read_time, STATUS</div><div class="line">FROM</div><div class="line">xxxtable</div><div class="line">WHERE receiver_id = &apos;1667510020&apos;</div><div class="line">AND STATUS = 1</div><div class="line">AND TYPE = 2</div><div class="line">AND send_time &lt; &apos;2017-03-22 08:35:50.553&apos; </div><div class="line">AND DATE_SUB(CURDATE(), INTERVAL 12 MONTH ) &lt;= DATE(send_time) </div><div class="line">ORDER BY send_time DESC LIMIT 1; </div><div class="line">/* select#1 */</div><div class="line">select </div><div class="line">`xxxxdb`.`xxxxtable`.`id` AS `id`,</div><div class="line">`xxxxdb`.`xxxxtable`.`content` AS `content`,</div><div class="line">`xxxxdb`.`xxxxtable`.`content_type` AS `content_type`,</div><div class="line">`xxxxdb`.`xxxxtable`.`receiver_id` AS `receiver_id`,</div><div class="line">`xxxxdb`.`xxxxtable`.`type` AS `TYPE`,</div><div class="line">`xxxxdb`.`xxxxtable`.`function_type` AS `function_type`,</div><div class="line">`xxxxdb`.`xxxxtable`.`function_id` AS `function_id`,</div><div class="line">`xxxxdb`.`xxxxtable`.`read_status` AS `read_status`,</div><div class="line">`xxxxdb`.`xxxxtable`.`send_time` AS `send_time`,</div><div class="line">`xxxxdb`.`xxxxtable`.`read_time` AS `read_time`,</div><div class="line">`xxxxdb`.`xxxxtable`.`status` AS `STATUS` </div><div class="line">from</div><div class="line">`xxxxdb`.`xxxxtable` </div><div class="line">where (</div><div class="line">(</div><div class="line">`xxxxdb`.`xxxxtable`.`type` = 2</div><div class="line">) </div><div class="line">and (</div><div class="line">`xxxxdb`.`xxxxtable`.`status` = 1</div><div class="line">) </div><div class="line">and (</div><div class="line">`xxxxdb`.`xxxxtable`.`receiver_id` = &apos;1667510020&apos;</div><div class="line">) </div><div class="line">and (</div><div class="line">`xxxxdb`.`xxxxtable`.`send_time` &lt; &apos;2017-03-22 08:35:50.553&apos;</div><div class="line">) </div><div class="line">and (</div><div class="line">&lt; cache &gt; ((curdate() - interval 12 month)) &lt;= cast(</div><div class="line">`xxxxdb`.`xxxxtable`.`send_time` as date</div><div class="line">)</div><div class="line">)</div><div class="line">) </div><div class="line">order by `xxxxdb`.`xxxxtable`.`send_time` desc </div><div class="line">limit 1</div></pre></td></tr></table></figure></p>
-<h3 id="优化一"><a href="#优化一" class="headerlink" title="优化一"></a>优化一</h3><p>从表结构定义上看，已经有receiver_id和send_time的联合索引就没必要单独再需要receiver_id索引了。因此可以先drop掉索引idx_receiverid！</p>
-<h3 id="优化二"><a href="#优化二" class="headerlink" title="优化二"></a>优化二</h3><p>从SQL语义上看，最关键的是发送时间条件：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">AND send_time &lt; &apos;2017-03-22 08:35:50.553&apos; </div><div class="line">AND DATE_SUB(CURDATE(), INTERVAL 12 MONTH ) &lt;= DATE(send_time)</div></pre></td></tr></table></figure></p>
-<p>初步判断业务需求是要查询发送时间小于当前时间，且发送时间在最近12个月内的数据。<br>Send_time数据库中的时间戳格式是：年月日时分秒毫秒，这里却对send_time字段做了date函数转换，开发者目的是为了和12个月前的年月日格式进行比对。为什么不直接让send_time和12个月前的年月日时分秒毫秒格式进行比对呢？这样不就可以去掉对索引字段做函数了吗。因此，我们可以将这2个条件改写为如下：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">AND send_time &lt; &apos;2017-03-22 08:35:50.553&apos; </div><div class="line">AND send_time &gt;= DATE_SUB(NOW(), INTERVAL 12 MONTH )</div></pre></td></tr></table></figure></p>
-<p>优化后的执行计划：<br><img src="/2017/03/28/Sematic-Optimization-of-mysql/图片4.png" alt="图片4"><br>这句SQL在优化前的执行计划中是：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">and (</div><div class="line">&lt; cache &gt; ((curdate() - interval 12 month)) &lt;= cast(</div><div class="line">`xxxxdb`.`xxxxtable`.`send_time` as date</div><div class="line">)</div></pre></td></tr></table></figure></p>
-<p>通过对比可以看到优化后省去了mysql对字段做类型转换的工作，同时可以充分利用该字段的索引。</p>
+<h3 id="需求描述"><a href="#需求描述" class="headerlink" title="需求描述"></a>需求描述</h3><p>开发提出需修改某业务表中的一个字段的内容，将其中一部分修改掉。<br>修改前：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[&#123;&quot;extension&quot;:&quot;jpg&quot;,&quot;fileKey&quot;:&quot;B39C644EA275D5DF4062F7DCD5442077&quot;,&quot;smallUrl&quot;:&quot;http://dl.test.com/images/320x320_B39C644EA275D5DF4062F7DCD5442077.jpg&quot;,&quot;bigImgUrl&quot;:&quot;http://abc.test.com/r/010005002001001/010005002001001004001/B39C644EA275D5DF4062F7DCD5442077.jpg?t=20160310&quot;,&quot;type&quot;:6,&quot;fileName&quot;:&quot;段1.1&quot;&#125;]</div></pre></td></tr></table></figure></p>
+<p>期望能修改为：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[&#123;&quot;extension&quot;:&quot;jpg&quot;,&quot;fileKey&quot;:&quot;B39C644EA275D5DF4062F7DCD5442077&quot;,&quot;smallUrl&quot;:&quot;http://abc.test.com/r/010005002001001/010005002001001004001/98x98_B39C644EA275D5DF4062F7DCD5442077.jpg?t=20160310&quot;,&quot;bigImgUrl&quot;:&quot;http://abc.test.com/r/010005002001001/010005002001001004001/B39C644EA275D5DF4062F7DCD5442077.jpg?t=20160310&quot;,&quot;type&quot;:6,&quot;fileName&quot;:&quot;段1.1&quot;&#125;]</div></pre></td></tr></table></figure></p>
+<h3 id="确定思路"><a href="#确定思路" class="headerlink" title="确定思路"></a>确定思路</h3><p>1、确定需要修改的具体内容，即”smallUrl”:后面的内容<br>2、写出要修改后的新内容，即bigImgUrl+分辨率<br>3、将需要修改的内容replace为新内容<br>经过讨论业务逻辑后，最终确定通过这三步即可完成。<br>此处有感：磨刀不误砍材工，动手之前一定要先梳理好业务逻辑。否则可能动手做了一半才发现不对，白白浪费了时间。</p>
+<h3 id="编写SQL"><a href="#编写SQL" class="headerlink" title="编写SQL"></a>编写SQL</h3><p>需要用到Mysql的几个函数：SUBSTRING_INDEX、CONCAT、REPLACE<br>SUBSTRING_INDEX(str,delim,count)：用来返回字符串str中在第count个出现的分隔符delim之前或之后的字符串。如果count是一个正数，返回从最后的(从左边开始计数)分隔符到左边所有字符。如果count是负数，返回从最后的(从右边开始计数)分隔符到右边所有字符。<br>CONCAT()：用来拼接字符串<br>REPLACE()：用来替换字符串<br>1、找出需要被修改的部分：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">CONCAT(SUBSTRING_INDEX(SUBSTRING_INDEX(t_content1,&apos;&quot;smallUrl&quot;:&apos;,-1),&apos;&quot;&apos;,2),&apos;&quot;&apos;) as &quot;old smallUrl&quot;,</div><div class="line">先截取smallUrl右边的部分，在此基础上再进一步截取这部分中第二个&quot;左边的部分，输出结果为：</div><div class="line">&quot;http://dl.test.com/images/320x320_B39C644EA275D5DF4062F7DCD5442077.jpg&quot;</div></pre></td></tr></table></figure></p>
+<p>2、写出修改后的部分：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">CONCAT(SUBSTRING_INDEX(SUBSTRING_INDEX(t_content1,&apos;&quot;bigImgUrl&quot;:&apos;,-1),&apos;/&apos;,6),&apos;/98x98_&apos;,SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTRING_INDEX(t_content1,&apos;&quot;bigImgUrl&quot;:&apos;,-1),&apos;&quot;&apos;,2),&apos;/&apos;,-1),&apos;&quot;&apos;) as &quot;new smallUrl&quot;</div><div class="line">输出结果为：</div><div class="line">&quot;http://abc.test.com/r/010005002001001/010005002001001004001/98x98_B39C644EA275D5DF4062F7DCD5442077.jpg?t=20160310&quot;</div></pre></td></tr></table></figure></p>
+<p>3、验证是否正确<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">SELECT t_content1,</div><div class="line">REPLACE(t_content1,CONCAT(SUBSTRING_INDEX(SUBSTRING_INDEX(t_content1,&apos;&quot;smallUrl&quot;:&apos;,-1),&apos;&quot;&apos;,2),&apos;&quot;&apos;),CONCAT(SUBSTRING_INDEX(SUBSTRING_INDEX(t_content1,&apos;&quot;bigImgUrl&quot;:&apos;,-1),&apos;/&apos;,6),&apos;/98x98_&apos;,SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTRING_INDEX(t_content1,&apos;&quot;bigImgUrl&quot;:&apos;,-1),&apos;&quot;&apos;,2),&apos;/&apos;,-1),&apos;&quot;&apos;)) as new_t_content1</div><div class="line">FROM test_book_class WHERE ccdl_type=5 </div><div class="line">AND t_content1 LIKE &apos;%&quot;bigImgUrl&quot;:&quot;http://abc.test.com%&apos; </div><div class="line">AND t_content1 LIKE &apos;%&quot;smallUrl&quot;:&quot;http://dl.test.com/%&apos; </div><div class="line">LIMIT 10;</div></pre></td></tr></table></figure></p>
+<p>比较修改前的内容和修改后的内容，确定被修改的部分是正确的。</p>
+<h3 id="执行SQL"><a href="#执行SQL" class="headerlink" title="执行SQL"></a>执行SQL</h3><p>注意：先测试库，后生产库。<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">UPDATE test_book_class SET t_content1=REPLACE(t_content1,CONCAT(SUBSTRING_INDEX(SUBSTRING_INDEX(t_content1,&apos;&quot;smallUrl&quot;:&apos;,-1),&apos;&quot;&apos;,2),&apos;&quot;&apos;),CONCAT(SUBSTRING_INDEX(SUBSTRING_INDEX(t_content1,&apos;&quot;bigImgUrl&quot;:&apos;,-1),&apos;/&apos;,6),&apos;/98x98_&apos;,SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTRING_INDEX(t_content1,&apos;&quot;bigImgUrl&quot;:&apos;,-1),&apos;&quot;&apos;,2),&apos;/&apos;,-1),&apos;&quot;&apos;))</div><div class="line">WHERE ccdl_type=5 AND t_content1 LIKE &apos;%&quot;bigImgUrl&quot;:&quot;http://abc.test.com%&apos; AND t_content1 LIKE &apos;%&quot;smallUrl&quot;:&quot;http://dl.test.com/%&apos;;</div><div class="line">COMMIT;</div></pre></td></tr></table></figure></p>
 </the>
       
     </div>
@@ -326,13 +323,13 @@
   
     
     <div class="copyright">
-        <p><span>本文标题:</span><a href="/2017/03/28/Sematic-Optimization-of-mysql/">mysql查询优化技术之语义优化</a></p>
+        <p><span>本文标题:</span><a href="/2017/04/06/String-handling-of-mysql/">MySQL字符串处理一则</a></p>
         <p><span>文章作者:</span><a href="/" title="回到主页">一条大河</a></p>
-        <p><span>发布时间:</span>2017-03-28, 17:04:15</p>
-        <p><span>最后更新:</span>2017-03-28, 17:33:28</p>
+        <p><span>发布时间:</span>2017-04-06, 16:20:51</p>
+        <p><span>最后更新:</span>2017-04-06, 17:16:24</p>
         <p>
-            <span>原始链接:</span><a class="post-url" href="/2017/03/28/Sematic-Optimization-of-mysql/" title="mysql查询优化技术之语义优化">http://riverdba.github.io/2017/03/28/Sematic-Optimization-of-mysql/</a>
-            <span class="copy-path" data-clipboard-text="原文: http://riverdba.github.io/2017/03/28/Sematic-Optimization-of-mysql/　　作者: 一条大河" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <span>原始链接:</span><a class="post-url" href="/2017/04/06/String-handling-of-mysql/" title="MySQL字符串处理一则">http://riverdba.github.io/2017/04/06/String-handling-of-mysql/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://riverdba.github.io/2017/04/06/String-handling-of-mysql/　　作者: 一条大河" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
             <script> var clipboard = new Clipboard('.copy-path'); </script>
         </p>
         <p>
@@ -344,16 +341,10 @@
 
     <nav id="article-nav">
         
-            <div id="article-nav-newer" class="article-nav-title">
-                <a href="/2017/03/29/Deep-comprehend-mysql-replication/">
-                    深入理解mysql的主从复制
-                </a>
-            </div>
-        
         
             <div id="article-nav-older" class="article-nav-title">
-                <a href="/2017/03/28/hexo-s-tips/">
-                    hexo&#39;s tips
+                <a href="/2017/04/05/Non-SPJ-Optimization-of-mysql/">
+                    MySQL查询优化技术之非SPJ优化
                 </a>
             </div>
         
@@ -365,7 +356,7 @@
     <div id="toc" class="toc-article">
         <strong class="toc-title">文章目录</strong>
         
-            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#发现慢SQL"><span class="toc-number">1.</span> <span class="toc-text">发现慢SQL</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#优化一"><span class="toc-number">2.</span> <span class="toc-text">优化一</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#优化二"><span class="toc-number">3.</span> <span class="toc-text">优化二</span></a></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#需求描述"><span class="toc-number">1.</span> <span class="toc-text">需求描述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#确定思路"><span class="toc-number">2.</span> <span class="toc-text">确定思路</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#编写SQL"><span class="toc-number">3.</span> <span class="toc-text">编写SQL</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#执行SQL"><span class="toc-number">4.</span> <span class="toc-text">执行SQL</span></a></li></ol>
         
     </div>
     <style>
@@ -401,7 +392,7 @@
         </div>
         <script>
             window._bd_share_config={
-                "common":{"bdSnsKey":{},"bdText":"mysql查询优化技术之语义优化　| Yangtze River's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+                "common":{"bdSnsKey":{},"bdText":"MySQL字符串处理一则　| Yangtze River's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
         </script>
     
 
@@ -420,8 +411,8 @@
     <div id="disqus_thread"></div>
     <script>
         var disqus_config = function(){
-            this.page.url = 'http://riverdba.github.io/2017/03/28/Sematic-Optimization-of-mysql/';
-            this.page.identifier = '2017/03/28/Sematic-Optimization-of-mysql/';
+            this.page.url = 'http://riverdba.github.io/2017/04/06/String-handling-of-mysql/';
+            this.page.identifier = '2017/04/06/String-handling-of-mysql/';
         };
         var loadComment = function(){
             var d = document, s = d.createElement('script');
@@ -443,15 +434,13 @@
 
     <div class="scroll" id="post-nav-button">
         
-            <a href="/2017/03/29/Deep-comprehend-mysql-replication/" title="上一篇: 深入理解mysql的主从复制">
-                <i class="fa fa-angle-left"></i>
-            </a>
+            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
         
 
         <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
 
         
-            <a href="/2017/03/28/hexo-s-tips/" title="下一篇: hexo&#39;s tips">
+            <a href="/2017/04/05/Non-SPJ-Optimization-of-mysql/" title="下一篇: MySQL查询优化技术之非SPJ优化">
                 <i class="fa fa-angle-right"></i>
             </a>
         
