@@ -25,7 +25,7 @@
 <meta property="og:image" content="http://riverdba.github.io/2017/04/01/MVCC-theory-study/1.png">
 <meta property="og:image" content="http://riverdba.github.io/2017/04/01/MVCC-theory-study/2.png">
 <meta property="og:image" content="http://riverdba.github.io/2017/04/01/MVCC-theory-study/3.png">
-<meta property="og:updated_time" content="2017-04-01T09:08:52.000Z">
+<meta property="og:updated_time" content="2017-04-12T03:02:14.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Innodb的MVCC实现原理">
 <meta name="twitter:description" content="摘要：Innodb的MVCC实现原理学习">
@@ -320,7 +320,7 @@
 <h3 id="MVCC实现原理"><a href="#MVCC实现原理" class="headerlink" title="MVCC实现原理"></a>MVCC实现原理</h3><p>从上面可以看出，在不同的隔离级别下，session1看到的数据是不同的。这由innodb中的MVCC通过undo实现的！<br>事务的隔离性是由锁来实现，而原子性、一致性、持久性通过redo和undo完成。</p>
 <h4 id="什么是redo"><a href="#什么是redo" class="headerlink" title="什么是redo"></a>什么是redo</h4><p>redo log用来保证事务的原子性和持久性；redo恢复提交事务修改的页操作；redo是物理日志，记录的是页的物理修改操作；redo存放在redo log文件中；</p>
 <h4 id="什么是undo"><a href="#什么是undo" class="headerlink" title="什么是undo"></a>什么是undo</h4><p>undo log用来保证事务的一致性；undo回滚行记录到某个特定版本；undo是逻辑日志，根据每行记录进行记录；undo存放在共享表空间的undo段中；</p>
-<h4 id="rollback-segment"><a href="#rollback-segment" class="headerlink" title="rollback segment"></a>rollback segment</h4><p>在innodb中，undo log被划分成多个段，具体某行的undo log就保存在某个段中，成为回滚段。</p>
+<h4 id="rollback-segment"><a href="#rollback-segment" class="headerlink" title="rollback segment"></a>rollback segment</h4><p>在innodb中，undo log被划分成多个段，具体某行的undo log就保存在某个段中，称为回滚段。</p>
 <h4 id="Innodb中MVCC的实现过程"><a href="#Innodb中MVCC的实现过程" class="headerlink" title="Innodb中MVCC的实现过程"></a>Innodb中MVCC的实现过程</h4><p>1、旧数据存储在UNDO中，再通过DB_ROLL_PTR回溯查找历史版本<br>先看下InnoDB的行存储格式（默认是compact格式）：<br><img src="/2017/04/01/MVCC-theory-study/0.png" alt="图0"><br>可以看到每行数据有个DB_ROLL_PTR（7字节的回滚指针），用于指向该行修改前的上一个历史版本（InnoDB里，会将row data修改前的旧数据存储在UNDO中）。当插入的是一条新数据时，记录上对应的回滚段指针为NULL！如下图：<br><img src="/2017/04/01/MVCC-theory-study/1.png" alt="图1"><br>更新记录时，原记录将被放入到undo表空间中，并通过DB_ROLL_PTR指向该记录。session1查询返回的未修改数据就是从这个UNDO中返回的。MySQL就是根据记录上的回滚段指针及事务ID判断记录是否可见，如果不可见继续按照DB_ROLL_PTR继续回溯查找。如下图：<br><img src="/2017/04/01/MVCC-theory-study/2.png" alt="图2"><br>2、通过read view判断行记录是否可见<br>RR隔离级别下：在每个事务开始的时候，会将当前系统中的所有的活跃事务拷贝到一个列表中(read view)。<br>RC隔离级别下：在事务中的每个语句开始时，会将当前系统中的所有的活跃事务拷贝到一个列表中(read view) 。<br>然后按照以下逻辑判断事务的可见性：<br><img src="/2017/04/01/MVCC-theory-study/3.png" alt="图3"><br>并不是用当前事务ID与表中各个数据行上的事务ID去比较的，而是在每个事务开始的时候，会将当前系统中所有的活跃事务拷贝到read view列表，根据read view最早一个事务ID和最晚的一个事务ID做比较，这样就能确保在当前事务之前没提交的所有事务的变更及后续新启动的事务的变更在当前事务中都是看不到的。当前事务自身的变更是可以看到的。</p>
 <p>资料来源：<a href="https://mp.weixin.qq.com/s?__biz=MjM5NzAzMTY4NQ==&amp;mid=2653930052&amp;idx=1&amp;sn=eb4cf71dc838e784af27dff2a1ca8d4b&amp;chksm=bd3b582e8a4cd138536baa9a9b8a831f3f34c7790eed4c6f26ffecf0c332636ad896ed9f8da3&amp;mpshare=1&amp;scene=1&amp;srcid=03317XGPfOUvlUZiJVfCeRXk&amp;pass_ticket=TRE0ji3UrLUUrdtDV4lWf1%2FfQ58FwhCZ8QooTXvY9Dc%3D#rd" target="_blank" rel="external">老叶茶馆微信公共号</a></p>
 </the>
@@ -334,7 +334,7 @@
         <p><span>本文标题:</span><a href="/2017/04/01/MVCC-theory-study/">Innodb的MVCC实现原理</a></p>
         <p><span>文章作者:</span><a href="/" title="回到主页">一条大河</a></p>
         <p><span>发布时间:</span>2017-04-01, 09:31:04</p>
-        <p><span>最后更新:</span>2017-04-01, 17:08:52</p>
+        <p><span>最后更新:</span>2017-04-12, 11:02:14</p>
         <p>
             <span>原始链接:</span><a class="post-url" href="/2017/04/01/MVCC-theory-study/" title="Innodb的MVCC实现原理">http://riverdba.github.io/2017/04/01/MVCC-theory-study/</a>
             <span class="copy-path" data-clipboard-text="原文: http://riverdba.github.io/2017/04/01/MVCC-theory-study/　　作者: 一条大河" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
