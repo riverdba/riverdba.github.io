@@ -29,7 +29,8 @@
 <meta property="og:image" content="http://riverdba.github.io/2017/04/15/archer-install/6.png">
 <meta property="og:image" content="http://riverdba.github.io/2017/04/15/archer-install/7.png">
 <meta property="og:image" content="http://riverdba.github.io/2017/04/15/archer-install/8.png">
-<meta property="og:updated_time" content="2017-04-15T09:27:58.000Z">
+<meta property="og:image" content="http://riverdba.github.io/2017/04/15/archer-install/error1.png">
+<meta property="og:updated_time" content="2017-04-18T09:11:32.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="archer安装及使用">
 <meta name="twitter:description" content="摘要：基于inception的自动化SQL操作平台">
@@ -194,7 +195,7 @@
                 
                 <section class="switch-part switch-part2">
                     <div class="widget tagcloud" id="js-tagcloud">
-                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hexo-Quick-Start/">Hexo Quick Start</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL查询优化技术/">MySQL查询优化技术</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SQL审核工具/">SQL审核工具</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/disqus/">disqus</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql性能调优技术/">mysql性能调优技术</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql查询优化技术/">mysql查询优化技术</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sysbench/">sysbench</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/学习笔记/">学习笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工作笔记/">工作笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/故障诊断/">故障诊断</a></li></ul>
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hexo-Quick-Start/">Hexo Quick Start</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hive-and-MyCAT/">Hive and MyCAT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL查询优化技术/">MySQL查询优化技术</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SQL审核工具/">SQL审核工具</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/disqus/">disqus</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql性能调优技术/">mysql性能调优技术</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql查询优化技术/">mysql查询优化技术</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sysbench/">sysbench</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/学习笔记/">学习笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工作笔记/">工作笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/故障诊断/">故障诊断</a></li></ul>
                     </div>
                 </section>
                 
@@ -331,6 +332,9 @@
 <h3 id="创建archer系统登录用户"><a href="#创建archer系统登录用户" class="headerlink" title="创建archer系统登录用户"></a>创建archer系统登录用户</h3><p>通过浏览器访问<a href="http://192.168.1.123:9123/admin/sql/users/" target="_blank" rel="external">http://192.168.1.123:9123/admin/sql/users/</a><br>可以看到django登录界面：<br><img src="/2017/04/15/archer-install/django_login.png" alt="图2"><br>使用上面第5步创建的用户名密码（admin/admin123）登录：<br><img src="/2017/04/15/archer-install/3.png" alt="图3"><br>点击右侧Add用户配置，用户名密码自定义，至少创建一个工程师和一个审核人（用admin用户可以登录）后续新的工程师和审核人用户请用LDAP导入sql_users表或django admin增加<br><img src="/2017/04/15/archer-install/4.png" alt="图4"></p>
 <h3 id="配置主库地址"><a href="#配置主库地址" class="headerlink" title="配置主库地址"></a>配置主库地址</h3><p>通过浏览器访问<a href="http://192.168.1.123:9123/admin/sql/master_config" target="_blank" rel="external">http://192.168.1.123:9123/admin/sql/master_config</a><br>点击右侧Add master_config。这一步是为了告诉archer你要用inception去哪些mysql主库里执行SQL，所用到的用户名密码、端口等。<br><img src="/2017/04/15/archer-install/5.png" alt="图5"><br><img src="/2017/04/15/archer-install/6.png" alt="图6"></p>
 <h3 id="正式访问主页"><a href="#正式访问主页" class="headerlink" title="正式访问主页"></a>正式访问主页</h3><p><a href="http://192.168.1.123:9123/login/" target="_blank" rel="external">http://192.168.1.123:9123/login/</a><br><img src="/2017/04/15/archer-install/7.png" alt="图7"><br>登录成功后：<br><img src="/2017/04/15/archer-install/8.png" alt="图8"></p>
+<h3 id="遇到问题及解决"><a href="#遇到问题及解决" class="headerlink" title="遇到问题及解决"></a>遇到问题及解决</h3><h4 id="报错1"><a href="#报错1" class="headerlink" title="报错1"></a>报错1</h4><p>查看回滚SQL时界面报错：<br><img src="/2017/04/15/archer-install/error1.png" alt="图9"><br>debug日志报错：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[18/Apr/2017 11:49:50] &quot;GET /detail/2/ HTTP/1.1&quot; 200 7474</div><div class="line">Mysql Error 1142: SELECT command denied to user &apos;incep_rw&apos;@&apos;192.168.1.123&apos; for table &apos;$_$inception_backup_information$_$&apos;</div><div class="line">Error: returned listTables more than 1.</div><div class="line">[18/Apr/2017 11:50:01] &quot;GET /rollback/?csrfmiddlewaretoken=8s6iaPsMtgX1Qvd0lf8vDOXe0K9hPecp&amp;workflowid=2 HTTP/1.1&quot; 500 73965</div></pre></td></tr></table></figure></p>
+<p>解决办法：给incep_rw用户赋予select、create、insert权限<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">root@mysql 04:42:04&gt;grant select,create,insert on *.* to incep_rw@&apos;%&apos; identified by &apos;incep_rw&apos;;</div><div class="line">Query OK, 0 rows affected (0.00 sec)</div><div class="line">root@mysql 04:54:23&gt;flush privileges;</div><div class="line">Query OK, 0 rows affected (0.00 sec)</div></pre></td></tr></table></figure></p>
+<p>CREATE权限用于创建表或者库的，INSERT权限用于插入备份数据的,SELECT权限用于查询回滚SQL。</p>
 
       
     </div>
@@ -342,7 +346,7 @@
         <p><span>本文标题:</span><a href="/2017/04/15/archer-install/">archer安装及使用</a></p>
         <p><span>文章作者:</span><a href="/" title="回到主页">一条大河</a></p>
         <p><span>发布时间:</span>2017-04-15, 14:12:18</p>
-        <p><span>最后更新:</span>2017-04-15, 17:27:58</p>
+        <p><span>最后更新:</span>2017-04-18, 17:11:32</p>
         <p>
             <span>原始链接:</span><a class="post-url" href="/2017/04/15/archer-install/" title="archer安装及使用">http://riverdba.github.io/2017/04/15/archer-install/</a>
             <span class="copy-path" data-clipboard-text="原文: http://riverdba.github.io/2017/04/15/archer-install/　　作者: 一条大河" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
@@ -356,6 +360,12 @@
 
 
     <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/2017/04/19/hive2mycat/">
+                    将hive输出文件导入mycat
+                </a>
+            </div>
         
         
             <div id="article-nav-older" class="article-nav-title">
@@ -372,7 +382,7 @@
     <div id="toc" class="toc-article">
         <strong class="toc-title">文章目录</strong>
         
-            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#开发语言和推荐环境"><span class="toc-number">1.</span> <span class="toc-text">开发语言和推荐环境</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#环境准备"><span class="toc-number">2.</span> <span class="toc-text">环境准备</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#安装所需软件和模块"><span class="toc-number">3.</span> <span class="toc-text">安装所需软件和模块</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#安装python3"><span class="toc-number">3.1.</span> <span class="toc-text">安装python3</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#安装setuptools"><span class="toc-number">3.2.</span> <span class="toc-text">安装setuptools</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#安装pip"><span class="toc-number">3.3.</span> <span class="toc-text">安装pip</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#安装Django"><span class="toc-number">3.4.</span> <span class="toc-text">安装Django</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#安装Crypto和pymysql"><span class="toc-number">3.5.</span> <span class="toc-text">安装Crypto和pymysql</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#配置archer"><span class="toc-number">4.</span> <span class="toc-text">配置archer</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#启动acher"><span class="toc-number">5.</span> <span class="toc-text">启动acher</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#创建archer系统登录用户"><span class="toc-number">6.</span> <span class="toc-text">创建archer系统登录用户</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#配置主库地址"><span class="toc-number">7.</span> <span class="toc-text">配置主库地址</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#正式访问主页"><span class="toc-number">8.</span> <span class="toc-text">正式访问主页</span></a></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#开发语言和推荐环境"><span class="toc-number">1.</span> <span class="toc-text">开发语言和推荐环境</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#环境准备"><span class="toc-number">2.</span> <span class="toc-text">环境准备</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#安装所需软件和模块"><span class="toc-number">3.</span> <span class="toc-text">安装所需软件和模块</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#安装python3"><span class="toc-number">3.1.</span> <span class="toc-text">安装python3</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#安装setuptools"><span class="toc-number">3.2.</span> <span class="toc-text">安装setuptools</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#安装pip"><span class="toc-number">3.3.</span> <span class="toc-text">安装pip</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#安装Django"><span class="toc-number">3.4.</span> <span class="toc-text">安装Django</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#安装Crypto和pymysql"><span class="toc-number">3.5.</span> <span class="toc-text">安装Crypto和pymysql</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#配置archer"><span class="toc-number">4.</span> <span class="toc-text">配置archer</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#启动acher"><span class="toc-number">5.</span> <span class="toc-text">启动acher</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#创建archer系统登录用户"><span class="toc-number">6.</span> <span class="toc-text">创建archer系统登录用户</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#配置主库地址"><span class="toc-number">7.</span> <span class="toc-text">配置主库地址</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#正式访问主页"><span class="toc-number">8.</span> <span class="toc-text">正式访问主页</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#遇到问题及解决"><span class="toc-number">9.</span> <span class="toc-text">遇到问题及解决</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#报错1"><span class="toc-number">9.1.</span> <span class="toc-text">报错1</span></a></li></ol></li></ol>
         
     </div>
     <style>
@@ -450,7 +460,9 @@
 
     <div class="scroll" id="post-nav-button">
         
-            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
+            <a href="/2017/04/19/hive2mycat/" title="上一篇: 将hive输出文件导入mycat">
+                <i class="fa fa-angle-left"></i>
+            </a>
         
 
         <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
@@ -462,7 +474,7 @@
         
     </div>
 
-    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2017/04/15/archer-install/">archer安装及使用</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/13/inception-install/">Inception安装及使用</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/11/sysbench-for-mysql/">mysql基准测试</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/06/String-handling-of-mysql/">MySQL字符串处理一则</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/05/Non-SPJ-Optimization-of-mysql/">MySQL查询优化技术之非SPJ优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/01/MVCC-theory-study/">Innodb的MVCC实现原理</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/30/mysql-troubleshooting01/">mysql故障处理记录1</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/29/Deep-comprehend-mysql-replication/">深入理解mysql的主从复制</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/28/Sematic-Optimization-of-mysql/">mysql查询优化技术之语义优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/28/hexo-s-tips/">hexo's tips</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/27/hexo-s-comment/">实现hexo的评论功能</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/27/Performance-tuning-key-points-of-mysql/">mysql性能调优的关键点</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/22/join-elimination-technique-of-mysql/">mysql查询优化技术之连接消除</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/21/hello-world/">Hello World</a></li></ul>
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2017/04/19/hive2mycat/">将hive输出文件导入mycat</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/15/archer-install/">archer安装及使用</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/13/inception-install/">Inception安装及使用</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/11/sysbench-for-mysql/">mysql基准测试</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/06/String-handling-of-mysql/">MySQL字符串处理一则</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/05/Non-SPJ-Optimization-of-mysql/">MySQL查询优化技术之非SPJ优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/01/MVCC-theory-study/">Innodb的MVCC实现原理</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/30/mysql-troubleshooting01/">mysql故障处理记录1</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/29/Deep-comprehend-mysql-replication/">深入理解mysql的主从复制</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/28/Sematic-Optimization-of-mysql/">mysql查询优化技术之语义优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/28/hexo-s-tips/">hexo's tips</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/27/hexo-s-comment/">实现hexo的评论功能</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/27/Performance-tuning-key-points-of-mysql/">mysql性能调优的关键点</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/22/join-elimination-technique-of-mysql/">mysql查询优化技术之连接消除</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/21/hello-world/">Hello World</a></li></ul>
 
 
 
