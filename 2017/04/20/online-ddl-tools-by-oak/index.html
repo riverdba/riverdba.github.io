@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+
+    <!--[if lt IE 9]>
+        <style>body {display: none; background: none !important} </style>
+        <meta http-equiv="Refresh" Content="0; url=//outdatedbrowser.com/" />
+    <![endif]-->
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no" />
+<meta name="author" content="一条大河" />
+
+
+
+<meta name="description" content="摘要：openarkkit工具包中oak-online-alter-table的使用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL在线DDL工具之OAK">
+<meta property="og:url" content="http://riverdba.github.io/2017/04/20/online-ddl-tools-by-oak/index.html">
+<meta property="og:site_name" content="Yangtze River's blog">
+<meta property="og:description" content="摘要：openarkkit工具包中oak-online-alter-table的使用">
+<meta property="og:updated_time" content="2017-04-20T09:26:08.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MySQL在线DDL工具之OAK">
+<meta name="twitter:description" content="摘要：openarkkit工具包中oak-online-alter-table的使用">
+
+<link rel="apple-touch-icon" href= "/apple-touch-icon.png">
+
+
+    <link rel="alternate" href="/atom.xml" title="Yangtze River&#39;s blog" type="application/atom+xml">
+
+
+
+    <link rel="shortcut icon" href="/yangtzeriver.jpg">
+
+
+
+    <link href="//cdn.bootcss.com/animate.css/3.5.1/animate.min.css" rel="stylesheet">
+
+
+
+    <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+
+
+
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+
+
+<title>MySQL在线DDL工具之OAK | Yangtze River&#39;s blog</title>
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+
+<script>
+    var yiliaConfig = {
+        fancybox: true,
+        animate: true,
+        isHome: false,
+        isPost: true,
+        isArchive: false,
+        isTag: false,
+        isCategory: false,
+        fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+        scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
+        search: true
+    }
+</script>
+
+
+    <script>
+        yiliaConfig.jquery_ui = [true, "//cdn.bootcss.com/jqueryui/1.10.4/jquery-ui.min.js", "//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css"];
+    </script>
+
+
+
+    <script> yiliaConfig.rootUrl = "\/";</script>
+
+
+
+
+
+
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/img/yangtzeriver.jpg" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">一条大河</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">为学患无疑，疑则进也！</p>
+        
+
+        
+            <form id="search-form">
+            <input type="text" id="local-search-input" name="q" placeholder="search..." class="search form-control" autocomplete="off" autocorrect="off" searchonload="false" />
+            <i class="fa fa-times" onclick="resetSearch()"></i>
+            </form>
+            <div id="local-search-result"></div>
+            <p class='no-result'>No results found <i class='fa fa-spinner fa-pulse'></i></p>
+        
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" href="mailto:river_dba@foxmail.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" href="#" title="GitHub"></a>
+                            
+                                <a class="fa RSS" href="/atom.xml" title="RSS"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hexo-Quick-Start/">Hexo Quick Start</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hive-and-MyCAT/">Hive and MyCAT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL查询优化技术/">MySQL查询优化技术</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SQL审核工具/">SQL审核工具</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/disqus/">disqus</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql性能调优技术/">mysql性能调优技术</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql查询优化技术/">mysql查询优化技术</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/online-ddl/">online ddl</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sysbench/">sysbench</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/学习笔记/">学习笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工作笔记/">工作笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/故障诊断/">故障诊断</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="http://moxfive.xyz/">MOxFIVE</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="http://moxfive.xyz/yelee/">yelee主题</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://dbanote.github.io">刘雅君</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">一条大河</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/img/yangtzeriver.jpg" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">一条大河</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">为学患无疑，疑则进也！</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" target="_blank" href="mailto:river_dba@foxmail.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" target="_blank" href="#" title="GitHub"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-online-ddl-tools-by-oak" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/04/20/online-ddl-tools-by-oak/" class="article-date">
+      <time datetime="2017-04-20T02:00:35.000Z" itemprop="datePublished">2017-04-20</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      MySQL在线DDL工具之OAK
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/TOOLS/">TOOLS</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/online-ddl/">online ddl</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p><excerpt in="" index="" |="" 首页摘要=""><br>摘要：openarkkit工具包中oak-online-alter-table的使用<a id="more"></a></excerpt></p>
+<p><the rest="" of="" contents="" |="" 余下全文=""></the></p>
+<h3 id="什么是OAK"><a href="#什么是OAK" class="headerlink" title="什么是OAK"></a>什么是OAK</h3><p>openark工具包是一组由Python语言编写的用于MySQL的工具集。可以解决一些日常复杂或耗时的维护任务。<br>包括如下工具:<br>oak-apply-ri: apply referential integrity on two columns with parent-child relationship.<br>oak-block-account: block or release MySQL users accounts, disabling them or enabling them to login.<br>oak-chunk-update: perform long, non-blocking UPDATE/DELETE operation in auto managed small chunks.<br>oak-get-slave-lag: print slave replication lag and terminate with respective exit code.<br>oak-hook-general-log: hook up and filter general log entries based on entry type or execution plan criteria.<br>oak-kill-slow-queries: terminate long running queries.<br>oak-modify-charset: change the character set (and collation) of a textual column.<br>oak-online-alter-table: perform a non-blocking ALTER TABLE operation.<br>oak-prepare-shutdown: make for a fast and safe MySQL shutdown.<br>oak-purge-master-logs: purge master logs, depending on the state of replicating slaves.<br>oak-repeat-query: repeat query execution until some condition holds.<br>oak-security-audit: audit accounts, passwords, privileges and other security settings.<br>oak-show-limits: show AUTO_INCREMENT “free space”.<br>oak-show-replication-status: show how far behind are replicating slaves on a given master.</p>
+<h3 id="下载安装"><a href="#下载安装" class="headerlink" title="下载安装"></a>下载安装</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">下载：</div><div class="line">[root@mysql1 src]# wget https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/openarkkit/openark-kit-196.tar.gz</div><div class="line">安装：</div><div class="line">[root@mysql1 src]# tar -zxvf openark-kit-196.tar.gz </div><div class="line">[root@mysql1 src]# cd openark-kit-196</div><div class="line">[root@mysql1 openark-kit-196]# python setup.py install</div><div class="line">查看安装好的系列工具集：</div><div class="line">[root@mysql1 openark-kit-196]# ll /usr/local/bin/oak*</div><div class="line">-rwxr-xr-x 1 root root 11020 Apr 20 10:27 /usr/local/bin/oak-apply-ri</div><div class="line">-rwxr-xr-x 1 root root 10999 Apr 20 10:27 /usr/local/bin/oak-block-account</div><div class="line">-rwxr-xr-x 1 root root 29490 Apr 20 10:27 /usr/local/bin/oak-chunk-update</div><div class="line">-rwxr-xr-x 1 root root  5501 Apr 20 10:27 /usr/local/bin/oak-get-slave-lag</div><div class="line">-rwxr-xr-x 1 root root 18181 Apr 20 10:27 /usr/local/bin/oak-hook-general-log</div><div class="line">-rwxr-xr-x 1 root root  6314 Apr 20 10:27 /usr/local/bin/oak-kill-slow-queries</div><div class="line">-rwxr-xr-x 1 root root  5630 Apr 20 10:27 /usr/local/bin/oak-modify-charset</div><div class="line">-rwxr-xr-x 1 root root 39192 Apr 20 10:27 /usr/local/bin/oak-online-alter-table</div><div class="line">-rwxr-xr-x 1 root root  7809 Apr 20 10:27 /usr/local/bin/oak-prepare-shutdown</div><div class="line">-rwxr-xr-x 1 root root 15045 Apr 20 10:27 /usr/local/bin/oak-purge-master-logs</div><div class="line">-rwxr-xr-x 1 root root  8371 Apr 20 10:27 /usr/local/bin/oak-repeat-query</div><div class="line">-rwxr-xr-x 1 root root 19312 Apr 20 10:27 /usr/local/bin/oak-security-audit</div><div class="line">-rwxr-xr-x 1 root root  5910 Apr 20 10:27 /usr/local/bin/oak-show-limits</div><div class="line">-rwxr-xr-x 1 root root  8654 Apr 20 10:27 /usr/local/bin/oak-show-replication-status</div></pre></td></tr></table></figure>
+<h3 id="操作流程"><a href="#操作流程" class="headerlink" title="操作流程"></a>操作流程</h3><p>1、检查被操作的表是否符合如下条件：</p>
+<ul>
+<li>单列唯一索引（联合索引和联合主键是不可以的，会触发mysql的一个bug）</li>
+<li>没有外键</li>
+<li>没有触发器（有的话要先删除，做完DDL再加上）<br>2、执行OAK命令<br>3、数据一致性校验<br>4、表切换<br>5、删除触发器<br>6、删除临时表<h3 id="在线DDL实操"><a href="#在线DDL实操" class="headerlink" title="在线DDL实操"></a>在线DDL实操</h3><h4 id="准备测试数据"><a href="#准备测试数据" class="headerlink" title="准备测试数据"></a>准备测试数据</h4><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mysql ~]# sysbench --test=/root/sysbench-0.5/sysbench/tests/db/insert.lua --oltp-table-size=1000000 --mysql-table-engine=innodb --mysql-user=root --mysql-passw</div><div class="line">ord=root123 --mysql-port=3306 --mysql-host=192.168.1.172 --mysql-db=jfedu --max-requests=0 --max-time=60 --oltp-tables-count=1 --report-interval=10 --num_threads=1 p</div><div class="line">repare</div><div class="line">sysbench 0.5:  multi-threaded system evaluation benchmark</div><div class="line">Creating table &apos;sbtest1&apos;...</div><div class="line">Inserting 1000000 records into &apos;sbtest1&apos;</div><div class="line">Creating secondary indexes on &apos;sbtest1&apos;...</div><div class="line">[root@mysql ~]# </div><div class="line">root@jfedu 01:20:08&gt;show create table sbtest1;</div><div class="line">+---------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</div><div class="line">| Table   | Create Table                                                                                                                                                                                                                                                                                |</div><div class="line">+---------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</div><div class="line">| sbtest1 | CREATE TABLE `sbtest1` (</div><div class="line">  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,</div><div class="line">  `k` int(10) unsigned NOT NULL DEFAULT &apos;0&apos;,</div><div class="line">  `c` char(120) NOT NULL DEFAULT &apos;&apos;,</div><div class="line">  `pad` char(60) NOT NULL DEFAULT &apos;&apos;,</div><div class="line">  PRIMARY KEY (`id`),</div><div class="line">  KEY `k_1` (`k`)</div><div class="line">) ENGINE=InnoDB AUTO_INCREMENT=1000001 DEFAULT CHARSET=utf8 MAX_ROWS=1000000 |</div><div class="line">+---------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</div><div class="line">1 row in set (0.02 sec)</div><div class="line">mysql&gt; select count(*) from sbtest1;</div><div class="line">+----------+</div><div class="line">| count(*) |</div><div class="line">+----------+</div><div class="line">|  1060893 |</div><div class="line">+----------+</div><div class="line">1 row in set (0.16 sec)</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h4 id="检查是否符合在线DDL的条件"><a href="#检查是否符合在线DDL的条件" class="headerlink" title="检查是否符合在线DDL的条件"></a>检查是否符合在线DDL的条件</h4><p>根据表结构可以看出是符合单列唯一索引，且无外键的。通过下面SQL查看结果显示是没触发器的：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">root@jfedu 01:47:30&gt;SELECT TRIGGER_SCHEMA,TRIGGER_NAME,EVENT_OBJECT_SCHEMA,EVENT_OBJECT_TABLE FROM information_schema.TRIGGERS WHERE event_object_schema= &apos;jfedu&apos;;</div><div class="line">Empty set (0.03 sec)</div><div class="line">root@jfedu 01:47:37&gt;</div></pre></td></tr></table></figure></p>
+<h4 id="执行OAK命令，给表加字段"><a href="#执行OAK命令，给表加字段" class="headerlink" title="执行OAK命令，给表加字段"></a>执行OAK命令，给表加字段</h4><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mysql1 ~]# oak-online-alter-table -u root --ask-pass -S /data/mysql/run/mysql.sock -d jfedu -t sbtest1 -g new_sbtest1 -a &quot;add last_update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,add key last_update_time(last_update_time)&quot; --sleep=300 --skip-delete-pass</div><div class="line">OAK开跑后，开启一个会话向老表插入一条数据：</div><div class="line">mysql&gt; insert into sbtest1 values(20000000,2222222222,&apos;22222222222&apos;,&apos;ccc&apos;);</div><div class="line">Query OK, 1 row affected (0.02 sec)</div><div class="line">OAK执行完毕后：</div><div class="line">... ...</div><div class="line">-- Copying range (1059000), (1060000), progress: 99%</div><div class="line">-- + Will sleep for 0.3 seconds</div><div class="line">-- - Reminder: altering jfedu.sbtest1: add last_update_time timestamp...</div><div class="line">-- Copying range (1060000), (1060893), progress: 99%</div><div class="line">-- + Will sleep for 0.3 seconds</div><div class="line">-- Copying range 100% complete. Number of rows: 1060893</div><div class="line">-- Ghost table creation completed. Note that triggers on jfedu.sbtest1 were not removed</div></pre></td></tr></table></figure>
+<p>可以看到只拷贝了1060893条数据，我们后来插入的数据有没有过去呢？</p>
+<h4 id="数据一致性校验"><a href="#数据一致性校验" class="headerlink" title="数据一致性校验"></a>数据一致性校验</h4><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">mysql&gt; select count(*) from sbtest1 union all select count(*) from new_sbtest1;</div><div class="line">+----------+</div><div class="line">| count(*) |</div><div class="line">+----------+</div><div class="line">|  1060894 |</div><div class="line">|  1060894 |</div><div class="line">+----------+</div><div class="line">2 rows in set (0.87 sec)</div><div class="line">可以看到多了一条数据，说明我们后来插入的数据同步成功了。看看表结构：</div><div class="line">mysql&gt; desc sbtest1;</div><div class="line">+-------+------------------+------+-----+---------+----------------+</div><div class="line">| Field | Type             | Null | Key | Default | Extra          |</div><div class="line">+-------+------------------+------+-----+---------+----------------+</div><div class="line">| id    | int(10) unsigned | NO   | PRI | NULL    | auto_increment |</div><div class="line">| k     | int(10) unsigned | NO   | MUL | 0       |                |</div><div class="line">| c     | char(120)        | NO   |     |         |                |</div><div class="line">| pad   | char(60)         | NO   |     |         |                |</div><div class="line">+-------+------------------+------+-----+---------+----------------+</div><div class="line">4 rows in set (0.00 sec)</div><div class="line">mysql&gt; desc new_sbtest1;</div><div class="line">+------------------+------------------+------+-----+-------------------+-----------------------------+</div><div class="line">| Field            | Type             | Null | Key | Default           | Extra                       |</div><div class="line">+------------------+------------------+------+-----+-------------------+-----------------------------+</div><div class="line">| id               | int(10) unsigned | NO   | PRI | NULL              | auto_increment              |</div><div class="line">| k                | int(10) unsigned | NO   | MUL | 0                 |                             |</div><div class="line">| c                | char(120)        | NO   |     |                   |                             |</div><div class="line">| pad              | char(60)         | NO   |     |                   |                             |</div><div class="line">| last_update_time | timestamp        | NO   | MUL | CURRENT_TIMESTAMP | on update CURRENT_TIMESTAMP |</div><div class="line">+------------------+------------------+------+-----+-------------------+-----------------------------+</div><div class="line">5 rows in set (0.00 sec)</div><div class="line">可以看到我们加的字段已经出现在新表上面了。</div></pre></td></tr></table></figure>
+<h4 id="验证一个疑问"><a href="#验证一个疑问" class="headerlink" title="验证一个疑问"></a>验证一个疑问</h4><p>用oak执行完ddl后，尚未rename的时候，在老表上做DML操作是否会同步到新表？<br>1、在老表插入数据<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">mysql&gt; select count(*) from sbtest1 union all select count(*) from new_sbtest1;</div><div class="line">+----------+</div><div class="line">| count(*) |</div><div class="line">+----------+</div><div class="line">|  1060894 |</div><div class="line">|  1060894 |</div><div class="line">+----------+</div><div class="line">2 rows in set (0.87 sec)</div><div class="line">插入一条数据：</div><div class="line">mysql&gt; insert into sbtest1 values(20000001,3333333,&apos;333333&apos;,&apos;ccc&apos;);                      </div><div class="line">Query OK, 1 row affected (0.01 sec)</div><div class="line">mysql&gt; select count(*) from sbtest1 union all select count(*) from new_sbtest1;</div><div class="line">+----------+</div><div class="line">| count(*) |</div><div class="line">+----------+</div><div class="line">|  1060895 |</div><div class="line">|  1060895 |</div><div class="line">+----------+</div><div class="line">2 rows in set (0.30 sec)</div><div class="line">可以看到新表和旧表都新增了一条数据。</div><div class="line">mysql&gt; select sum(crc32(concat(ifnull(id,&apos;NULL&apos;),ifnull(k,&apos;NULL&apos;)))) as sum from sbtest1 union all select sum(crc32(concat(ifnull(id,&apos;NULL&apos;),ifnull(k,&apos;NULL&apos;)))) as sum from new_sbtest1;</div><div class="line">+------------------+</div><div class="line">| sum              |</div><div class="line">+------------------+</div><div class="line">| 2278342522965511 |</div><div class="line">| 2278342522965511 |</div><div class="line">+------------------+</div><div class="line">2 rows in set (0.67 sec)</div></pre></td></tr></table></figure></p>
+<p>2、在老表修改数据<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">root@jfedu 02:27:51&gt;select * from sbtest1 limit 1;</div><div class="line">+----+--------+-------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------+</div><div class="line">| id | k      | c                                                                                                                       | pad                                                         |</div><div class="line">+----+--------+-------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------+</div><div class="line">|  1 | 501885 | 08566691963-88624912351-16662227201-46648573979-64646226163-77505759394-75470094713-41097360717-15161106334-50535565977 | 63188288836-92351140030-06390587585-66802097351-49282961843 |</div><div class="line">+----+--------+-------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------+</div><div class="line">1 row in set (0.01 sec)</div><div class="line">root@jfedu 02:28:05&gt;update sbtest1 set k=11111 where id=1;</div><div class="line">Query OK, 1 row affected (0.01 sec)</div><div class="line">Rows matched: 1  Changed: 1  Warnings: 0</div><div class="line">root@jfedu 02:29:37&gt;select * from sbtest1 where id=1;</div><div class="line">+----+-------+-------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------+</div><div class="line">| id | k     | c                                                                                                                       | pad                                                         |</div><div class="line">+----+-------+-------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------+</div><div class="line">|  1 | 11111 | 08566691963-88624912351-16662227201-46648573979-64646226163-77505759394-75470094713-41097360717-15161106334-50535565977 | 63188288836-92351140030-06390587585-66802097351-49282961843 |</div><div class="line">+----+-------+-------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------+</div><div class="line">1 row in set (0.00 sec)</div><div class="line">root@jfedu 02:30:06&gt;select * from new_sbtest1 where id=1;</div><div class="line">+----+-------+-------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------+---------------------+</div><div class="line">| id | k     | c                                                                                                                       | pad                                                         | last_update_time    |</div><div class="line">+----+-------+-------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------+---------------------+</div><div class="line">|  1 | 11111 | 08566691963-88624912351-16662227201-46648573979-64646226163-77505759394-75470094713-41097360717-15161106334-50535565977 | 63188288836-92351140030-06390587585-66802097351-49282961843 | 2017-04-20 14:28:47 |</div><div class="line">+----+-------+-------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------+---------------------+</div><div class="line">1 row in set (0.00 sec)</div><div class="line">root@jfedu 02:30:13&gt;exit</div><div class="line">Bye</div></pre></td></tr></table></figure></p>
+<p>可以看出在老表中的插入和更新操作都被同步到了新表。这是由OAK创建的三个触发器来实现的：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">mysql&gt; SELECT TRIGGER_SCHEMA,TRIGGER_NAME,EVENT_OBJECT_SCHEMA,EVENT_OBJECT_TABLE FROM information_schema.TRIGGERS WHERE event_object_schema= &apos;jfedu&apos;;</div><div class="line">+----------------+----------------+---------------------+--------------------+</div><div class="line">| TRIGGER_SCHEMA | TRIGGER_NAME   | EVENT_OBJECT_SCHEMA | EVENT_OBJECT_TABLE |</div><div class="line">+----------------+----------------+---------------------+--------------------+</div><div class="line">| jfedu          | sbtest1_AI_oak | jfedu               | sbtest1            |</div><div class="line">| jfedu          | sbtest1_AU_oak | jfedu               | sbtest1            |</div><div class="line">| jfedu          | sbtest1_AD_oak | jfedu               | sbtest1            |</div><div class="line">+----------------+----------------+---------------------+--------------------+</div><div class="line">3 rows in set (0.00 sec)</div></pre></td></tr></table></figure></p>
+<p>看看这三个触发器的内容：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">root@jfedu 02:26:24&gt;show create trigger sbtest1_AI_oak;</div><div class="line">+----------------+------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----------------------+----------------------+--------------------+</div><div class="line">| Trigger        | sql_mode               | SQL Original Statement                                                                                                                                                                                                              | character_set_client | collation_connection | Database Collation |</div><div class="line">+----------------+------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----------------------+----------------------+--------------------+</div><div class="line">| sbtest1_AI_oak | NO_ENGINE_SUBSTITUTION | CREATE DEFINER=`root`@`localhost` TRIGGER jfedu.sbtest1_AI_oak AFTER INSERT ON jfedu.sbtest1</div><div class="line">        FOR EACH ROW</div><div class="line">            REPLACE INTO jfedu.new_sbtest1 (`c`, `pad`, `k`, `id`) VALUES (NEW.`c`, NEW.`pad`, NEW.`k`, NEW.`id`) | utf8                 | utf8_general_ci      | utf8_general_ci    |</div><div class="line">+----------------+------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----------------------+----------------------+--------------------+</div><div class="line">1 row in set (0.01 sec)</div><div class="line">触发器sbtest1_AI_oak负责将老表的insert操作同步到新表</div><div class="line">root@jfedu 02:26:41&gt;show create trigger sbtest1_AU_oak; </div><div class="line">+----------------+------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----------------------+----------------------+--------------------+</div><div class="line">| Trigger        | sql_mode               | SQL Original Statement                                                                                                                                                                                                                                                                                                          | character_set_client | collation_connection | Database Collation |</div><div class="line">+----------------+------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----------------------+----------------------+--------------------+</div><div class="line">| sbtest1_AU_oak | NO_ENGINE_SUBSTITUTION | CREATE DEFINER=`root`@`localhost` TRIGGER jfedu.sbtest1_AU_oak AFTER UPDATE ON jfedu.sbtest1</div><div class="line">        FOR EACH ROW</div><div class="line">        BEGIN</div><div class="line">            DELETE FROM jfedu.new_sbtest1 WHERE (id) = (OLD.id);</div><div class="line">            REPLACE INTO jfedu.new_sbtest1 (`c`, `pad`, `k`, `id`) VALUES (NEW.`c`, NEW.`pad`, NEW.`k`, NEW.`id`);</div><div class="line">        END | utf8                 | utf8_general_ci      | utf8_general_ci    |</div><div class="line">+----------------+------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----------------------+----------------------+--------------------+</div><div class="line">1 row in set (0.00 sec)</div><div class="line">触发器sbtest1_AU_oak负责将老表的update操作同步到新表</div><div class="line">root@jfedu 02:27:22&gt;show create trigger sbtest1_AD_oak; </div><div class="line">+----------------+------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----------------------+----------------------+--------------------+</div><div class="line">| Trigger        | sql_mode               | SQL Original Statement                                                                                                                                                            | character_set_client | collation_connection | Database Collation |</div><div class="line">+----------------+------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----------------------+----------------------+--------------------+</div><div class="line">| sbtest1_AD_oak | NO_ENGINE_SUBSTITUTION | CREATE DEFINER=`root`@`localhost` TRIGGER jfedu.sbtest1_AD_oak AFTER DELETE ON jfedu.sbtest1</div><div class="line">        FOR EACH ROW</div><div class="line">            DELETE FROM jfedu.new_sbtest1 WHERE (id) = (OLD.id) | utf8                 | utf8_general_ci      | utf8_general_ci    |</div><div class="line">+----------------+------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----------------------+----------------------+--------------------+</div><div class="line">1 row in set (0.00 sec)</div><div class="line">触发器sbtest1_AD_oak负责将老表的delete操作同步到新表</div></pre></td></tr></table></figure></p>
+<p>也就是说在我们rename切换表之前，对旧表的任何增、删、改操作都会同步到新表！</p>
+<h4 id="表切换"><a href="#表切换" class="headerlink" title="表切换"></a>表切换</h4><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">mysql&gt; rename table sbtest1 to old_sbtest1,new_sbtest1 to sbtest1;</div><div class="line">Query OK, 0 rows affected (0.09 sec)</div><div class="line">mysql&gt; drop trigger sbtest1_AI_oak;drop trigger sbtest1_AU_oak;drop trigger sbtest1_AD_oak;</div><div class="line">Query OK, 0 rows affected (0.03 sec)</div><div class="line">Query OK, 0 rows affected (0.01 sec)</div><div class="line">Query OK, 0 rows affected (0.00 sec)</div><div class="line">mysql&gt; drop table old_sbtest1;</div><div class="line">Query OK, 0 rows affected (0.08 sec)</div><div class="line">mysql&gt; desc sbtest1;</div><div class="line">+------------------+------------------+------+-----+-------------------+-----------------------------+</div><div class="line">| Field            | Type             | Null | Key | Default           | Extra                       |</div><div class="line">+------------------+------------------+------+-----+-------------------+-----------------------------+</div><div class="line">| id               | int(10) unsigned | NO   | PRI | NULL              | auto_increment              |</div><div class="line">| k                | int(10) unsigned | NO   | MUL | 0                 |                             |</div><div class="line">| c                | char(120)        | NO   |     |                   |                             |</div><div class="line">| pad              | char(60)         | NO   |     |                   |                             |</div><div class="line">| last_update_time | timestamp        | NO   | MUL | CURRENT_TIMESTAMP | on update CURRENT_TIMESTAMP |</div><div class="line">+------------------+------------------+------+-----+-------------------+-----------------------------+</div><div class="line">5 rows in set (0.01 sec)</div></pre></td></tr></table></figure>
+<p>在切换表之前，触发器一定不能删掉，否则数据就会不一致的！</p>
+<h3 id="遇到问题及解决"><a href="#遇到问题及解决" class="headerlink" title="遇到问题及解决"></a>遇到问题及解决</h3><p>1、安装MySQLdb遇到的问题<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mysql1 openark-kit-196]# oak-online-alter-table --help</div><div class="line">Traceback (most recent call last):</div><div class="line">  File &quot;/usr/local/bin/oak-online-alter-table&quot;, line 21, in &lt;module&gt;</div><div class="line">    import MySQLdb</div><div class="line">ImportError: No module named MySQLdb</div><div class="line">[root@mysql1 openark-kit-196]# pip install MySQL-python</div><div class="line">&gt;&gt;&gt; import MySQLdb</div><div class="line">Traceback (most recent call last):</div><div class="line">  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</div><div class="line">  File &quot;/usr/local/lib/python2.7/site-packages/MySQLdb/__init__.py&quot;, line 19, in &lt;module&gt;</div><div class="line">    import _mysql</div><div class="line">ImportError: libperconaserverclient.so.18: cannot open shared object file: No such file or directory</div><div class="line">&gt;&gt;&gt; exit()</div><div class="line">[root@mysql1 openark-kit-196]# find / -name &quot;libperconaserverclient*&quot;</div><div class="line">没找到libperconaserverclient相关包，需要安装mysql-devel：</div><div class="line">[root@mysql1 openark-kit-196]# yum -y install mysql-devel</div><div class="line">[root@mysql1 openark-kit-196]# ln -s /opt/mysql/lib/libmysqlclient.so.18 /usr/lib64/libmysqlclient.so.18</div><div class="line">[root@mysql1 openark-kit-196]# ln -s /usr/local/mysql/lib/libperconaserverclient_r.so.18 /usr/lib64</div><div class="line">[root@mysql1 openark-kit-196]# ln -s /usr/local/mysql/lib/libperconaserverclient_r.so /usr/lib64</div><div class="line">[root@mysql1 openark-kit-196]# ldconfig</div><div class="line">[root@mysql1 openark-kit-196]# python</div><div class="line">Python 2.7.10 (default, Jan 20 2016, 16:07:05) </div><div class="line">[GCC 4.4.7 20120313 (Red Hat 4.4.7-16)] on linux2</div><div class="line">Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.</div><div class="line">&gt;&gt;&gt; import MySQLdb</div><div class="line">&gt;&gt;&gt; exit()</div><div class="line">[root@mysql1 openark-kit-196]# oak-online-alter-table --help</div><div class="line">Usage: oak-online-alter-table [options]</div><div class="line"></div><div class="line">Options:</div><div class="line">  -h, --help            show this help message and exit</div><div class="line">  -u USER, --user=USER  MySQL user</div><div class="line">  -H HOST, --host=HOST  MySQL host (default: localhost)</div><div class="line">  -p PASSWORD, --password=PASSWORD</div><div class="line">                        MySQL password</div><div class="line">  --ask-pass            Prompt for password</div><div class="line">  -P PORT, --port=PORT  TCP/IP port (default: 3306)</div><div class="line">  -S SOCKET, --socket=SOCKET</div><div class="line">                        MySQL socket file. Only applies when host is localhost</div><div class="line">  --defaults-file=DEFAULTS_FILE</div><div class="line">                        Read from MySQL configuration file. Overrides all</div><div class="line">                        other options</div><div class="line">  -d DATABASE, --database=DATABASE</div><div class="line">                        Database name (required unless table is fully</div><div class="line">                        qualified)</div><div class="line">  -t TABLE, --table=TABLE</div><div class="line">                        Table to alter (optionally fully qualified)</div><div class="line">  -g GHOST, --ghost=GHOST</div><div class="line">                        Table name to serve as ghost. This table will be</div><div class="line">                        created and synchronized with the original table</div><div class="line">  -a ALTER_STATEMENT, --alter=ALTER_STATEMENT</div><div class="line">                        Comma delimited ALTER statement details, excluding the</div><div class="line">                        &apos;ALTER TABLE t&apos; itself</div><div class="line">  -c CHUNK_SIZE, --chunk-size=CHUNK_SIZE</div><div class="line">                        Number of rows to act on in chunks. Default: 1000</div><div class="line">  -l, --lock-chunks     Use LOCK TABLES for each chunk</div><div class="line">  -N, --skip-binlog     Disable binary logging</div><div class="line">  -r MAX_LOCK_RETRIES, --max-lock-retries=MAX_LOCK_RETRIES</div><div class="line">                        Maximum times to retry on deadlock or</div><div class="line">                        lock_wait_timeout. (default: 10; 0 is unlimited)</div><div class="line">  --skip-delete-pass    Do not execute the DELETE data pass</div><div class="line">  --sleep=SLEEP_MILLIS  Number of milliseconds to sleep between chunks.</div><div class="line">                        Default: 0</div><div class="line">  --sleep-ratio=SLEEP_RATIO</div><div class="line">                        Ratio of sleep time to execution time. Default: 0</div><div class="line">  --cleanup             Remove custom triggers, ghost table from possible</div><div class="line">                        previous runs</div><div class="line">  -v, --verbose         Print user friendly messages</div><div class="line">  -q, --quiet           Quiet mode, do not verbose</div><div class="line">[root@mysql1 openark-kit-196]#</div></pre></td></tr></table></figure></p>
+<p>2、用oak做Online DDL,如果rename那一步操作错了？不小心在从库上做rename了怎么恢复？（包含旧表删除和trigger删除）<br>可以使用oak在主库再做一遍，因为从库已经做过了因此要加一个参数–skip-binlog来关闭binlog写入。这样主库的操作就不会复制到从库，避免主从复制异常！</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2017/04/20/online-ddl-tools-by-oak/">MySQL在线DDL工具之OAK</a></p>
+        <p><span>文章作者:</span><a href="/" title="回到主页">一条大河</a></p>
+        <p><span>发布时间:</span>2017-04-20, 10:00:35</p>
+        <p><span>最后更新:</span>2017-04-20, 17:26:08</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2017/04/20/online-ddl-tools-by-oak/" title="MySQL在线DDL工具之OAK">http://riverdba.github.io/2017/04/20/online-ddl-tools-by-oak/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://riverdba.github.io/2017/04/20/online-ddl-tools-by-oak/　　作者: 一条大河" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2017/04/19/hive2mycat/">
+                    将hive输出文件导入mycat
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">文章目录</strong>
+        
+            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#什么是OAK"><span class="toc-number">1.</span> <span class="toc-text">什么是OAK</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#下载安装"><span class="toc-number">2.</span> <span class="toc-text">下载安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#操作流程"><span class="toc-number">3.</span> <span class="toc-text">操作流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#在线DDL实操"><span class="toc-number">4.</span> <span class="toc-text">在线DDL实操</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#准备测试数据"><span class="toc-number">4.1.</span> <span class="toc-text">准备测试数据</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#检查是否符合在线DDL的条件"><span class="toc-number">4.2.</span> <span class="toc-text">检查是否符合在线DDL的条件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#执行OAK命令，给表加字段"><span class="toc-number">4.3.</span> <span class="toc-text">执行OAK命令，给表加字段</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#数据一致性校验"><span class="toc-number">4.4.</span> <span class="toc-text">数据一致性校验</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#验证一个疑问"><span class="toc-number">4.5.</span> <span class="toc-text">验证一个疑问</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#表切换"><span class="toc-number">4.6.</span> <span class="toc-text">表切换</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#遇到问题及解决"><span class="toc-number">5.</span> <span class="toc-text">遇到问题及解决</span></a></li></ol>
+        
+    </div>
+    <style>
+        .left-col .switch-btn,
+        .left-col .switch-area {
+            display: none;
+        }
+        .toc-level-6 i,
+        .toc-level-6 ol {
+            display: none !important;
+        }
+    </style>
+
+    <input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+    <script>
+        yiliaConfig.toc = ["隐藏目录", "显示目录", !!"false"];
+    </script>
+
+
+
+    
+<div class="share">
+    
+        <div class="bdsharebuttonbox">
+            <a href="#" class="fa fa-twitter bds_twi" data-cmd="twi" title="分享到推特"></a>
+            <a href="#" class="fa fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+            <a href="#" class="fa fa-qq bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+            <a href="#" class="fa fa-files-o bds_copy" data-cmd="copy" title="复制网址"></a>
+            <a href="#" class="fa fa fa-envelope-o bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+            <a href="#" class="fa fa-weixin bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+            <a href="#" class="fa fa-share-alt bds_more" data-cmd="more"></i></a>
+        </div>
+        <script>
+            window._bd_share_config={
+                "common":{"bdSnsKey":{},"bdText":"MySQL在线DDL工具之OAK　| Yangtze River's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+        </script>
+    
+
+    
+</div>
+
+
+
+
+
+
+
+    
+        <section id="comments">
+    <style> aside.comment-bar { margin: auto 30px; }</style>
+    <div id="disqus_thread"></div>
+    <script>
+        var disqus_config = function(){
+            this.page.url = 'http://riverdba.github.io/2017/04/20/online-ddl-tools-by-oak/';
+            this.page.identifier = '2017/04/20/online-ddl-tools-by-oak/';
+        };
+        var loadComment = function(){
+            var d = document, s = d.createElement('script');
+            s.src = '//https-riverdba-github-io.disqus.com/embed.js';
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        }
+    </script>
+    
+    <script> loadComment(); </script>
+
+</section>
+
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2017/04/19/hive2mycat/" title="下一篇: 将hive输出文件导入mycat">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2017/04/20/online-ddl-tools-by-oak/">MySQL在线DDL工具之OAK</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/19/hive2mycat/">将hive输出文件导入mycat</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/15/archer-install/">archer安装及使用</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/13/inception-install/">Inception安装及使用</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/11/sysbench-for-mysql/">mysql基准测试</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/06/String-handling-of-mysql/">MySQL字符串处理一则</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/05/Non-SPJ-Optimization-of-mysql/">MySQL查询优化技术之非SPJ优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/01/MVCC-theory-study/">Innodb的MVCC实现原理</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/30/mysql-troubleshooting01/">mysql故障处理记录1</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/29/Deep-comprehend-mysql-replication/">深入理解mysql的主从复制</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/28/Sematic-Optimization-of-mysql/">mysql查询优化技术之语义优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/28/hexo-s-tips/">hexo's tips</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/27/hexo-s-comment/">实现hexo的评论功能</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/27/Performance-tuning-key-points-of-mysql/">mysql性能调优的关键点</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/22/join-elimination-technique-of-mysql/">mysql查询优化技术之连接消除</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/21/hello-world/">Hello World</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2017 一条大河
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题  v3.5">Yelee</a> by MOxFIVE <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" title="本站到访数"><i class="fa fa-user" aria-hidden="true"></i><span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>| </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit"  title="本页阅读量"><i class="fa fa-eye animated infinite pulse" aria-hidden="true"></i><span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+    </div>
+    
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.2.0/require.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" onclick="load$hide();" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    // Open in New Window
+    
+        var oOpenInNew = {
+            
+            
+            
+            
+            
+            
+             archives: ".archive-article-title", 
+             miniArchives: "a.post-list-link", 
+            
+             friends: "#js-friends a", 
+             socail: ".social a" 
+        }
+        for (var x in oOpenInNew) {
+            $(oOpenInNew[x]).attr("target", "_blank");
+        }
+    
+</script>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  </div>
+</body>
+</html>
