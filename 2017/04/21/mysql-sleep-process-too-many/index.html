@@ -15,16 +15,16 @@
 
 
 
-<meta name="description" content="摘要：记一次字符串字段数据更新的过程">
+<meta name="description" content="摘要：interactive_timeout和wait_timeout参数对sleep连接的影响">
 <meta property="og:type" content="article">
-<meta property="og:title" content="MySQL字符串处理一则">
-<meta property="og:url" content="http://riverdba.github.io/2017/04/06/String-handling-of-mysql/index.html">
+<meta property="og:title" content="mysql sleep连接太多怎么办">
+<meta property="og:url" content="http://riverdba.github.io/2017/04/21/mysql-sleep-process-too-many/index.html">
 <meta property="og:site_name" content="Yangtze River's blog">
-<meta property="og:description" content="摘要：记一次字符串字段数据更新的过程">
-<meta property="og:updated_time" content="2017-04-06T09:16:24.000Z">
+<meta property="og:description" content="摘要：interactive_timeout和wait_timeout参数对sleep连接的影响">
+<meta property="og:updated_time" content="2017-04-21T08:34:44.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="MySQL字符串处理一则">
-<meta name="twitter:description" content="摘要：记一次字符串字段数据更新的过程">
+<meta name="twitter:title" content="mysql sleep连接太多怎么办">
+<meta name="twitter:description" content="摘要：interactive_timeout和wait_timeout参数对sleep连接的影响">
 
 <link rel="apple-touch-icon" href= "/apple-touch-icon.png">
 
@@ -56,7 +56,7 @@
 <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
 
 
-<title>MySQL字符串处理一则 | Yangtze River&#39;s blog</title>
+<title>mysql sleep连接太多怎么办 | Yangtze River&#39;s blog</title>
 
 <script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
 <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
@@ -260,11 +260,11 @@
     </div>
     <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
 </nav>
-      <div class="body-wrap"><article id="post-String-handling-of-mysql" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-mysql-sleep-process-too-many" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2017/04/06/String-handling-of-mysql/" class="article-date">
-      <time datetime="2017-04-06T08:20:51.000Z" itemprop="datePublished">2017-04-06</time>
+      <a href="/2017/04/21/mysql-sleep-process-too-many/" class="article-date">
+      <time datetime="2017-04-21T03:54:39.000Z" itemprop="datePublished">2017-04-21</time>
 </a>
 
 
@@ -279,7 +279,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      MySQL字符串处理一则
+      mysql sleep连接太多怎么办
     </h1>
   
 
@@ -294,7 +294,7 @@
 
         
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/工作笔记/">工作笔记</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mysql性能调优技术/">mysql性能调优技术</a></li></ul>
     </div>
 
         <div class="clearfix"></div>
@@ -304,18 +304,19 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-        <p><excerpt in="" index="" |="" 首页摘要=""><br>摘要：记一次字符串字段数据更新的过程<a id="more"></a></excerpt></p>
-<the rest="" of="" contents="" |="" 余下全文="">
+        <p><excerpt in="" index="" |="" 首页摘要=""><br>摘要：interactive_timeout和wait_timeout参数对sleep连接的影响<a id="more"></a></excerpt></p>
+<p><the rest="" of="" contents="" |="" 余下全文=""></the></p>
+<h3 id="interactive-timeout"><a href="#interactive-timeout" class="headerlink" title="interactive_timeout"></a>interactive_timeout</h3><p>参数含义：服务器关闭交互式连接前等待活动的秒数。交互式客户端定义为在mysql_real_connect()中使用CLIENT_INTERACTIVE选项的客户端。<br>参数默认值：28800秒（8小时）<br>官网文档：<a href="https://dev.mysql.com/doc/refman/5.6/en/server-system-variables.html#sysvar_interactive_timeout" target="_blank" rel="external">https://dev.mysql.com/doc/refman/5.6/en/server-system-variables.html#sysvar_interactive_timeout</a></p>
+<h3 id="wait-timeout"><a href="#wait-timeout" class="headerlink" title="wait_timeout"></a>wait_timeout</h3><p>参数含义：服务器关闭非交互连接之前等待活动的秒数。<br>在线程启动时，根据全局wait_timeout值或全局interactive_timeout值初始化会话wait_timeout值，取决于客户端类型(由mysql_real_connect()的连接选项CLIENT_INTERACTIVE定义)。<br>参数默认值：28800秒（8小时）<br>官网文档：<a href="https://dev.mysql.com/doc/refman/5.6/en/server-system-variables.html#sysvar_wait_timeout" target="_blank" rel="external">https://dev.mysql.com/doc/refman/5.6/en/server-system-variables.html#sysvar_wait_timeout</a></p>
+<h3 id="sleep连接"><a href="#sleep连接" class="headerlink" title="sleep连接"></a>sleep连接</h3><p>参数含义：指processlist中Command类型为sleep的线程（线程正在等待客户端发送一个新的语句）<br>官网文档：<a href="https://dev.mysql.com/doc/refman/5.6/en/show-processlist.html" target="_blank" rel="external">https://dev.mysql.com/doc/refman/5.6/en/show-processlist.html</a><br>          <a href="https://dev.mysql.com/doc/refman/5.6/en/thread-commands.html中介绍Sleep的含义是:The" target="_blank" rel="external">https://dev.mysql.com/doc/refman/5.6/en/thread-commands.html中介绍Sleep的含义是:The</a> thread is waiting for the client to send a new statement to it.</p>
+<h3 id="max-connections"><a href="#max-connections" class="headerlink" title="max_connections"></a>max_connections</h3><p>参数含义：最大允许客户端同时连接的数量。当客户端连接数超过该值的时候就会报错：Too many connections！<br>官网文档：<a href="https://dev.mysql.com/doc/refman/5.6/en/server-system-variables.html#sysvar_max_connections" target="_blank" rel="external">https://dev.mysql.com/doc/refman/5.6/en/server-system-variables.html#sysvar_max_connections</a></p>
+<h3 id="max-user-connections"><a href="#max-user-connections" class="headerlink" title="max_user_connections"></a>max_user_connections</h3><p>参数含义：允许任何给定的MySQL用户帐户的最大并发连接数。默认的值为0，意味着“没有限制”。<br>官网文档：<a href="https://dev.mysql.com/doc/refman/5.6/en/server-system-variables.html#sysvar_max_user_connections" target="_blank" rel="external">https://dev.mysql.com/doc/refman/5.6/en/server-system-variables.html#sysvar_max_user_connections</a></p>
+<h3 id="以上参数对连接数的影响"><a href="#以上参数对连接数的影响" class="headerlink" title="以上参数对连接数的影响"></a>以上参数对连接数的影响</h3><p>MySQL所支持的最大连接数是有上限的，由参数max_connections控制。因为每个连接的建立都会消耗内存，因此我们希望客户端在连接到MySQL处理完相应的操作后就断开连接并释放占用的内存。如果你的MySQL Server有大量的闲置连接，他们不仅会白白消耗内存，而且如果连接一直在累加而不断开，最终肯定会达到MySQL Server的连接上限数，这会报’too many connections’的错误。对于wait_timeout的值设定，应该根据系统的运行情况来判断。在系统运行一段时间后，可以通过show processlist命令查看当前系统的连接状态，如果发现有大量的sleep状态的连接进程，则说明该参数设置的过大，可以进行适当的调整小些。</p>
+<h3 id="调整参数"><a href="#调整参数" class="headerlink" title="调整参数"></a>调整参数</h3><p>调整前：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mysql_43 ~]# lxsql 3306 variables &apos;timeout&apos;</div><div class="line">+-----------------------------+----------+</div><div class="line">| Variable_name               | Value    |</div><div class="line">+-----------------------------+----------+</div><div class="line">| connect_timeout             | 10       |</div><div class="line">| delayed_insert_timeout      | 300      |</div><div class="line">| have_statement_timeout      | YES      |</div><div class="line">| innodb_flush_log_at_timeout | 1        |</div><div class="line">| innodb_lock_wait_timeout    | 5        |</div><div class="line">| innodb_rollback_on_timeout  | OFF      |</div><div class="line">| interactive_timeout         | 31536000 |</div><div class="line">| lock_wait_timeout           | 31536000 |</div><div class="line">| net_read_timeout            | 30       |</div><div class="line">| net_write_timeout           | 60       |</div><div class="line">| rpl_stop_slave_timeout      | 31536000 |</div><div class="line">| slave_net_timeout           | 3600     |</div><div class="line">| thread_pool_idle_timeout    | 60       |</div><div class="line">| wait_timeout                | 31536000 |</div><div class="line">+-----------------------------+----------+</div><div class="line">[root@mysql_43 ~]# lxsql 3306 connect</div><div class="line">+-------------+---------+----------+</div><div class="line">| USER        | command | COUNT(*) |</div><div class="line">+-------------+---------+----------+</div><div class="line">| rouser      | Sleep   |      124 |</div><div class="line">| system user | Connect |        2 |</div><div class="line">| root        | Sleep   |        1 |</div><div class="line">| root        | Query   |        1 |</div><div class="line">+-------------+---------+----------+</div></pre></td></tr></table></figure></p>
+<p>调整命令<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">mysql&gt; set global interactive_timeout=600;set global wait_timeout=600;</div><div class="line">记得修改配置文件：以防下次实例重启后恢复旧值</div><div class="line">[root@mysql_43 ~]# sed -i &apos;s/wait_timeout=31536000/wait_timeout=600/g;s/interactive_timeout=31536000/interactive_timeout=600/g&apos; /opt/mysql/my.cnf</div><div class="line">[root@mysql_43 ~]# cat /opt/mysql/my.cnf|grep &quot;timeout&quot;</div><div class="line">wait_timeout=600</div><div class="line">interactive_timeout=600</div></pre></td></tr></table></figure></p>
+<p>看看是否调整成功：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mysql_43 ~]# xlsql 3306 variables &apos;timeout&apos;</div><div class="line">+-----------------------------+----------+</div><div class="line">| Variable_name               | Value    |</div><div class="line">+-----------------------------+----------+</div><div class="line">| connect_timeout             | 10       |</div><div class="line">| delayed_insert_timeout      | 300      |</div><div class="line">| have_statement_timeout      | YES      |</div><div class="line">| innodb_flush_log_at_timeout | 1        |</div><div class="line">| innodb_lock_wait_timeout    | 5        |</div><div class="line">| innodb_rollback_on_timeout  | OFF      |</div><div class="line">| interactive_timeout         | 600      |</div><div class="line">| lock_wait_timeout           | 31536000 |</div><div class="line">| net_read_timeout            | 30       |</div><div class="line">| net_write_timeout           | 60       |</div><div class="line">| rpl_stop_slave_timeout      | 31536000 |</div><div class="line">| slave_net_timeout           | 3600     |</div><div class="line">| thread_pool_idle_timeout    | 60       |</div><div class="line">| wait_timeout                | 600      |</div><div class="line">+-----------------------------+----------+</div></pre></td></tr></table></figure></p>
+<p>过10分钟后，查看mysql的sleep连接有所降低：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mysql_43 ~]# xlsql 3306 connect</div><div class="line">+-------------+---------+----------+</div><div class="line">| USER        | command | COUNT(*) |</div><div class="line">+-------------+---------+----------+</div><div class="line">| rouser      | Sleep   |      106 |</div><div class="line">| system user | Connect |        2 |</div><div class="line">| root        | Query   |        1 |</div><div class="line">| rouser      | Query   |        1 |</div><div class="line">+-------------+---------+----------+</div><div class="line">[root@mysql_43 ~]#</div></pre></td></tr></table></figure></p>
 
-<h3 id="需求描述"><a href="#需求描述" class="headerlink" title="需求描述"></a>需求描述</h3><p>开发提出需修改某业务表中的一个字段的内容，将其中一部分修改掉。<br>修改前：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[&#123;&quot;extension&quot;:&quot;jpg&quot;,&quot;fileKey&quot;:&quot;B39C644EA275D5DF4062F7DCD5442077&quot;,&quot;smallUrl&quot;:&quot;http://dl.test.com/images/320x320_B39C644EA275D5DF4062F7DCD5442077.jpg&quot;,&quot;bigImgUrl&quot;:&quot;http://abc.test.com/r/010005002001001/010005002001001004001/B39C644EA275D5DF4062F7DCD5442077.jpg?t=20160310&quot;,&quot;type&quot;:6,&quot;fileName&quot;:&quot;段1.1&quot;&#125;]</div></pre></td></tr></table></figure></p>
-<p>期望能修改为：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[&#123;&quot;extension&quot;:&quot;jpg&quot;,&quot;fileKey&quot;:&quot;B39C644EA275D5DF4062F7DCD5442077&quot;,&quot;smallUrl&quot;:&quot;http://abc.test.com/r/010005002001001/010005002001001004001/98x98_B39C644EA275D5DF4062F7DCD5442077.jpg?t=20160310&quot;,&quot;bigImgUrl&quot;:&quot;http://abc.test.com/r/010005002001001/010005002001001004001/B39C644EA275D5DF4062F7DCD5442077.jpg?t=20160310&quot;,&quot;type&quot;:6,&quot;fileName&quot;:&quot;段1.1&quot;&#125;]</div></pre></td></tr></table></figure></p>
-<h3 id="确定思路"><a href="#确定思路" class="headerlink" title="确定思路"></a>确定思路</h3><p>1、确定需要修改的具体内容，即”smallUrl”:后面的内容<br>2、写出要修改后的新内容，即bigImgUrl+分辨率<br>3、将需要修改的内容replace为新内容<br>经过讨论业务逻辑后，最终确定通过这三步即可完成。<br>此处有感：磨刀不误砍材工，动手之前一定要先梳理好业务逻辑。否则可能动手做了一半才发现不对，白白浪费了时间。</p>
-<h3 id="编写SQL"><a href="#编写SQL" class="headerlink" title="编写SQL"></a>编写SQL</h3><p>需要用到Mysql的几个函数：SUBSTRING_INDEX、CONCAT、REPLACE<br>SUBSTRING_INDEX(str,delim,count)：用来返回字符串str中在第count个出现的分隔符delim之前或之后的字符串。如果count是一个正数，返回从最后的(从左边开始计数)分隔符到左边所有字符。如果count是负数，返回从最后的(从右边开始计数)分隔符到右边所有字符。<br>CONCAT()：用来拼接字符串<br>REPLACE()：用来替换字符串<br>1、找出需要被修改的部分：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">CONCAT(SUBSTRING_INDEX(SUBSTRING_INDEX(t_content1,&apos;&quot;smallUrl&quot;:&apos;,-1),&apos;&quot;&apos;,2),&apos;&quot;&apos;) as &quot;old smallUrl&quot;,</div><div class="line">先截取smallUrl右边的部分，在此基础上再进一步截取这部分中第二个&quot;左边的部分，输出结果为：</div><div class="line">&quot;http://dl.test.com/images/320x320_B39C644EA275D5DF4062F7DCD5442077.jpg&quot;</div></pre></td></tr></table></figure></p>
-<p>2、写出修改后的部分：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">CONCAT(SUBSTRING_INDEX(SUBSTRING_INDEX(t_content1,&apos;&quot;bigImgUrl&quot;:&apos;,-1),&apos;/&apos;,6),&apos;/98x98_&apos;,SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTRING_INDEX(t_content1,&apos;&quot;bigImgUrl&quot;:&apos;,-1),&apos;&quot;&apos;,2),&apos;/&apos;,-1),&apos;&quot;&apos;) as &quot;new smallUrl&quot;</div><div class="line">输出结果为：</div><div class="line">&quot;http://abc.test.com/r/010005002001001/010005002001001004001/98x98_B39C644EA275D5DF4062F7DCD5442077.jpg?t=20160310&quot;</div></pre></td></tr></table></figure></p>
-<p>3、验证是否正确<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">SELECT t_content1,</div><div class="line">REPLACE(t_content1,CONCAT(SUBSTRING_INDEX(SUBSTRING_INDEX(t_content1,&apos;&quot;smallUrl&quot;:&apos;,-1),&apos;&quot;&apos;,2),&apos;&quot;&apos;),CONCAT(SUBSTRING_INDEX(SUBSTRING_INDEX(t_content1,&apos;&quot;bigImgUrl&quot;:&apos;,-1),&apos;/&apos;,6),&apos;/98x98_&apos;,SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTRING_INDEX(t_content1,&apos;&quot;bigImgUrl&quot;:&apos;,-1),&apos;&quot;&apos;,2),&apos;/&apos;,-1),&apos;&quot;&apos;)) as new_t_content1</div><div class="line">FROM test_book_class WHERE ccdl_type=5 </div><div class="line">AND t_content1 LIKE &apos;%&quot;bigImgUrl&quot;:&quot;http://abc.test.com%&apos; </div><div class="line">AND t_content1 LIKE &apos;%&quot;smallUrl&quot;:&quot;http://dl.test.com/%&apos; </div><div class="line">LIMIT 10;</div></pre></td></tr></table></figure></p>
-<p>比较修改前的内容和修改后的内容，确定被修改的部分是正确的。</p>
-<h3 id="执行SQL"><a href="#执行SQL" class="headerlink" title="执行SQL"></a>执行SQL</h3><p>注意：先测试库，后生产库。<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">UPDATE test_book_class SET t_content1=REPLACE(t_content1,CONCAT(SUBSTRING_INDEX(SUBSTRING_INDEX(t_content1,&apos;&quot;smallUrl&quot;:&apos;,-1),&apos;&quot;&apos;,2),&apos;&quot;&apos;),CONCAT(SUBSTRING_INDEX(SUBSTRING_INDEX(t_content1,&apos;&quot;bigImgUrl&quot;:&apos;,-1),&apos;/&apos;,6),&apos;/98x98_&apos;,SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTRING_INDEX(t_content1,&apos;&quot;bigImgUrl&quot;:&apos;,-1),&apos;&quot;&apos;,2),&apos;/&apos;,-1),&apos;&quot;&apos;))</div><div class="line">WHERE ccdl_type=5 AND t_content1 LIKE &apos;%&quot;bigImgUrl&quot;:&quot;http://abc.test.com%&apos; AND t_content1 LIKE &apos;%&quot;smallUrl&quot;:&quot;http://dl.test.com/%&apos;;</div><div class="line">COMMIT;</div></pre></td></tr></table></figure></p>
-</the>
       
     </div>
     
@@ -323,13 +324,13 @@
   
     
     <div class="copyright">
-        <p><span>本文标题:</span><a href="/2017/04/06/String-handling-of-mysql/">MySQL字符串处理一则</a></p>
+        <p><span>本文标题:</span><a href="/2017/04/21/mysql-sleep-process-too-many/">mysql sleep连接太多怎么办</a></p>
         <p><span>文章作者:</span><a href="/" title="回到主页">一条大河</a></p>
-        <p><span>发布时间:</span>2017-04-06, 16:20:51</p>
-        <p><span>最后更新:</span>2017-04-06, 17:16:24</p>
+        <p><span>发布时间:</span>2017-04-21, 11:54:39</p>
+        <p><span>最后更新:</span>2017-04-21, 16:34:44</p>
         <p>
-            <span>原始链接:</span><a class="post-url" href="/2017/04/06/String-handling-of-mysql/" title="MySQL字符串处理一则">http://riverdba.github.io/2017/04/06/String-handling-of-mysql/</a>
-            <span class="copy-path" data-clipboard-text="原文: http://riverdba.github.io/2017/04/06/String-handling-of-mysql/　　作者: 一条大河" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <span>原始链接:</span><a class="post-url" href="/2017/04/21/mysql-sleep-process-too-many/" title="mysql sleep连接太多怎么办">http://riverdba.github.io/2017/04/21/mysql-sleep-process-too-many/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://riverdba.github.io/2017/04/21/mysql-sleep-process-too-many/　　作者: 一条大河" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
             <script> var clipboard = new Clipboard('.copy-path'); </script>
         </p>
         <p>
@@ -341,16 +342,10 @@
 
     <nav id="article-nav">
         
-            <div id="article-nav-newer" class="article-nav-title">
-                <a href="/2017/04/11/sysbench-for-mysql/">
-                    mysql基准测试
-                </a>
-            </div>
-        
         
             <div id="article-nav-older" class="article-nav-title">
-                <a href="/2017/04/05/Non-SPJ-Optimization-of-mysql/">
-                    MySQL查询优化技术之非SPJ优化
+                <a href="/2017/04/20/online-ddl-tools-by-oak/">
+                    MySQL在线DDL工具之OAK
                 </a>
             </div>
         
@@ -362,7 +357,7 @@
     <div id="toc" class="toc-article">
         <strong class="toc-title">文章目录</strong>
         
-            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#需求描述"><span class="toc-number">1.</span> <span class="toc-text">需求描述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#确定思路"><span class="toc-number">2.</span> <span class="toc-text">确定思路</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#编写SQL"><span class="toc-number">3.</span> <span class="toc-text">编写SQL</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#执行SQL"><span class="toc-number">4.</span> <span class="toc-text">执行SQL</span></a></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#interactive-timeout"><span class="toc-number">1.</span> <span class="toc-text">interactive_timeout</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#wait-timeout"><span class="toc-number">2.</span> <span class="toc-text">wait_timeout</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#sleep连接"><span class="toc-number">3.</span> <span class="toc-text">sleep连接</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#max-connections"><span class="toc-number">4.</span> <span class="toc-text">max_connections</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#max-user-connections"><span class="toc-number">5.</span> <span class="toc-text">max_user_connections</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#以上参数对连接数的影响"><span class="toc-number">6.</span> <span class="toc-text">以上参数对连接数的影响</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#调整参数"><span class="toc-number">7.</span> <span class="toc-text">调整参数</span></a></li></ol>
         
     </div>
     <style>
@@ -398,7 +393,7 @@
         </div>
         <script>
             window._bd_share_config={
-                "common":{"bdSnsKey":{},"bdText":"MySQL字符串处理一则　| Yangtze River's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+                "common":{"bdSnsKey":{},"bdText":"mysql sleep连接太多怎么办　| Yangtze River's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
         </script>
     
 
@@ -417,8 +412,8 @@
     <div id="disqus_thread"></div>
     <script>
         var disqus_config = function(){
-            this.page.url = 'http://riverdba.github.io/2017/04/06/String-handling-of-mysql/';
-            this.page.identifier = '2017/04/06/String-handling-of-mysql/';
+            this.page.url = 'http://riverdba.github.io/2017/04/21/mysql-sleep-process-too-many/';
+            this.page.identifier = '2017/04/21/mysql-sleep-process-too-many/';
         };
         var loadComment = function(){
             var d = document, s = d.createElement('script');
@@ -440,15 +435,13 @@
 
     <div class="scroll" id="post-nav-button">
         
-            <a href="/2017/04/11/sysbench-for-mysql/" title="上一篇: mysql基准测试">
-                <i class="fa fa-angle-left"></i>
-            </a>
+            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
         
 
         <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
 
         
-            <a href="/2017/04/05/Non-SPJ-Optimization-of-mysql/" title="下一篇: MySQL查询优化技术之非SPJ优化">
+            <a href="/2017/04/20/online-ddl-tools-by-oak/" title="下一篇: MySQL在线DDL工具之OAK">
                 <i class="fa fa-angle-right"></i>
             </a>
         
