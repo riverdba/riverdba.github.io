@@ -15,21 +15,16 @@
 
 
 
-<meta name="description" content="摘要：将hive输出的文件导入mycat">
+<meta name="description" content="摘要：将mycat1.4升级到1.5">
 <meta property="og:type" content="article">
-<meta property="og:title" content="将hive输出文件导入mycat">
-<meta property="og:url" content="http://riverdba.github.io/2017/04/19/hive2mycat/index.html">
+<meta property="og:title" content="mycat1.4升级到1.5">
+<meta property="og:url" content="http://riverdba.github.io/2017/04/22/mycat-upgrade/index.html">
 <meta property="og:site_name" content="Yangtze River's blog">
-<meta property="og:description" content="摘要：将hive输出的文件导入mycat">
-<meta property="og:image" content="http://riverdba.github.io/2017/04/19/hive2mycat/1.png">
-<meta property="og:image" content="http://riverdba.github.io/2017/04/19/hive2mycat/2.png">
-<meta property="og:image" content="http://riverdba.github.io/2017/04/19/hive2mycat/3.png">
-<meta property="og:image" content="http://riverdba.github.io/2017/04/19/hive2mycat/4.png">
-<meta property="og:updated_time" content="2017-04-19T02:28:42.000Z">
+<meta property="og:description" content="摘要：将mycat1.4升级到1.5">
+<meta property="og:updated_time" content="2017-04-22T08:28:44.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="将hive输出文件导入mycat">
-<meta name="twitter:description" content="摘要：将hive输出的文件导入mycat">
-<meta name="twitter:image" content="http://riverdba.github.io/2017/04/19/hive2mycat/1.png">
+<meta name="twitter:title" content="mycat1.4升级到1.5">
+<meta name="twitter:description" content="摘要：将mycat1.4升级到1.5">
 
 <link rel="apple-touch-icon" href= "/apple-touch-icon.png">
 
@@ -61,7 +56,7 @@
 <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
 
 
-<title>将hive输出文件导入mycat | Yangtze River&#39;s blog</title>
+<title>mycat1.4升级到1.5 | Yangtze River&#39;s blog</title>
 
 <script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
 <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
@@ -265,11 +260,11 @@
     </div>
     <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
 </nav>
-      <div class="body-wrap"><article id="post-hive2mycat" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-mycat-upgrade" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2017/04/19/hive2mycat/" class="article-date">
-      <time datetime="2017-04-19T01:53:02.000Z" itemprop="datePublished">2017-04-19</time>
+      <a href="/2017/04/22/mycat-upgrade/" class="article-date">
+      <time datetime="2017-04-22T05:34:29.000Z" itemprop="datePublished">2017-04-22</time>
 </a>
 
 
@@ -284,7 +279,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      将hive输出文件导入mycat
+      mycat1.4升级到1.5
     </h1>
   
 
@@ -299,7 +294,7 @@
 
         
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Hive-and-MyCAT/">Hive and MyCAT</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/工作笔记/">工作笔记</a></li></ul>
     </div>
 
         <div class="clearfix"></div>
@@ -309,27 +304,17 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-        <p><excerpt in="" index="" |="" 首页摘要=""><br>摘要：将hive输出的文件导入mycat<a id="more"></a></excerpt></p>
-<p><the rest="" of="" contents="" |="" 余下全文=""></the></p>
-<h3 id="需求说明"><a href="#需求说明" class="headerlink" title="需求说明"></a>需求说明</h3><p>hadoop服务器上有个定时任务，每天凌晨通过hive输出运算结果，需要将结果数据导入mycat中。</p>
-<h3 id="分析Hive输出文件"><a href="#分析Hive输出文件" class="headerlink" title="分析Hive输出文件"></a>分析Hive输出文件</h3><p>hive输出的文件格式如下：<br><img src="/2017/04/19/hive2mycat/1.png" alt="图1"><br>每行数据的字段分隔符看上去是个小方块，vi进去后看到是^A:<br><img src="/2017/04/19/hive2mycat/2.png" alt="图2"><br>这个符号很容易被误认为是键盘6上面那个倒尖括号和大写字母A组成的，其实是通过按crtl+v+a才可以正确的输出该符号。    </p>
-<h3 id="导入MyCAT"><a href="#导入MyCAT" class="headerlink" title="导入MyCAT"></a>导入MyCAT</h3><p><img src="/2017/04/19/hive2mycat/3.png" alt="图3"><br>到数据库中查看导入的数据：<br><img src="/2017/04/19/hive2mycat/4.png" alt="图4"><br>如果字段分割符不对，导入mycat时会报错</p>
-<pre><code>命令行报错：
-ERROR 2013 (HY000) at line 1: Lost connection to MySQL server during query
-mycat日志报错：
-04/18 19:28:21.432  ERROR [$_NIOREACTOR-3-RW] (FrontendConnection.java:270) -load data error
-java.lang.StringIndexOutOfBoundsException: String index out of range: 0
-        at java.lang.String.charAt(String.java:658)
-        at org.opencloudb.server.handler.ServerLoadDataInfileHandler.end(ServerLoadDataInfileHandler.java:623)
-        at org.opencloudb.net.FrontendConnection.loadDataInfileEnd(FrontendConnection.java:268)
-        at org.opencloudb.net.FrontendConnection.rawHandle(FrontendConnection.java:426)
-        at org.opencloudb.net.FrontendConnection.handle(FrontendConnection.java:417)
-        at org.opencloudb.net.AbstractConnection.onReadData(AbstractConnection.java:313)
-        at org.opencloudb.net.NIOSocketWR.asynRead(NIOSocketWR.java:186)
-        at org.opencloudb.net.AbstractConnection.asynRead(AbstractConnection.java:274)
-        at org.opencloudb.net.NIOReactor$RW.run(NIOReactor.java:96)
-        at java.lang.Thread.run(Thread.java:745)
-</code></pre>
+        <p><excerpt in="" index="" |="" 首页摘要=""><br>摘要：将mycat1.4升级到1.5<a id="more"></a></excerpt></p>
+<the rest="" of="" contents="" |="" 余下全文="">
+
+<h3 id="为什么升级"><a href="#为什么升级" class="headerlink" title="为什么升级"></a>为什么升级</h3><p>我们公司自2015年6月开始使用mycat1.4-RC，9月份升级到1.4-RELEASE，直到今天已经稳定运行快2年了。昨天晚上线上mycat突然发生连接失败报警，于是迅速登上服务器看到如下报错：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">04/21 21:50:01.156   WARN [$_MyCatServer] (NIOAcceptor.java:121) -$_MyCatServer</div><div class="line">java.lang.ArrayIndexOutOfBoundsException: 9</div><div class="line">        at org.opencloudb.net.NIOReactorPool.getNextReactor(NIOReactorPool.java:22)</div><div class="line">        at org.opencloudb.net.NIOAcceptor.accept(NIOAcceptor.java:117)</div><div class="line">        at org.opencloudb.net.NIOAcceptor.run(NIOAcceptor.java:91)</div></pre></td></tr></table></figure></p>
+<p>先紧急处理故障：备份mycat日志并重启mycat后恢复正常。今天上午咨询了Leader-us，确认此为1.4的bug，建议升级到1.5！</p>
+<h3 id="下载mycat1-5"><a href="#下载mycat1-5" class="headerlink" title="下载mycat1.5"></a>下载mycat1.5</h3><p>下载地址：<a href="https://github.com/MyCATApache/Mycat-download/blob/master/1.5-RELEASE/Mycat-server-1.5.1-RELEASE-20161130213509-linux.tar.gz" target="_blank" rel="external">https://github.com/MyCATApache/Mycat-download/blob/master/1.5-RELEASE/Mycat-server-1.5.1-RELEASE-20161130213509-linux.tar.gz</a><br>删除当前目录下所有的文件夹：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mycat2 src]# find ./ -type d |xargs rm -rf</div></pre></td></tr></table></figure></p>
+<p>解压：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mycat2 src]# tar -zxvf Mycat-server-1.5.1-RELEASE-20161130213509-linux.tar.gz</div></pre></td></tr></table></figure></p>
+<p>查看文件：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mycat2 src]# cd mycat/</div><div class="line">[root@mycat2 mycat]# ls</div><div class="line">bin  catlet  conf  lib  logs  version.txt</div><div class="line">[root@mycat2 mycat]# cat version.txt </div><div class="line">BuildTime  2016-11-30 13:35:05</div><div class="line">GitVersion   15645b8ef82a653bcd7c66f6d15f8bd73249991f</div><div class="line">MavenVersion 1.5.1-RELEASE</div><div class="line">GitUrl https://github.com/MyCATApache/Mycat-Server.git</div><div class="line">MyCatSite http://www.mycat.org.cn</div><div class="line">QQGroup 106088787</div><div class="line">[root@mycat2 mycat]#</div></pre></td></tr></table></figure></p>
+<h3 id="备份mycat1-4"><a href="#备份mycat1-4" class="headerlink" title="备份mycat1.4"></a>备份mycat1.4</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mycat2 local]# cp -r mycat mycat1.4_20170422</div></pre></td></tr></table></figure>
+<h3 id="升级"><a href="#升级" class="headerlink" title="升级"></a>升级</h3><p>将mycat1.4中的配置文件目录（conf）拷贝到1.5<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mycat2]#cd /usr/local/mycat</div><div class="line">采用不提示直接覆盖的方式拷贝文件：</div><div class="line">[root@mycat2 mycat]# \cp -rf conf/ /src/mycat/</div><div class="line">拷贝完毕后要到1.5的mycat目录中确认下配置文件是否完好，确定OK后再将1.4的mycat删掉，将1.5的mycat拷贝到/usr/local然后启动mycat</div><div class="line">[root@mycat2 local]# rm -rf mycat</div><div class="line">[root@mycat2 local]# mv /src/mycat/ ./</div><div class="line">[root@mycat2 local]# mycat start</div><div class="line">Starting Mycat-server...</div><div class="line">[root@mycat2 local]# ps -ef|grep mycat</div><div class="line">root       300     1  0 15:00 ?        00:00:00 /usr/local/mycat/bin/./wrapper-linux-x86-64 /usr/local/mycat/conf/wrapper.conf wrapper.syslog.ident=mycat wrapper.pidfile=/usr/local/mycat/logs/mycat.pid wrapper.daemonize=TRUE wrapper.lockfile=/var/lock/subsys/mycat</div><div class="line">root       351 17022  0 15:00 pts/0    00:00:00 grep mycat</div><div class="line">[root@mycat2 local]# mysql -udev_ro -pdev2017 -h192.168.1.130 -P8066</div><div class="line">Welcome to the MySQL monitor.  Commands end with ; or \g.</div><div class="line">Your MySQL connection id is 51</div><div class="line">Server version: 5.5.8-mycat-1.5.1-RELEASE-20161130213509 MyCat Server (OpenCloundDB)</div><div class="line">Copyright (c) 2000, 2013, Oracle and/or its affiliates. All rights reserved.</div><div class="line">Oracle is a registered trademark of Oracle Corporation and/or its</div><div class="line">affiliates. Other names may be trademarks of their respective</div><div class="line">owners.</div><div class="line">Type &apos;help;&apos; or &apos;\h&apos; for help. Type &apos;\c&apos; to clear the current input statement.</div><div class="line">mysql&gt; show databases;</div><div class="line">+---------------+</div><div class="line">| DATABASE      |</div><div class="line">+---------------+</div><div class="line">| testdb        |</div><div class="line">| riverdb       |</div><div class="line">+---------------+</div><div class="line">14 rows in set (0.00 sec)</div><div class="line">mysql&gt; exit</div><div class="line">Bye</div><div class="line">[root@mycat2 local]#</div></pre></td></tr></table></figure></p>
+</the>
       
     </div>
     
@@ -337,13 +322,13 @@ java.lang.StringIndexOutOfBoundsException: String index out of range: 0
   
     
     <div class="copyright">
-        <p><span>本文标题:</span><a href="/2017/04/19/hive2mycat/">将hive输出文件导入mycat</a></p>
+        <p><span>本文标题:</span><a href="/2017/04/22/mycat-upgrade/">mycat1.4升级到1.5</a></p>
         <p><span>文章作者:</span><a href="/" title="回到主页">一条大河</a></p>
-        <p><span>发布时间:</span>2017-04-19, 09:53:02</p>
-        <p><span>最后更新:</span>2017-04-19, 10:28:42</p>
+        <p><span>发布时间:</span>2017-04-22, 13:34:29</p>
+        <p><span>最后更新:</span>2017-04-22, 16:28:44</p>
         <p>
-            <span>原始链接:</span><a class="post-url" href="/2017/04/19/hive2mycat/" title="将hive输出文件导入mycat">http://riverdba.github.io/2017/04/19/hive2mycat/</a>
-            <span class="copy-path" data-clipboard-text="原文: http://riverdba.github.io/2017/04/19/hive2mycat/　　作者: 一条大河" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <span>原始链接:</span><a class="post-url" href="/2017/04/22/mycat-upgrade/" title="mycat1.4升级到1.5">http://riverdba.github.io/2017/04/22/mycat-upgrade/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://riverdba.github.io/2017/04/22/mycat-upgrade/　　作者: 一条大河" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
             <script> var clipboard = new Clipboard('.copy-path'); </script>
         </p>
         <p>
@@ -355,16 +340,10 @@ java.lang.StringIndexOutOfBoundsException: String index out of range: 0
 
     <nav id="article-nav">
         
-            <div id="article-nav-newer" class="article-nav-title">
-                <a href="/2017/04/20/online-ddl-tools-by-oak/">
-                    MySQL在线DDL工具之OAK
-                </a>
-            </div>
-        
         
             <div id="article-nav-older" class="article-nav-title">
-                <a href="/2017/04/15/archer-install/">
-                    archer安装及使用
+                <a href="/2017/04/21/mysql-sleep-process-too-many/">
+                    mysql sleep连接太多怎么办
                 </a>
             </div>
         
@@ -376,7 +355,7 @@ java.lang.StringIndexOutOfBoundsException: String index out of range: 0
     <div id="toc" class="toc-article">
         <strong class="toc-title">文章目录</strong>
         
-            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#需求说明"><span class="toc-number">1.</span> <span class="toc-text">需求说明</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#分析Hive输出文件"><span class="toc-number">2.</span> <span class="toc-text">分析Hive输出文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#导入MyCAT"><span class="toc-number">3.</span> <span class="toc-text">导入MyCAT</span></a></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#为什么升级"><span class="toc-number">1.</span> <span class="toc-text">为什么升级</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#下载mycat1-5"><span class="toc-number">2.</span> <span class="toc-text">下载mycat1.5</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#备份mycat1-4"><span class="toc-number">3.</span> <span class="toc-text">备份mycat1.4</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#升级"><span class="toc-number">4.</span> <span class="toc-text">升级</span></a></li></ol>
         
     </div>
     <style>
@@ -412,7 +391,7 @@ java.lang.StringIndexOutOfBoundsException: String index out of range: 0
         </div>
         <script>
             window._bd_share_config={
-                "common":{"bdSnsKey":{},"bdText":"将hive输出文件导入mycat　| Yangtze River's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+                "common":{"bdSnsKey":{},"bdText":"mycat1.4升级到1.5　| Yangtze River's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
         </script>
     
 
@@ -431,8 +410,8 @@ java.lang.StringIndexOutOfBoundsException: String index out of range: 0
     <div id="disqus_thread"></div>
     <script>
         var disqus_config = function(){
-            this.page.url = 'http://riverdba.github.io/2017/04/19/hive2mycat/';
-            this.page.identifier = '2017/04/19/hive2mycat/';
+            this.page.url = 'http://riverdba.github.io/2017/04/22/mycat-upgrade/';
+            this.page.identifier = '2017/04/22/mycat-upgrade/';
         };
         var loadComment = function(){
             var d = document, s = d.createElement('script');
@@ -454,15 +433,13 @@ java.lang.StringIndexOutOfBoundsException: String index out of range: 0
 
     <div class="scroll" id="post-nav-button">
         
-            <a href="/2017/04/20/online-ddl-tools-by-oak/" title="上一篇: MySQL在线DDL工具之OAK">
-                <i class="fa fa-angle-left"></i>
-            </a>
+            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
         
 
         <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
 
         
-            <a href="/2017/04/15/archer-install/" title="下一篇: archer安装及使用">
+            <a href="/2017/04/21/mysql-sleep-process-too-many/" title="下一篇: mysql sleep连接太多怎么办">
                 <i class="fa fa-angle-right"></i>
             </a>
         
