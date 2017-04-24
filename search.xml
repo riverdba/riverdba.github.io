@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title><![CDATA[在mycat上使用select * 的影响]]></title>
+      <url>http://riverdba.github.io/2017/04/24/select-on-mycat/</url>
+      <content type="html"><![CDATA[<p><excerpt in="" index="" |="" 首页摘要=""><br>摘要：select * 写法对mycat结果集的影响<a id="more"></a></excerpt></p>
+<the rest="" of="" contents="" |="" 余下全文="">
+
+<h3 id="为什么要避免SELECT"><a href="#为什么要避免SELECT" class="headerlink" title="为什么要避免SELECT *"></a>为什么要避免SELECT *</h3><p>select *会将不需要读的字段数据都从MySQL里读出来，给网络传输造成不必要的压力。且表字段一旦更新，但model层没有来得及更新的话，系统会报错。</p>
+<h3 id="SELECT-对MyCAT的影响"><a href="#SELECT-对MyCAT的影响" class="headerlink" title="SELECT *对MyCAT的影响"></a>SELECT *对MyCAT的影响</h3><p>mycat版本：1.5.1-RELEASE<br>使用select *查询结果：<br><img src="/2017/04/24/select-on-mycat/1.png" alt="图1"><br>将每个字段列出来查询结果：<br><img src="/2017/04/24/select-on-mycat/2.png" alt="图2"><br>可以看到，使用select *导致mycat返回结果集错乱了。<br>再次强调：SELECT语句必须指定具体字段名称！</p>
+</the>]]></content>
+      
+        <categories>
+            
+            <category> MyCAT </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> 工作笔记 </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
       <title><![CDATA[mycat1.4升级到1.5]]></title>
       <url>http://riverdba.github.io/2017/04/22/mycat-upgrade/</url>
       <content type="html"><![CDATA[<p><excerpt in="" index="" |="" 首页摘要=""><br>摘要：将mycat1.4升级到1.5<a id="more"></a></excerpt></p>
@@ -143,7 +168,7 @@ java.lang.StringIndexOutOfBoundsException: String index out of range: 0
         
         <tags>
             
-            <tag> Hive and MyCAT </tag>
+            <tag> 工作笔记 </tag>
             
         </tags>
         
