@@ -15,19 +15,16 @@
 
 
 
-<meta name="description" content="摘要：select * 写法对mycat结果集的影响">
+<meta name="description" content="摘要：MyCAT常见问题与解决过程记录">
 <meta property="og:type" content="article">
-<meta property="og:title" content="在mycat上使用select * 的影响">
-<meta property="og:url" content="http://riverdba.github.io/2017/04/24/select-on-mycat/index.html">
+<meta property="og:title" content="mycat常见问题集锦">
+<meta property="og:url" content="http://riverdba.github.io/2017/04/24/mycat-faq/index.html">
 <meta property="og:site_name" content="Yangtze River's blog">
-<meta property="og:description" content="摘要：select * 写法对mycat结果集的影响">
-<meta property="og:image" content="http://riverdba.github.io/2017/04/24/select-on-mycat/1.png">
-<meta property="og:image" content="http://riverdba.github.io/2017/04/24/select-on-mycat/2.png">
-<meta property="og:updated_time" content="2017-04-24T05:28:52.000Z">
+<meta property="og:description" content="摘要：MyCAT常见问题与解决过程记录">
+<meta property="og:updated_time" content="2017-04-24T09:53:26.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="在mycat上使用select * 的影响">
-<meta name="twitter:description" content="摘要：select * 写法对mycat结果集的影响">
-<meta name="twitter:image" content="http://riverdba.github.io/2017/04/24/select-on-mycat/1.png">
+<meta name="twitter:title" content="mycat常见问题集锦">
+<meta name="twitter:description" content="摘要：MyCAT常见问题与解决过程记录">
 
 <link rel="apple-touch-icon" href= "/apple-touch-icon.png">
 
@@ -59,7 +56,7 @@
 <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
 
 
-<title>在mycat上使用select * 的影响 | Yangtze River&#39;s blog</title>
+<title>mycat常见问题集锦 | Yangtze River&#39;s blog</title>
 
 <script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
 <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
@@ -263,11 +260,11 @@
     </div>
     <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
 </nav>
-      <div class="body-wrap"><article id="post-select-on-mycat" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-mycat-faq" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2017/04/24/select-on-mycat/" class="article-date">
-      <time datetime="2017-04-24T03:44:17.000Z" itemprop="datePublished">2017-04-24</time>
+      <a href="/2017/04/24/mycat-faq/" class="article-date">
+      <time datetime="2017-04-24T08:42:55.000Z" itemprop="datePublished">2017-04-24</time>
 </a>
 
 
@@ -282,7 +279,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      在mycat上使用select * 的影响
+      mycat常见问题集锦
     </h1>
   
 
@@ -307,11 +304,13 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-        <p><excerpt in="" index="" |="" 首页摘要=""><br>摘要：select * 写法对mycat结果集的影响<a id="more"></a></excerpt></p>
+        <p><excerpt in="" index="" |="" 首页摘要=""><br>摘要：MyCAT常见问题与解决过程记录<a id="more"></a></excerpt></p>
 <the rest="" of="" contents="" |="" 余下全文="">
 
-<h3 id="为什么要避免SELECT"><a href="#为什么要避免SELECT" class="headerlink" title="为什么要避免SELECT *"></a>为什么要避免SELECT *</h3><p>select *会将不需要读的字段数据都从MySQL里读出来，给网络传输造成不必要的压力。且表字段一旦更新，但model层没有来得及更新的话，系统会报错。</p>
-<h3 id="SELECT-对MyCAT的影响"><a href="#SELECT-对MyCAT的影响" class="headerlink" title="SELECT *对MyCAT的影响"></a>SELECT *对MyCAT的影响</h3><p>mycat版本：1.5.1-RELEASE<br>使用select *查询结果：<br><img src="/2017/04/24/select-on-mycat/1.png" alt="图1"><br>将每个字段列出来查询结果：<br><img src="/2017/04/24/select-on-mycat/2.png" alt="图2"><br>可以看到，使用select *导致mycat返回结果集错乱了。<br>再次强调：SELECT语句必须指定具体字段名称！</p>
+<h3 id="1-4版本BUG"><a href="#1-4版本BUG" class="headerlink" title="1.4版本BUG"></a>1.4版本BUG</h3><p>mycat版本：1.4-RELEASE<br>运行环境：线上库<br>报错内容：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">04/21 21:50:01.156   WARN [$_MyCatServer] (NIOAcceptor.java:121) -$_MyCatServer</div><div class="line">java.lang.ArrayIndexOutOfBoundsException: 9</div><div class="line">        at org.opencloudb.net.NIOReactorPool.getNextReactor(NIOReactorPool.java:22)</div><div class="line">        at org.opencloudb.net.NIOAcceptor.accept(NIOAcceptor.java:117)</div><div class="line">        at org.opencloudb.net.NIOAcceptor.run(NIOAcceptor.java:91)</div></pre></td></tr></table></figure></p>
+<p>紧急解决：这个报错导致客户端无法正常连接，重启mycat后恢复正常！<br>永久解决：这是1.4的BUG，建议升级到1.5。</p>
+<h3 id="错误号1105"><a href="#错误号1105" class="headerlink" title="错误号1105"></a>错误号1105</h3><p>mycat版本：1.5.1-RELEASE<br>运行环境：开发库<br>报错内容：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">mysql&gt; select * from e_detail;</div><div class="line">ERROR 1105 (HY000): java.lang.ArrayIndexOutOfBoundsException: 80</div><div class="line">mycat日志：</div><div class="line">04/24 16:14:19.368   WARN [BusinessExecutor3] (MultiNodeQueryHandler.java:484) -caught exception </div><div class="line">java.lang.ArrayIndexOutOfBoundsException</div><div class="line">04/24 16:14:19.369   INFO [BusinessExecutor3] (AbstractConnection.java:458) -close connection,reason:java.lang.ArrayIndexOutOfBoundsException ,MySQLConnection [id=27389, lastTime=1493021659154, user=xldev, schema=xueledb125, old shema=xueledb125, borrowed=true, fromSlaveDB=false, threadId=3560685, charset=utf8, txIsolation=3, autocommit=true, attachment=dn249&#123;SELECT *</div><div class="line">FROM e_detail</div></pre></td></tr></table></figure></p>
+<p>现象补充：当执行select count(*) from e_detail时没报错，只有这个表执行select *的时候会报错。其他表select *都没问题！<br>造成原因：各个分片中的表结构字段数量不一致！<br>解决办法：<br>1、找到不一致的分片加上遗漏的字段<br>2、直接在mycat上drop掉这个表，重新创建该表（由于开发库数据无所谓，固采用此法）</p>
 </the>
       
     </div>
@@ -320,13 +319,13 @@
   
     
     <div class="copyright">
-        <p><span>本文标题:</span><a href="/2017/04/24/select-on-mycat/">在mycat上使用select * 的影响</a></p>
+        <p><span>本文标题:</span><a href="/2017/04/24/mycat-faq/">mycat常见问题集锦</a></p>
         <p><span>文章作者:</span><a href="/" title="回到主页">一条大河</a></p>
-        <p><span>发布时间:</span>2017-04-24, 11:44:17</p>
-        <p><span>最后更新:</span>2017-04-24, 13:28:52</p>
+        <p><span>发布时间:</span>2017-04-24, 16:42:55</p>
+        <p><span>最后更新:</span>2017-04-24, 17:53:26</p>
         <p>
-            <span>原始链接:</span><a class="post-url" href="/2017/04/24/select-on-mycat/" title="在mycat上使用select * 的影响">http://riverdba.github.io/2017/04/24/select-on-mycat/</a>
-            <span class="copy-path" data-clipboard-text="原文: http://riverdba.github.io/2017/04/24/select-on-mycat/　　作者: 一条大河" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <span>原始链接:</span><a class="post-url" href="/2017/04/24/mycat-faq/" title="mycat常见问题集锦">http://riverdba.github.io/2017/04/24/mycat-faq/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://riverdba.github.io/2017/04/24/mycat-faq/　　作者: 一条大河" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
             <script> var clipboard = new Clipboard('.copy-path'); </script>
         </p>
         <p>
@@ -338,16 +337,10 @@
 
     <nav id="article-nav">
         
-            <div id="article-nav-newer" class="article-nav-title">
-                <a href="/2017/04/24/mycat-faq/">
-                    mycat常见问题集锦
-                </a>
-            </div>
-        
         
             <div id="article-nav-older" class="article-nav-title">
-                <a href="/2017/04/22/mycat-upgrade/">
-                    mycat1.4升级到1.5
+                <a href="/2017/04/24/select-on-mycat/">
+                    在mycat上使用select * 的影响
                 </a>
             </div>
         
@@ -359,7 +352,7 @@
     <div id="toc" class="toc-article">
         <strong class="toc-title">文章目录</strong>
         
-            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#为什么要避免SELECT"><span class="toc-number">1.</span> <span class="toc-text">为什么要避免SELECT *</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SELECT-对MyCAT的影响"><span class="toc-number">2.</span> <span class="toc-text">SELECT *对MyCAT的影响</span></a></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4版本BUG"><span class="toc-number">1.</span> <span class="toc-text">1.4版本BUG</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#错误号1105"><span class="toc-number">2.</span> <span class="toc-text">错误号1105</span></a></li></ol>
         
     </div>
     <style>
@@ -395,7 +388,7 @@
         </div>
         <script>
             window._bd_share_config={
-                "common":{"bdSnsKey":{},"bdText":"在mycat上使用select * 的影响　| Yangtze River's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+                "common":{"bdSnsKey":{},"bdText":"mycat常见问题集锦　| Yangtze River's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
         </script>
     
 
@@ -414,8 +407,8 @@
     <div id="disqus_thread"></div>
     <script>
         var disqus_config = function(){
-            this.page.url = 'http://riverdba.github.io/2017/04/24/select-on-mycat/';
-            this.page.identifier = '2017/04/24/select-on-mycat/';
+            this.page.url = 'http://riverdba.github.io/2017/04/24/mycat-faq/';
+            this.page.identifier = '2017/04/24/mycat-faq/';
         };
         var loadComment = function(){
             var d = document, s = d.createElement('script');
@@ -437,15 +430,13 @@
 
     <div class="scroll" id="post-nav-button">
         
-            <a href="/2017/04/24/mycat-faq/" title="上一篇: mycat常见问题集锦">
-                <i class="fa fa-angle-left"></i>
-            </a>
+            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
         
 
         <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
 
         
-            <a href="/2017/04/22/mycat-upgrade/" title="下一篇: mycat1.4升级到1.5">
+            <a href="/2017/04/24/select-on-mycat/" title="下一篇: 在mycat上使用select * 的影响">
                 <i class="fa fa-angle-right"></i>
             </a>
         
