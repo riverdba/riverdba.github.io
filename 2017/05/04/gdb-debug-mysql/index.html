@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+
+    <!--[if lt IE 9]>
+        <style>body {display: none; background: none !important} </style>
+        <meta http-equiv="Refresh" Content="0; url=//outdatedbrowser.com/" />
+    <![endif]-->
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no" />
+<meta name="author" content="一条大河" />
+
+
+
+<meta name="description" content="摘要：通过GDB调试mysql5.6的启动过程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用GDB调试mysql源码">
+<meta property="og:url" content="http://riverdba.github.io/2017/05/04/gdb-debug-mysql/index.html">
+<meta property="og:site_name" content="Yangtze River's blog">
+<meta property="og:description" content="摘要：通过GDB调试mysql5.6的启动过程">
+<meta property="og:image" content="http://riverdba.github.io/2017/05/04/gdb-debug-mysql/1.png">
+<meta property="og:image" content="http://riverdba.github.io/2017/05/04/gdb-debug-mysql/2.png">
+<meta property="og:image" content="http://riverdba.github.io/2017/05/04/gdb-debug-mysql/3.png">
+<meta property="og:image" content="http://riverdba.github.io/2017/05/04/gdb-debug-mysql/4.png">
+<meta property="og:image" content="http://riverdba.github.io/2017/05/04/gdb-debug-mysql/5.png">
+<meta property="og:image" content="http://riverdba.github.io/2017/05/04/gdb-debug-mysql/6.png">
+<meta property="og:image" content="http://riverdba.github.io/2017/05/04/gdb-debug-mysql/7.png">
+<meta property="og:image" content="http://riverdba.github.io/2017/05/04/gdb-debug-mysql/8.png">
+<meta property="og:image" content="http://riverdba.github.io/2017/05/04/gdb-debug-mysql/9.png">
+<meta property="og:image" content="http://riverdba.github.io/2017/05/04/gdb-debug-mysql/10.png">
+<meta property="og:image" content="http://riverdba.github.io/2017/05/04/gdb-debug-mysql/11.png">
+<meta property="og:image" content="http://riverdba.github.io/2017/05/04/gdb-debug-mysql/12.png">
+<meta property="og:image" content="http://riverdba.github.io/2017/05/04/gdb-debug-mysql/13.png">
+<meta property="og:image" content="http://riverdba.github.io/2017/05/04/gdb-debug-mysql/14.png">
+<meta property="og:image" content="http://riverdba.github.io/2017/05/04/gdb-debug-mysql/15.png">
+<meta property="og:updated_time" content="2017-05-04T10:07:54.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用GDB调试mysql源码">
+<meta name="twitter:description" content="摘要：通过GDB调试mysql5.6的启动过程">
+<meta name="twitter:image" content="http://riverdba.github.io/2017/05/04/gdb-debug-mysql/1.png">
+
+<link rel="apple-touch-icon" href= "/apple-touch-icon.png">
+
+
+    <link rel="alternate" href="/atom.xml" title="Yangtze River&#39;s blog" type="application/atom+xml">
+
+
+
+    <link rel="shortcut icon" href="/yangtzeriver.jpg">
+
+
+
+    <link href="//cdn.bootcss.com/animate.css/3.5.1/animate.min.css" rel="stylesheet">
+
+
+
+    <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+
+
+
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+
+
+<title>使用GDB调试mysql源码 | Yangtze River&#39;s blog</title>
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+
+<script>
+    var yiliaConfig = {
+        fancybox: true,
+        animate: true,
+        isHome: false,
+        isPost: true,
+        isArchive: false,
+        isTag: false,
+        isCategory: false,
+        fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+        scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
+        search: true
+    }
+</script>
+
+
+    <script>
+        yiliaConfig.jquery_ui = [true, "//cdn.bootcss.com/jqueryui/1.10.4/jquery-ui.min.js", "//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css"];
+    </script>
+
+
+
+    <script> yiliaConfig.rootUrl = "\/";</script>
+
+
+
+
+
+
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/img/yangtzeriver.jpg" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">一条大河</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">为学患无疑，疑则进也！</p>
+        
+
+        
+            <form id="search-form">
+            <input type="text" id="local-search-input" name="q" placeholder="search..." class="search form-control" autocomplete="off" autocorrect="off" searchonload="false" />
+            <i class="fa fa-times" onclick="resetSearch()"></i>
+            </form>
+            <div id="local-search-result"></div>
+            <p class='no-result'>No results found <i class='fa fa-spinner fa-pulse'></i></p>
+        
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" href="mailto:river_dba@foxmail.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" href="#" title="GitHub"></a>
+                            
+                                <a class="fa RSS" href="/atom.xml" title="RSS"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/GDB/">GDB</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hexo-Quick-Start/">Hexo Quick Start</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL查询优化技术/">MySQL查询优化技术</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SQL审核工具/">SQL审核工具</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/disqus/">disqus</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql性能调优技术/">mysql性能调优技术</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql查询优化技术/">mysql查询优化技术</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/online-ddl/">online ddl</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sysbench/">sysbench</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/学习笔记/">学习笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工作笔记/">工作笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/故障诊断/">故障诊断</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="http://moxfive.xyz/">MOxFIVE</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="http://moxfive.xyz/yelee/">yelee主题</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://dbanote.github.io">刘雅君</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">一条大河</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/img/yangtzeriver.jpg" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">一条大河</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">为学患无疑，疑则进也！</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" target="_blank" href="mailto:river_dba@foxmail.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" target="_blank" href="#" title="GitHub"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-gdb-debug-mysql" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/05/04/gdb-debug-mysql/" class="article-date">
+      <time datetime="2017-05-04T02:21:02.000Z" itemprop="datePublished">2017-05-04</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      使用GDB调试mysql源码
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/MySQL/">MySQL</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/GDB/">GDB</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p><excerpt in="" index="" |="" 首页摘要=""><br>摘要：通过GDB调试mysql5.6的启动过程<a id="more"></a></excerpt></p>
+<p><the rest="" of="" contents="" |="" 余下全文=""></the></p>
+<h3 id="安装GDB"><a href="#安装GDB" class="headerlink" title="安装GDB"></a>安装GDB</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mysql2 src]# wget http://ftp.gnu.org/gnu/gdb/gdb-7.6.1.tar.gz</div><div class="line">[root@mysql2 src]# tar -zxvf gdb-7.6.1.tar.gz </div><div class="line">[root@mysql2 src]# cd gdb-7.6.1 </div><div class="line">[root@mysql2 gdb-7.6.1]# ./configure  </div><div class="line">[root@mysql2 gdb-7.6.1]# make &amp;&amp; make install</div><div class="line">[root@mysql2 gdb-7.6.1]# whereis gdb</div><div class="line">gdb: /usr/local/bin/gdb /usr/share/gdb</div><div class="line">[root@mysql2 gdb-7.6.1]# gdb -v</div><div class="line">GNU gdb (GDB) 7.6.1</div><div class="line">Copyright (C) 2013 Free Software Foundation, Inc.</div><div class="line">License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;</div><div class="line">This is free software: you are free to change and redistribute it.</div><div class="line">There is NO WARRANTY, to the extent permitted by law.  Type &quot;show copying&quot;</div><div class="line">and &quot;show warranty&quot; for details.</div><div class="line">This GDB was configured as &quot;x86_64-unknown-linux-gnu&quot;.</div><div class="line">For bug reporting instructions, please see:</div><div class="line">&lt;http://www.gnu.org/software/gdb/bugs/&gt;.</div><div class="line">[root@mysql2 ~]# gdb</div><div class="line">GNU gdb (GDB) 7.6.1</div><div class="line">Copyright (C) 2013 Free Software Foundation, Inc.</div><div class="line">License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;</div><div class="line">This is free software: you are free to change and redistribute it.</div><div class="line">There is NO WARRANTY, to the extent permitted by law.  Type &quot;show copying&quot;</div><div class="line">and &quot;show warranty&quot; for details.</div><div class="line">This GDB was configured as &quot;x86_64-unknown-linux-gnu&quot;.</div><div class="line">For bug reporting instructions, please see:</div><div class="line">&lt;http://www.gnu.org/software/gdb/bugs/&gt;.</div><div class="line">(gdb) help</div><div class="line">List of classes of commands:</div><div class="line"></div><div class="line">aliases -- Aliases of other commands</div><div class="line">breakpoints -- Making program stop at certain points</div><div class="line">data -- Examining data</div><div class="line">files -- Specifying and examining files</div><div class="line">internals -- Maintenance commands</div><div class="line">obscure -- Obscure features</div><div class="line">running -- Running the program</div><div class="line">stack -- Examining the stack</div><div class="line">status -- Status inquiries</div><div class="line">support -- Support facilities</div><div class="line">tracepoints -- Tracing of program execution without stopping the program</div><div class="line">user-defined -- User-defined commands</div><div class="line"></div><div class="line">Type &quot;help&quot; followed by a class name for a list of commands in that class.</div><div class="line">Type &quot;help all&quot; for the list of all commands.</div><div class="line">Type &quot;help&quot; followed by command name for full documentation.</div><div class="line">Type &quot;apropos word&quot; to search for commands related to &quot;word&quot;.</div><div class="line">Command name abbreviations are allowed if unambiguous.</div><div class="line">(gdb)</div></pre></td></tr></table></figure>
+<h3 id="开启DEBUG模式编译源码"><a href="#开启DEBUG模式编译源码" class="headerlink" title="开启DEBUG模式编译源码"></a>开启DEBUG模式编译源码</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mysql2 ~]# mkdir -p &#123;/opt/debug_mysql,/opt/debug_mysql/run,/data/debug_mysql/data,/data/debug_mysql/tmp,/data/debug_mysql/log/iblog,/data/debug_mysql/log/binlog&#125;</div><div class="line">[root@mysql2 mysql-5.6.35]#cmake \</div><div class="line">-DCMAKE_INSTALL_PREFIX=/opt/debug_mysql \</div><div class="line">-DINSTALL_DATADIR=/data/debug_mysql/data  \</div><div class="line">-DDEFAULT_CHARSET=utf8 \</div><div class="line">-DDEFAULT_COLLATION=utf8_general_ci \</div><div class="line">-DEXTRA_CHARSETS=all \</div><div class="line">-DWITH_SSL=yes \</div><div class="line">-DWITH_EMBEDDED_SERVER=1 \</div><div class="line">-DENABLED_LOCAL_INFILE=1 \</div><div class="line">-DWITH_MYISAM_STORAGE_ENGINE=1 \</div><div class="line">-DWITH_INNOBASE_STORAGE_ENGINE=1 \</div><div class="line">-DWITH_ARCHIVE_STORAGE_ENGINE=1 \</div><div class="line">-DWITH_BLACKHOLE_STORAGE_ENGINE=1 \</div><div class="line">-DWITH_FEDERATED_STORAGE_ENGINE=1 \</div><div class="line">-DWITH_PARTITION_STORAGE_ENGINE=1 \</div><div class="line">-DMYSQL_UNIX_ADDR=/opt/debug_mysql/run/mysql.sock \</div><div class="line">-DMYSQL_TCP_PORT=3307 \</div><div class="line">-DENABLED_LOCAL_INFILE=1 \</div><div class="line">-DSYSCONFDIR=/etc \</div><div class="line">-DWITH_DEBUG=1 #添加此项开启DEBUG模式</div><div class="line">[root@mysql2 mysql-5.6.35]# make &amp;&amp; make install</div><div class="line">[root@mysql2 opt]# /opt/debug_mysql/scripts/mysql_install_db --defaults-file=/opt/my3307.cnf --basedir=/opt/debug_mysql</div></pre></td></tr></table></figure>
+<h3 id="调试mysqld的启动过程"><a href="#调试mysqld的启动过程" class="headerlink" title="调试mysqld的启动过程"></a>调试mysqld的启动过程</h3><h4 id="找到mysqld的启动入口"><a href="#找到mysqld的启动入口" class="headerlink" title="找到mysqld的启动入口"></a>找到mysqld的启动入口</h4><p>对mysqld的入口函数(mysqld_main)做断点:<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mysql2 ~]# gdb --args /opt/debug_mysql/bin/mysqld</div><div class="line">GNU gdb (GDB) 7.6.1</div><div class="line">Copyright (C) 2013 Free Software Foundation, Inc.</div><div class="line">License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;</div><div class="line">This is free software: you are free to change and redistribute it.</div><div class="line">There is NO WARRANTY, to the extent permitted by law.  Type &quot;show copying&quot;</div><div class="line">and &quot;show warranty&quot; for details.</div><div class="line">This GDB was configured as &quot;x86_64-unknown-linux-gnu&quot;.</div><div class="line">For bug reporting instructions, please see:</div><div class="line">&lt;http://www.gnu.org/software/gdb/bugs/&gt;...</div><div class="line">Reading symbols from /opt/debug_mysql/bin/mysqld...done.</div><div class="line">(gdb) b mysqld_main</div><div class="line">Breakpoint 1 at 0x63bfbf: file /opt/mysql-5.6.35/sql/mysqld.cc, line 5250.</div><div class="line">(gdb)</div></pre></td></tr></table></figure></p>
+<p>查看源码文件mysqld.cc的第5250行：<br><img src="/2017/05/04/gdb-debug-mysql/1.png" alt="图1"><br>说明这个mysqld_main就是mysqld启动的入口函数</p>
+<h4 id="启动mysqld"><a href="#启动mysqld" class="headerlink" title="启动mysqld"></a>启动mysqld</h4><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">(gdb) n</div><div class="line">The program is not being run.</div><div class="line">(gdb) r</div><div class="line">Starting program: /opt/debug_mysql/bin/mysqld </div><div class="line">[Thread debugging using libthread_db enabled]</div><div class="line">Using host libthread_db library &quot;/lib64/libthread_db.so.1&quot;.</div><div class="line"></div><div class="line">Breakpoint 1, mysqld_main (argc=1, argv=0x7fffffffe578) at /opt/mysql-5.6.35/sql/mysqld.cc:5250</div><div class="line">5250      my_progname= argv[0];</div></pre></td></tr></table></figure>
+<p>mysqld_main本身作为第一个参数传递给my_progname启动。</p>
+<h4 id="文件、目录权限的初始化"><a href="#文件、目录权限的初始化" class="headerlink" title="文件、目录权限的初始化"></a>文件、目录权限的初始化</h4><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">(gdb) n</div><div class="line">5254      if (my_init())                 // init my_sys library &amp; pthreads</div><div class="line">(gdb) s</div><div class="line">my_init () at /opt/mysql-5.6.35/mysys/my_init.c:69</div><div class="line">69        if (my_init_done)</div><div class="line">(gdb) n</div><div class="line">72        my_init_done= 1;</div><div class="line">(gdb) n</div><div class="line">74        my_umask= 0660;                       /* Default umask for new files */</div><div class="line">(gdb) n</div><div class="line">75        my_umask_dir= 0700;                   /* Default umask for new directories */</div><div class="line">(gdb) n</div><div class="line">78        if ((str= getenv(&quot;UMASK&quot;)) != 0)</div><div class="line">(gdb) n</div><div class="line">81        if ((str= getenv(&quot;UMASK_DIR&quot;)) != 0)</div><div class="line">(gdb) n</div><div class="line">84        init_glob_errs();</div><div class="line">(gdb) n</div><div class="line">86        instrumented_stdin.m_file= stdin;</div><div class="line">(gdb) n</div><div class="line">87        instrumented_stdin.m_psi= NULL;       /* not yet instrumented */</div><div class="line">(gdb) n</div><div class="line">88        mysql_stdin= &amp; instrumented_stdin;</div></pre></td></tr></table></figure>
+<h4 id="线程初始化"><a href="#线程初始化" class="headerlink" title="线程初始化"></a>线程初始化</h4><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">(gdb) n</div><div class="line">90        if (my_thread_global_init())</div><div class="line">(gdb) s</div><div class="line">my_thread_global_init () at /opt/mysql-5.6.35/mysys/my_thr_init.c:120</div><div class="line">120       if (my_thread_global_init_done)</div><div class="line">(gdb) n</div><div class="line">122       my_thread_global_init_done= 1;</div><div class="line">(gdb) n</div><div class="line">134       pthread_mutexattr_init(&amp;my_fast_mutexattr);</div><div class="line">(gdb) n</div><div class="line">135       pthread_mutexattr_settype(&amp;my_fast_mutexattr,</div><div class="line">(gdb) n</div><div class="line">143       pthread_mutexattr_init(&amp;my_errorcheck_mutexattr);</div><div class="line">(gdb) n</div><div class="line">144       pthread_mutexattr_settype(&amp;my_errorcheck_mutexattr,</div><div class="line">(gdb) n</div><div class="line">148       DBUG_ASSERT(! THR_KEY_mysys_initialized);</div><div class="line">(gdb) n</div><div class="line">149       if ((pth_ret= pthread_key_create(&amp;THR_KEY_mysys, NULL)) != 0)</div><div class="line">(gdb) s</div><div class="line">155       THR_KEY_mysys_initialized= TRUE;</div><div class="line">(gdb) n</div><div class="line">156       mysql_mutex_init(key_THR_LOCK_malloc, &amp;THR_LOCK_malloc, MY_MUTEX_INIT_FAST);</div><div class="line">(gdb) n</div><div class="line">157       mysql_mutex_init(key_THR_LOCK_open, &amp;THR_LOCK_open, MY_MUTEX_INIT_FAST);</div><div class="line">(gdb) n</div><div class="line">158       mysql_mutex_init(key_THR_LOCK_charset, &amp;THR_LOCK_charset, MY_MUTEX_INIT_FAST);</div><div class="line">(gdb) n</div><div class="line">159       mysql_mutex_init(key_THR_LOCK_threads, &amp;THR_LOCK_threads, MY_MUTEX_INIT_FAST);</div></pre></td></tr></table></figure>
+<p><img src="/2017/05/04/gdb-debug-mysql/2.png" alt="图2"><br><img src="/2017/05/04/gdb-debug-mysql/3.png" alt="图3"></p>
+<h4 id="mutex初始化"><a href="#mutex初始化" class="headerlink" title="mutex初始化"></a>mutex初始化</h4><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">(gdb) n</div><div class="line">my_init () at /opt/mysql-5.6.35/mysys/my_init.c:94</div><div class="line">94        safe_mutex_global_init();             /* Must be called early */</div><div class="line">(gdb) n</div><div class="line">102       if ((home_dir= getenv(&quot;HOME&quot;)) != 0)</div><div class="line">(gdb) n</div><div class="line">103         home_dir= intern_filename(home_dir_buff, home_dir);</div><div class="line">(gdb) n</div><div class="line">106         DBUG_ENTER(&quot;my_init&quot;);</div><div class="line">(gdb) n</div><div class="line">107         DBUG_PROCESS((char*) (my_progname ? my_progname : &quot;unknown&quot;));</div><div class="line">(gdb) n</div><div class="line">109         DBUG_PRINT(&quot;exit&quot;, (&quot;home: &apos;%s&apos;&quot;, home_dir));</div><div class="line">(gdb) n</div><div class="line">113         DBUG_RETURN(0);</div><div class="line">(gdb) n</div><div class="line">115     &#125; /* my_init */</div></pre></td></tr></table></figure>
+<h4 id="加载配置文件"><a href="#加载配置文件" class="headerlink" title="加载配置文件"></a>加载配置文件</h4><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">(gdb) n</div><div class="line">mysqld_main (argc=1, argv=0x7fffffffe578) at /opt/mysql-5.6.35/sql/mysqld.cc:5261</div><div class="line">5261      orig_argc= argc;</div><div class="line">(gdb) s</div><div class="line">5262      orig_argv= argv;</div><div class="line">(gdb) n</div><div class="line">5263      my_getopt_use_args_separator= TRUE;</div><div class="line">(gdb) n</div><div class="line">5264      my_defaults_read_login_file= FALSE;</div><div class="line">(gdb) n</div><div class="line">5265      if (load_defaults(MYSQL_CONFIG_NAME, load_default_groups, &amp;argc, &amp;argv))</div></pre></td></tr></table></figure>
+<p><img src="/2017/05/04/gdb-debug-mysql/4.png" alt="图4"><br><img src="/2017/05/04/gdb-debug-mysql/5.png" alt="图5"><br>下图可以看到win平台上mysqld加载my.cnf配置文件的顺序：<br><img src="/2017/05/04/gdb-debug-mysql/6.png" alt="图6"><br>下图可以看到linux平台上mysqld加载my.cnf配置文件的顺序：<br><img src="/2017/05/04/gdb-debug-mysql/7.png" alt="图7"><br>依次查找my.cnf的顺序是：/etc、/etc/mysql、当前目录、当前用户家目录</p>
+<h4 id="设置字符集"><a href="#设置字符集" class="headerlink" title="设置字符集"></a>设置字符集</h4><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">(gdb) n</div><div class="line">5274      system_charset_info= &amp;my_charset_utf8_general_ci;</div></pre></td></tr></table></figure>
+<h4 id="初始化各种status变量"><a href="#初始化各种status变量" class="headerlink" title="初始化各种status变量"></a>初始化各种status变量</h4><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">(gdb) n</div><div class="line">5276      init_sql_statement_names();</div><div class="line">(gdb) s</div><div class="line">init_sql_statement_names () at /opt/mysql-5.6.35/sql/mysqld.cc:3599</div><div class="line">3599      char *first_com= (char*) offsetof(STATUS_VAR, com_stat[0]);</div></pre></td></tr></table></figure>
+<h4 id="初始化系统变量"><a href="#初始化系统变量" class="headerlink" title="初始化系统变量"></a>初始化系统变量</h4><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">(gdb) n</div><div class="line">5277      sys_var_init();</div><div class="line">(gdb) s</div><div class="line">sys_var_init () at /opt/mysql-5.6.35/sql/set_var.cc:61</div><div class="line">61        DBUG_ENTER(&quot;sys_var_init&quot;);</div></pre></td></tr></table></figure>
+<p><img src="/2017/05/04/gdb-debug-mysql/8.png" alt="图8"></p>
+<h4 id="初始化performance-schema"><a href="#初始化performance-schema" class="headerlink" title="初始化performance_schema"></a>初始化performance_schema</h4><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">(gdb) s</div><div class="line">init_pfs_instrument_array () at /opt/mysql-5.6.35/storage/perfschema/pfs_server.cc:218</div><div class="line">218       my_init_dynamic_array(&amp;pfs_instr_config_array, sizeof(PFS_instr_config*), 10, 10);</div></pre></td></tr></table></figure>
+<p><img src="/2017/05/04/gdb-debug-mysql/9.png" alt="图9"></p>
+<h4 id="为performance-schema初始化做早期准备"><a href="#为performance-schema初始化做早期准备" class="headerlink" title="为performance schema初始化做早期准备"></a>为performance schema初始化做早期准备</h4><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">(gdb) n</div><div class="line">mysqld_main (argc=2, argv=0x17edd20) at /opt/mysql-5.6.35/sql/mysqld.cc:5288</div><div class="line">5288      ho_error= handle_early_options();</div><div class="line">(gdb) s</div><div class="line">handle_early_options () at /opt/mysql-5.6.35/sql/mysqld.cc:6865</div><div class="line">6865      vector&lt;my_option&gt; all_early_options;</div></pre></td></tr></table></figure>
+<p><img src="/2017/05/04/gdb-debug-mysql/10.png" alt="图10"></p>
+<h4 id="初始化key-LOCK-error-log"><a href="#初始化key-LOCK-error-log" class="headerlink" title="初始化key_LOCK_error_log"></a>初始化key_LOCK_error_log</h4><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">(gdb) n</div><div class="line">5358      init_error_log_mutex();</div></pre></td></tr></table></figure>
+<p><img src="/2017/05/04/gdb-debug-mysql/11.png" alt="图11"></p>
+<h4 id="初始化key-LOCK-audit-mask"><a href="#初始化key-LOCK-audit-mask" class="headerlink" title="初始化key_LOCK_audit_mask"></a>初始化key_LOCK_audit_mask</h4><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">(gdb) s</div><div class="line">5368      mysql_audit_initialize();</div><div class="line">(gdb) s</div><div class="line">mysql_audit_initialize () at /opt/mysql-5.6.35/sql/sql_audit.cc:316</div><div class="line">316       init_audit_psi_keys();</div></pre></td></tr></table></figure>
+<p><img src="/2017/05/04/gdb-debug-mysql/12.png" alt="图12"></p>
+<h4 id="初始化logger"><a href="#初始化logger" class="headerlink" title="初始化logger"></a>初始化logger</h4><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">(gdb) n</div><div class="line">mysqld_main (argc=2, argv=0x17edd20) at /opt/mysql-5.6.35/sql/mysqld.cc:5374</div><div class="line">5374      logger.init_base();</div><div class="line">(gdb) s</div><div class="line">LOGGER::init_base (this=0x179a4c0 &lt;logger&gt;) at /opt/mysql-5.6.35/sql/log.cc:912</div><div class="line">912       DBUG_ASSERT(inited == 0);</div></pre></td></tr></table></figure>
+<p><img src="/2017/05/04/gdb-debug-mysql/13.png" alt="图13"><br><img src="/2017/05/04/gdb-debug-mysql/14.png" alt="图14"></p>
+<h4 id="初始化公共变量"><a href="#初始化公共变量" class="headerlink" title="初始化公共变量"></a>初始化公共变量</h4><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">(gdb) s</div><div class="line">5404      if (init_common_variables())</div></pre></td></tr></table></figure>
+<p><img src="/2017/05/04/gdb-debug-mysql/15.png" alt="图15"></p>
+<h4 id="检查data-home目录"><a href="#检查data-home目录" class="headerlink" title="检查data home目录"></a>检查data home目录</h4><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">(gdb) n</div><div class="line">5465      check_data_home(mysql_real_data_home);</div><div class="line">(gdb) n</div><div class="line">5466      if (my_setwd(mysql_real_data_home,MYF(MY_WME)) &amp;&amp; !opt_help)</div><div class="line">(gdb) s</div><div class="line">my_setwd (dir=0x17931a0 &lt;mysql_real_data_home&gt; &quot;/opt/debug_mysql/data/&quot;, MyFlags=16) at /opt/mysql-5.6.35/mysys/my_getwd.c:98</div><div class="line">98        DBUG_ENTER(&quot;my_setwd&quot;);</div></pre></td></tr></table></figure>
+<h4 id="检查用户"><a href="#检查用户" class="headerlink" title="检查用户"></a>检查用户</h4><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">(gdb) n</div><div class="line">mysqld_main (argc=2, argv=0x17edd20) at /opt/mysql-5.6.35/sql/mysqld.cc:5469</div><div class="line">5469      if ((user_info= check_user(mysqld_user)))</div><div class="line">(gdb) s</div><div class="line">check_user (user=0x0) at /opt/mysql-5.6.35/sql/mysqld.cc:2100</div><div class="line">2100      uid_t user_id= geteuid();</div></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2017/05/04/gdb-debug-mysql/">使用GDB调试mysql源码</a></p>
+        <p><span>文章作者:</span><a href="/" title="回到主页">一条大河</a></p>
+        <p><span>发布时间:</span>2017-05-04, 10:21:02</p>
+        <p><span>最后更新:</span>2017-05-04, 18:07:54</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2017/05/04/gdb-debug-mysql/" title="使用GDB调试mysql源码">http://riverdba.github.io/2017/05/04/gdb-debug-mysql/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://riverdba.github.io/2017/05/04/gdb-debug-mysql/　　作者: 一条大河" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2017/04/24/mycat-faq/">
+                    mycat常见问题集锦
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">文章目录</strong>
+        
+            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#安装GDB"><span class="toc-number">1.</span> <span class="toc-text">安装GDB</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#开启DEBUG模式编译源码"><span class="toc-number">2.</span> <span class="toc-text">开启DEBUG模式编译源码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#调试mysqld的启动过程"><span class="toc-number">3.</span> <span class="toc-text">调试mysqld的启动过程</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#找到mysqld的启动入口"><span class="toc-number">3.1.</span> <span class="toc-text">找到mysqld的启动入口</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#启动mysqld"><span class="toc-number">3.2.</span> <span class="toc-text">启动mysqld</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#文件、目录权限的初始化"><span class="toc-number">3.3.</span> <span class="toc-text">文件、目录权限的初始化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#线程初始化"><span class="toc-number">3.4.</span> <span class="toc-text">线程初始化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#mutex初始化"><span class="toc-number">3.5.</span> <span class="toc-text">mutex初始化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#加载配置文件"><span class="toc-number">3.6.</span> <span class="toc-text">加载配置文件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#设置字符集"><span class="toc-number">3.7.</span> <span class="toc-text">设置字符集</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#初始化各种status变量"><span class="toc-number">3.8.</span> <span class="toc-text">初始化各种status变量</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#初始化系统变量"><span class="toc-number">3.9.</span> <span class="toc-text">初始化系统变量</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#初始化performance-schema"><span class="toc-number">3.10.</span> <span class="toc-text">初始化performance_schema</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#为performance-schema初始化做早期准备"><span class="toc-number">3.11.</span> <span class="toc-text">为performance schema初始化做早期准备</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#初始化key-LOCK-error-log"><span class="toc-number">3.12.</span> <span class="toc-text">初始化key_LOCK_error_log</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#初始化key-LOCK-audit-mask"><span class="toc-number">3.13.</span> <span class="toc-text">初始化key_LOCK_audit_mask</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#初始化logger"><span class="toc-number">3.14.</span> <span class="toc-text">初始化logger</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#初始化公共变量"><span class="toc-number">3.15.</span> <span class="toc-text">初始化公共变量</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#检查data-home目录"><span class="toc-number">3.16.</span> <span class="toc-text">检查data home目录</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#检查用户"><span class="toc-number">3.17.</span> <span class="toc-text">检查用户</span></a></li></ol></li></ol>
+        
+    </div>
+    <style>
+        .left-col .switch-btn,
+        .left-col .switch-area {
+            display: none;
+        }
+        .toc-level-6 i,
+        .toc-level-6 ol {
+            display: none !important;
+        }
+    </style>
+
+    <input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+    <script>
+        yiliaConfig.toc = ["隐藏目录", "显示目录", !!"false"];
+    </script>
+
+
+
+    
+<div class="share">
+    
+        <div class="bdsharebuttonbox">
+            <a href="#" class="fa fa-twitter bds_twi" data-cmd="twi" title="分享到推特"></a>
+            <a href="#" class="fa fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+            <a href="#" class="fa fa-qq bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+            <a href="#" class="fa fa-files-o bds_copy" data-cmd="copy" title="复制网址"></a>
+            <a href="#" class="fa fa fa-envelope-o bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+            <a href="#" class="fa fa-weixin bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+            <a href="#" class="fa fa-share-alt bds_more" data-cmd="more"></i></a>
+        </div>
+        <script>
+            window._bd_share_config={
+                "common":{"bdSnsKey":{},"bdText":"使用GDB调试mysql源码　| Yangtze River's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+        </script>
+    
+
+    
+</div>
+
+
+
+
+
+
+
+    
+        <section id="comments">
+    <style> aside.comment-bar { margin: auto 30px; }</style>
+    <div id="disqus_thread"></div>
+    <script>
+        var disqus_config = function(){
+            this.page.url = 'http://riverdba.github.io/2017/05/04/gdb-debug-mysql/';
+            this.page.identifier = '2017/05/04/gdb-debug-mysql/';
+        };
+        var loadComment = function(){
+            var d = document, s = d.createElement('script');
+            s.src = '//https-riverdba-github-io.disqus.com/embed.js';
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        }
+    </script>
+    
+    <script> loadComment(); </script>
+
+</section>
+
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2017/04/24/mycat-faq/" title="下一篇: mycat常见问题集锦">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2017/05/04/gdb-debug-mysql/">使用GDB调试mysql源码</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/24/mycat-faq/">mycat常见问题集锦</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/24/select-on-mycat/">在mycat上使用select * 的影响</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/22/mycat-upgrade/">mycat1.4升级到1.5</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/21/mysql-sleep-process-too-many/">mysql sleep连接太多怎么办</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/20/online-ddl-tools-by-oak/">MySQL在线DDL工具之OAK</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/19/hive2mycat/">将hive输出文件导入mycat</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/15/archer-install/">archer安装及使用</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/13/inception-install/">Inception安装及使用</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/11/sysbench-for-mysql/">mysql基准测试</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/06/String-handling-of-mysql/">MySQL字符串处理一则</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/05/Non-SPJ-Optimization-of-mysql/">MySQL查询优化技术之非SPJ优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/01/MVCC-theory-study/">Innodb的MVCC实现原理</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/30/mysql-troubleshooting01/">mysql故障处理记录1</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/29/Deep-comprehend-mysql-replication/">深入理解mysql的主从复制</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/28/Sematic-Optimization-of-mysql/">mysql查询优化技术之语义优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/28/hexo-s-tips/">hexo's tips</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/27/hexo-s-comment/">实现hexo的评论功能</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/27/Performance-tuning-key-points-of-mysql/">mysql性能调优的关键点</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/22/join-elimination-technique-of-mysql/">mysql查询优化技术之连接消除</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/21/hello-world/">Hello World</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2017 一条大河
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题  v3.5">Yelee</a> by MOxFIVE <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" title="本站到访数"><i class="fa fa-user" aria-hidden="true"></i><span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>| </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit"  title="本页阅读量"><i class="fa fa-eye animated infinite pulse" aria-hidden="true"></i><span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+    </div>
+    
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.2.0/require.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" onclick="load$hide();" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    // Open in New Window
+    
+        var oOpenInNew = {
+            
+            
+            
+            
+            
+            
+             archives: ".archive-article-title", 
+             miniArchives: "a.post-list-link", 
+            
+             friends: "#js-friends a", 
+             socail: ".social a" 
+        }
+        for (var x in oOpenInNew) {
+            $(oOpenInNew[x]).attr("target", "_blank");
+        }
+    
+</script>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  </div>
+</body>
+</html>
