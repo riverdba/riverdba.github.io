@@ -15,20 +15,16 @@
 
 
 
-<meta name="description" content="摘要：mysql数据库故障处理记录">
+<meta name="description" content="摘要：重现mysql事务未提交导致的阻塞">
 <meta property="og:type" content="article">
-<meta property="og:title" content="mysql故障处理记录1">
-<meta property="og:url" content="http://riverdba.github.io/2017/03/30/mysql-troubleshooting01/index.html">
+<meta property="og:title" content="mysql事务未提交引发的阻塞">
+<meta property="og:url" content="http://riverdba.github.io/2017/07/13/mysql-transcation-uncommitted/index.html">
 <meta property="og:site_name" content="Yangtze River's blog">
-<meta property="og:description" content="摘要：mysql数据库故障处理记录">
-<meta property="og:image" content="http://riverdba.github.io/2017/03/30/mysql-troubleshooting01/1.png">
-<meta property="og:image" content="http://riverdba.github.io/2017/03/30/mysql-troubleshooting01/2.png">
-<meta property="og:image" content="http://riverdba.github.io/2017/03/30/mysql-troubleshooting01/3.png">
-<meta property="og:updated_time" content="2017-03-30T03:17:00.000Z">
+<meta property="og:description" content="摘要：重现mysql事务未提交导致的阻塞">
+<meta property="og:updated_time" content="2017-07-13T09:12:40.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="mysql故障处理记录1">
-<meta name="twitter:description" content="摘要：mysql数据库故障处理记录">
-<meta name="twitter:image" content="http://riverdba.github.io/2017/03/30/mysql-troubleshooting01/1.png">
+<meta name="twitter:title" content="mysql事务未提交引发的阻塞">
+<meta name="twitter:description" content="摘要：重现mysql事务未提交导致的阻塞">
 
 <link rel="apple-touch-icon" href= "/apple-touch-icon.png">
 
@@ -60,7 +56,7 @@
 <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
 
 
-<title>mysql故障处理记录1 | Yangtze River&#39;s blog</title>
+<title>mysql事务未提交引发的阻塞 | Yangtze River&#39;s blog</title>
 
 <script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
 <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
@@ -264,11 +260,11 @@
     </div>
     <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
 </nav>
-      <div class="body-wrap"><article id="post-mysql-troubleshooting01" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-mysql-transcation-uncommitted" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2017/03/30/mysql-troubleshooting01/" class="article-date">
-      <time datetime="2017-03-30T02:18:34.000Z" itemprop="datePublished">2017-03-30</time>
+      <a href="/2017/07/13/mysql-transcation-uncommitted/" class="article-date">
+      <time datetime="2017-07-13T08:51:51.000Z" itemprop="datePublished">2017-07-13</time>
 </a>
 
 
@@ -283,7 +279,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      mysql故障处理记录1
+      mysql事务未提交引发的阻塞
     </h1>
   
 
@@ -308,15 +304,19 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-        <p><excerpt in="" index="" |="" 首页摘要=""><br>摘要：mysql数据库故障处理记录<a id="more"></a></excerpt></p>
-<the rest="" of="" contents="" |="" 余下全文="">
+        <p><excerpt in="" index="" |="" 首页摘要=""><br>摘要：重现mysql事务未提交导致的阻塞<a id="more"></a></excerpt></p>
+<p><the rest="" of="" contents="" |="" 余下全文=""></the></p>
+<h3 id="环境说明"><a href="#环境说明" class="headerlink" title="环境说明"></a>环境说明</h3><p>zabbix的表history_str的数据总行数为680：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">root@zabbix 10:24:26&gt;select count(*) from history_str;</div><div class="line">+----------+</div><div class="line">| count(*) |</div><div class="line">+----------+</div><div class="line">|      680 |</div><div class="line">+----------+</div><div class="line">1 row in set (0.00 sec)</div></pre></td></tr></table></figure></p>
+<p>通过这个表模拟会话1执行一个事务很快就完成了但是未提交，会话2对该表进行update操作就会被阻塞。</p>
+<h3 id="会话1"><a href="#会话1" class="headerlink" title="会话1"></a>会话1</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">root@zabbix 10:24:26&gt;begin;</div><div class="line">root@zabbix 10:24:26&gt;select * from history_str for update;</div></pre></td></tr></table></figure>
+<p>会话1上对该表开启一个事务，并执行一个操作，对表的每一行都加X锁。也就是说相当于对该表加了表锁。<br>由于表只有几百条数据，查询很快就完成了。但是该事务一直未提交。</p>
+<h3 id="会话2"><a href="#会话2" class="headerlink" title="会话2"></a>会话2</h3><p>这时另一个会话对该表的某一条记录进行更新操作，就遇到了报错：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">root@zabbix 10:26:43&gt;update history_str set value=&apos;testupdate&apos; where itemid=23327; </div><div class="line">ERROR 1205 (HY000): Lock wait timeout exceeded; try restarting transaction</div></pre></td></tr></table></figure></p>
+<p>由于表数据很少，所以会话1中的操作很快已完成，所以在processlist中是看不到任何正在执行的sql：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">root@zabbix 10:31:30&gt;show processlist;</div><div class="line">+----+------+-----------+--------+---------+------+-------+------------------+</div><div class="line">| Id | User | Host      | db     | Command | Time | State | Info             |</div><div class="line">+----+------+-----------+--------+---------+------+-------+------------------+</div><div class="line">|  1 | root | localhost | zabbix | Sleep   |   80 |       | NULL             |</div><div class="line">|  2 | root | localhost | zabbix | Query   |    0 | init  | show processlist |</div><div class="line">|  3 | root | localhost | NULL   | Sleep   |  217 |       | NULL             |</div><div class="line">+----+------+-----------+--------+---------+------+-------+------------------+</div><div class="line">3 rows in set (0.00 sec)</div></pre></td></tr></table></figure></p>
+<h3 id="会话3"><a href="#会话3" class="headerlink" title="会话3"></a>会话3</h3><p>查看是否存在正在被锁定的事务线程：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">root@(none) 10:27:21&gt;select r.*,p.HOST,p.COMMAND,p.state,p.time from information_schema.innodb_trx r,information_schema.processlist p where p.id = trx_mysql_thread_id  \G </div><div class="line">*************************** 1. row ***************************</div><div class="line">                    trx_id: 19828757</div><div class="line">                 trx_state: RUNNING  #这个状态说明事务还在运行中</div><div class="line">               trx_started: 2017-07-07 10:24:26</div><div class="line">     trx_requested_lock_id: NULL</div><div class="line">          trx_wait_started: NULL</div><div class="line">                trx_weight: 5</div><div class="line">       trx_mysql_thread_id: 1</div><div class="line">                 trx_query: NULL  #由于已经执行完毕，这里看不到具体的SQL</div><div class="line">       trx_operation_state: NULL</div><div class="line">         trx_tables_in_use: 0</div><div class="line">         trx_tables_locked: 0</div><div class="line">          trx_lock_structs: 5</div><div class="line">     trx_lock_memory_bytes: 1184</div><div class="line">           trx_rows_locked: 684</div><div class="line">         trx_rows_modified: 0</div><div class="line">   trx_concurrency_tickets: 0</div><div class="line">       trx_isolation_level: REPEATABLE READ</div><div class="line">         trx_unique_checks: 1</div><div class="line">    trx_foreign_key_checks: 1</div><div class="line">trx_last_foreign_key_error: NULL</div><div class="line"> trx_adaptive_hash_latched: 0</div><div class="line"> trx_adaptive_hash_timeout: 10000</div><div class="line">          trx_is_read_only: 0</div><div class="line">trx_autocommit_non_locking: 0</div><div class="line">                      HOST: localhost</div><div class="line">                   COMMAND: Sleep  #这个状态说明sql已执行完毕</div><div class="line">                     state: </div><div class="line">                      time: 210</div><div class="line">1 row in set (0.01 sec)</div></pre></td></tr></table></figure></p>
+<p>可以看到有一个事务id为19828757，为了确定下update操作是否被他阻塞，再次执行会话2的update语句然后马上到会话3查询：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">root@(none) 10:27:56&gt;select r.*,p.HOST,p.COMMAND,p.state,p.time from information_schema.innodb_trx r,information_schema.processlist p where p.id = trx_mysql_thread_id  \G </div><div class="line">*************************** 1. row ***************************</div><div class="line">                    trx_id: 19828759</div><div class="line">                 trx_state: LOCK WAIT</div><div class="line">               trx_started: 2017-07-07 10:28:13</div><div class="line">     trx_requested_lock_id: 19828759:79:6:2</div><div class="line">          trx_wait_started: 2017-07-07 10:28:13</div><div class="line">                trx_weight: 2</div><div class="line">       trx_mysql_thread_id: 2</div><div class="line">                 trx_query: update history_str set value=&apos;testupdate&apos; where itemid=23327</div><div class="line">       trx_operation_state: starting index read</div><div class="line">         trx_tables_in_use: 1</div><div class="line">         trx_tables_locked: 1</div><div class="line">          trx_lock_structs: 2</div><div class="line">     trx_lock_memory_bytes: 360</div><div class="line">           trx_rows_locked: 1</div><div class="line">         trx_rows_modified: 0</div><div class="line">   trx_concurrency_tickets: 0</div><div class="line">       trx_isolation_level: REPEATABLE READ</div><div class="line">         trx_unique_checks: 1</div><div class="line">    trx_foreign_key_checks: 1</div><div class="line">trx_last_foreign_key_error: NULL</div><div class="line"> trx_adaptive_hash_latched: 0</div><div class="line"> trx_adaptive_hash_timeout: 10000</div><div class="line">          trx_is_read_only: 0</div><div class="line">trx_autocommit_non_locking: 0</div><div class="line">                      HOST: localhost</div><div class="line">                   COMMAND: Query</div><div class="line">                     state: updating</div><div class="line">                      time: 2</div><div class="line">*************************** 2. row ***************************</div><div class="line">                    trx_id: 19828757</div><div class="line">                 trx_state: RUNNING</div><div class="line">               trx_started: 2017-07-07 10:24:26</div><div class="line">     trx_requested_lock_id: NULL</div><div class="line">          trx_wait_started: NULL</div><div class="line">                trx_weight: 5</div><div class="line">       trx_mysql_thread_id: 1</div><div class="line">                 trx_query: NULL</div><div class="line">       trx_operation_state: NULL</div><div class="line">         trx_tables_in_use: 0</div><div class="line">         trx_tables_locked: 0</div><div class="line">          trx_lock_structs: 5</div><div class="line">     trx_lock_memory_bytes: 1184</div><div class="line">           trx_rows_locked: 684</div><div class="line">         trx_rows_modified: 0</div><div class="line">   trx_concurrency_tickets: 0</div><div class="line">       trx_isolation_level: REPEATABLE READ</div><div class="line">         trx_unique_checks: 1</div><div class="line">    trx_foreign_key_checks: 1</div><div class="line">trx_last_foreign_key_error: NULL</div><div class="line"> trx_adaptive_hash_latched: 0</div><div class="line"> trx_adaptive_hash_timeout: 10000</div><div class="line">          trx_is_read_only: 0</div><div class="line">trx_autocommit_non_locking: 0</div><div class="line">                      HOST: localhost</div><div class="line">                   COMMAND: Sleep</div><div class="line">                     state: </div><div class="line">                      time: 229</div><div class="line">2 rows in set (0.00 sec)</div></pre></td></tr></table></figure></p>
+<p>可以看到我们的update果然是被会话1中未提交的事务（trx_id:19828757）阻塞了。</p>
+<h3 id="解决办法"><a href="#解决办法" class="headerlink" title="解决办法"></a>解决办法</h3><p>应急解决：Kill掉会话1<br>永久解决：找到导致该事务未提交的业务代码，务必保证每个事务都及时commit。</p>
 
-<h3 id="发现故障"><a href="#发现故障" class="headerlink" title="发现故障"></a>发现故障</h3><p>2017-03-29日晚上20点30突然同时收到2条微信告警：（mysql告警:threads_running超过阀值，os告警：cpu usage超过阀值）<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">Type: mysql </div><div class="line">Tags: XXX </div><div class="line">Host: 192.168.XXX.XXX:3306 </div><div class="line">Level: critical </div><div class="line">Item: threads_running </div><div class="line">Value: 314 </div><div class="line">Message: too many threads running </div><div class="line">Type: os </div><div class="line">Tags: XXX </div><div class="line">Host: 192.168.XXX.XXX: </div><div class="line">Level: critical </div><div class="line">Item: cpu_idle </div><div class="line">Value: 39% </div><div class="line">Message: too little cpu idle</div></pre></td></tr></table></figure></p>
-<h3 id="处理故障"><a href="#处理故障" class="headerlink" title="处理故障"></a>处理故障</h3><p>第一时间登录数据库查看当前运行的SQL：<br><img src="/2017/03/30/mysql-troubleshooting01/1.png" alt="图1"><br>查看慢查询：<br><img src="/2017/03/30/mysql-troubleshooting01/2.png" alt="图2"><br>发现该SQL就是阻塞的根源！<br>查看当前连接数，发现有800多个并发连接卡住，于是第一时间kill掉这些连接以保证业务正常！kill掉连接后数据库连接数下降到正常范围，同时主机CPU也恢复正常！</p>
-<h3 id="分析故障"><a href="#分析故障" class="headerlink" title="分析故障"></a>分析故障</h3><p>通过分析这个SQL语句，发现identifying_code字段上是有索引的，这个where条件匹配到的数据存在大量重复（最多的一个identifying_code有十几W行）：<br><img src="/2017/03/30/mysql-troubleshooting01/3.png" alt="图3"><br>而且这些数据中大部分的delete_flag已经是1了。可见这个SQL每次都是将大部分1改为1，并发量大的时候导致每次都锁很多行最终导致连接阻塞。因此可以优化SQL为如下：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">UPDATE XXX</div><div class="line">    set</div><div class="line">      delete_flag = 1</div><div class="line">    where</div><div class="line">    identifying_code = &apos;1517bfd3f7f4558885a&apos; and delete_flag = 0;</div></pre></td></tr></table></figure></p>
-<p>这样每次都只将delete_flag为0的改为1，这个条件过滤后每次符合条件的数据只有1行。就避免了每次update大量数据，减少行锁的发生！</p>
-<h3 id="故障总结"><a href="#故障总结" class="headerlink" title="故障总结"></a>故障总结</h3><p>这个属于开发的业务逻辑没考虑完善，同时作为DBA没有结合业务做更细的SQL审核也需要自我检讨。</p>
-</the>
       
     </div>
     
@@ -324,13 +324,13 @@
   
     
     <div class="copyright">
-        <p><span>本文标题:</span><a href="/2017/03/30/mysql-troubleshooting01/">mysql故障处理记录1</a></p>
+        <p><span>本文标题:</span><a href="/2017/07/13/mysql-transcation-uncommitted/">mysql事务未提交引发的阻塞</a></p>
         <p><span>文章作者:</span><a href="/" title="回到主页">一条大河</a></p>
-        <p><span>发布时间:</span>2017-03-30, 10:18:34</p>
-        <p><span>最后更新:</span>2017-03-30, 11:17:00</p>
+        <p><span>发布时间:</span>2017-07-13, 16:51:51</p>
+        <p><span>最后更新:</span>2017-07-13, 17:12:40</p>
         <p>
-            <span>原始链接:</span><a class="post-url" href="/2017/03/30/mysql-troubleshooting01/" title="mysql故障处理记录1">http://riverdba.github.io/2017/03/30/mysql-troubleshooting01/</a>
-            <span class="copy-path" data-clipboard-text="原文: http://riverdba.github.io/2017/03/30/mysql-troubleshooting01/　　作者: 一条大河" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <span>原始链接:</span><a class="post-url" href="/2017/07/13/mysql-transcation-uncommitted/" title="mysql事务未提交引发的阻塞">http://riverdba.github.io/2017/07/13/mysql-transcation-uncommitted/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://riverdba.github.io/2017/07/13/mysql-transcation-uncommitted/　　作者: 一条大河" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
             <script> var clipboard = new Clipboard('.copy-path'); </script>
         </p>
         <p>
@@ -342,16 +342,10 @@
 
     <nav id="article-nav">
         
-            <div id="article-nav-newer" class="article-nav-title">
-                <a href="/2017/04/01/MVCC-theory-study/">
-                    Innodb的MVCC实现原理
-                </a>
-            </div>
-        
         
             <div id="article-nav-older" class="article-nav-title">
-                <a href="/2017/03/29/Deep-comprehend-mysql-replication/">
-                    深入理解mysql的主从复制
+                <a href="/2017/07/11/scrapy-install/">
+                    Python爬虫框架scrapy的安装
                 </a>
             </div>
         
@@ -363,7 +357,7 @@
     <div id="toc" class="toc-article">
         <strong class="toc-title">文章目录</strong>
         
-            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#发现故障"><span class="toc-number">1.</span> <span class="toc-text">发现故障</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#处理故障"><span class="toc-number">2.</span> <span class="toc-text">处理故障</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#分析故障"><span class="toc-number">3.</span> <span class="toc-text">分析故障</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#故障总结"><span class="toc-number">4.</span> <span class="toc-text">故障总结</span></a></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#环境说明"><span class="toc-number">1.</span> <span class="toc-text">环境说明</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#会话1"><span class="toc-number">2.</span> <span class="toc-text">会话1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#会话2"><span class="toc-number">3.</span> <span class="toc-text">会话2</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#会话3"><span class="toc-number">4.</span> <span class="toc-text">会话3</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#解决办法"><span class="toc-number">5.</span> <span class="toc-text">解决办法</span></a></li></ol>
         
     </div>
     <style>
@@ -399,7 +393,7 @@
         </div>
         <script>
             window._bd_share_config={
-                "common":{"bdSnsKey":{},"bdText":"mysql故障处理记录1　| Yangtze River's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+                "common":{"bdSnsKey":{},"bdText":"mysql事务未提交引发的阻塞　| Yangtze River's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
         </script>
     
 
@@ -418,8 +412,8 @@
     <div id="disqus_thread"></div>
     <script>
         var disqus_config = function(){
-            this.page.url = 'http://riverdba.github.io/2017/03/30/mysql-troubleshooting01/';
-            this.page.identifier = '2017/03/30/mysql-troubleshooting01/';
+            this.page.url = 'http://riverdba.github.io/2017/07/13/mysql-transcation-uncommitted/';
+            this.page.identifier = '2017/07/13/mysql-transcation-uncommitted/';
         };
         var loadComment = function(){
             var d = document, s = d.createElement('script');
@@ -441,15 +435,13 @@
 
     <div class="scroll" id="post-nav-button">
         
-            <a href="/2017/04/01/MVCC-theory-study/" title="上一篇: Innodb的MVCC实现原理">
-                <i class="fa fa-angle-left"></i>
-            </a>
+            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
         
 
         <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
 
         
-            <a href="/2017/03/29/Deep-comprehend-mysql-replication/" title="下一篇: 深入理解mysql的主从复制">
+            <a href="/2017/07/11/scrapy-install/" title="下一篇: Python爬虫框架scrapy的安装">
                 <i class="fa fa-angle-right"></i>
             </a>
         
