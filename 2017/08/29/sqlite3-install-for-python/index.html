@@ -15,16 +15,16 @@
 
 
 
-<meta name="description" content="从这里开始，快速开启博客之旅！">
+<meta name="description" content="摘要：使用sqlmap时遇到一个问题，需要给python安装sqlite3。记录下安装过程！">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Hello World">
-<meta property="og:url" content="http://riverdba.github.io/2017/03/21/hello-world/index.html">
+<meta property="og:title" content="python2.7安装sqlite3模块">
+<meta property="og:url" content="http://riverdba.github.io/2017/08/29/sqlite3-install-for-python/index.html">
 <meta property="og:site_name" content="Yangtze River's blog">
-<meta property="og:description" content="从这里开始，快速开启博客之旅！">
-<meta property="og:updated_time" content="2017-07-13T09:20:26.000Z">
+<meta property="og:description" content="摘要：使用sqlmap时遇到一个问题，需要给python安装sqlite3。记录下安装过程！">
+<meta property="og:updated_time" content="2017-08-29T09:19:58.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hello World">
-<meta name="twitter:description" content="从这里开始，快速开启博客之旅！">
+<meta name="twitter:title" content="python2.7安装sqlite3模块">
+<meta name="twitter:description" content="摘要：使用sqlmap时遇到一个问题，需要给python安装sqlite3。记录下安装过程！">
 
 <link rel="apple-touch-icon" href= "/apple-touch-icon.png">
 
@@ -56,7 +56,7 @@
 <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
 
 
-<title>Hello World | Yangtze River&#39;s blog</title>
+<title>python2.7安装sqlite3模块 | Yangtze River&#39;s blog</title>
 
 <script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
 <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
@@ -260,11 +260,11 @@
     </div>
     <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
 </nav>
-      <div class="body-wrap"><article id="post-hello-world" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-sqlite3-install-for-python" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2017/03/21/hello-world/" class="article-date">
-      <time datetime="2017-03-21T08:44:04.680Z" itemprop="datePublished">2017-03-21</time>
+      <a href="/2017/08/29/sqlite3-install-for-python/" class="article-date">
+      <time datetime="2017-08-29T08:58:29.000Z" itemprop="datePublished">2017-08-29</time>
 </a>
 
 
@@ -279,7 +279,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      Hello World
+      python2.7安装sqlite3模块
     </h1>
   
 
@@ -288,13 +288,13 @@
       <div class="article-info article-info-post">
         
     <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/Hexo/">Hexo</a>
+    <a class="article-category-link" href="/categories/Python/">Python</a>
     </div>
 
 
         
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Hexo-Quick-Start/">Hexo Quick Start</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/sqlite3/">sqlite3</a></li></ul>
     </div>
 
         <div class="clearfix"></div>
@@ -304,22 +304,17 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-        <p><excerpt in="" index="" |="" 首页摘要=""><br>从这里开始，快速开启博客之旅！<a id="more"></a></excerpt></p>
-<p><the rest="" of="" contents="" |="" 余下全文=""><br>Welcome to <a href="https://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</the></p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">$ hexo new <span class="string">"My New Post"</span></div><div class="line">简写命令：hexo n <span class="string">"My New Post"</span></div></pre></td></tr></table></figure>
-<p>新建一篇博文，新建的md文件位于：hexo当前目录/source/_posts中。<br>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">$ hexo server</div><div class="line">简写命令：hexo s</div></pre></td></tr></table></figure>
-<p>这个命令是开启本地hexo服务用的，可以访问<a href="http://localhost:4000/进行本地预览。" target="_blank" rel="external">http://localhost:4000/进行本地预览。</a><br>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">$ hexo generate</div><div class="line">简写命令：hexo g</div></pre></td></tr></table></figure>
-<p>一般部署上去的时候都需要编译一下，编译后，会出现一个 public 件夹，将所有的md文件编译成html文件 。<br>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">$ hexo deploy</div><div class="line">简写命令：hexo d</div></pre></td></tr></table></figure>
-<p>执行这个命令可以将博客部署到git。<br>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
-<h3 id="清除-public"><a href="#清除-public" class="headerlink" title="清除 public"></a>清除 public</h3><figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">$ hexo clean</div></pre></td></tr></table></figure>
-<p>当 source 文件夹中的部分资源更改过之后，特别是对文件进行了删除或者路径的改变之后，需要执行这个命令，然后重新编译。 </p>
-<h3 id="Tips"><a href="#Tips" class="headerlink" title="Tips"></a>Tips</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">1、当执行hexo d部署博客时遇到被hang住没反应的时候，按Crtl + C退出然后执行：hexo clean再执行：hexo d -g即可！</div><div class="line">2、hexo d -g 部署到远程（相当于先执行hexo g再执行hexo d）</div><div class="line">3、hexo s -d 启动本地预览</div></pre></td></tr></table></figure>
-<h3 id="Markdown语法"><a href="#Markdown语法" class="headerlink" title="Markdown语法"></a>Markdown语法</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">1、分段： 两个回车</div><div class="line">2、换行 两个空格 + 回车</div><div class="line">3、标题 # ~ ###### 井号的个数表示几级标题，即Markdown可以表示一级标题到六级标题</div><div class="line">4、引用 &gt;</div><div class="line">5、列表 * ， + ， - ， 1. ，选其中之一，注意后面有个空格</div><div class="line">6、代码区块 四个空格 开头</div><div class="line">7、链接 [文字](链接地址)</div><div class="line">8、图片 ![图片说明](图片地址) ，图片地址可以是本地路径，也可以是网络地址</div><div class="line">9、强调 **文字** ， __文字__ ， _文字_ ， *文字*</div><div class="line">10、代码 ```，```</div></pre></td></tr></table></figure>
-<p>More info: <a href="http://www.kancloud.cn/wizardforcel/markdown-simple-world/97373" target="_blank" rel="external">Markdown更多语法</a></p>
+        <p><excerpt in="" index="" |="" 首页摘要=""><br>摘要：使用sqlmap时遇到一个问题，需要给python安装sqlite3。记录下安装过程！<a id="more"></a></excerpt></p>
+<the rest="" of="" contents="" |="" 余下全文="">
 
+<h2 id="安装sqlite3"><a href="#安装sqlite3" class="headerlink" title="安装sqlite3"></a>安装sqlite3</h2><h3 id="尝试使用pip安装，安装失败："><a href="#尝试使用pip安装，安装失败：" class="headerlink" title="尝试使用pip安装，安装失败："></a>尝试使用pip安装，安装失败：</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mysql1 src]# pip install sqlite3</div><div class="line">Collecting sqlite3</div><div class="line">  Using cached sqlite3-99.0.tar.gz</div><div class="line">    Complete output from command python setup.py egg_info:</div><div class="line">    Traceback (most recent call last):</div><div class="line">      File &quot;&lt;string&gt;&quot;, line 1, in &lt;module&gt;</div><div class="line">      File &quot;/tmp/pip-build-GKbPwN/sqlite3/setup.py&quot;, line 2, in &lt;module&gt;</div><div class="line">        raise RuntimeError(&quot;Package &apos;sqlite3&apos; must not be downloaded from pypi&quot;)</div><div class="line">    RuntimeError: Package &apos;sqlite3&apos; must not be downloaded from pypi</div><div class="line">    </div><div class="line">    ----------------------------------------</div><div class="line">Command &quot;python setup.py egg_info&quot; failed with error code 1 in /tmp/pip-build-GKbPwN/sqlite3/</div></pre></td></tr></table></figure>
+<h3 id="下载安装sqlite3"><a href="#下载安装sqlite3" class="headerlink" title="下载安装sqlite3"></a>下载安装sqlite3</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mysql1 src]# wget https://sqlite.org/2017/sqlite-autoconf-3190300.tar.gz</div><div class="line">[root@mysql1 src]# tar -xvf sqlite-autoconf-3190300.tar.gz </div><div class="line">[root@mysql1 sqlite-autoconf-3190300]# ./configure --prefix=/usr/local/lib/python2.7/dist-packages/sqlite3</div><div class="line">[root@mysql1 sqlite-autoconf-3190300]# make &amp;&amp; make install</div><div class="line">安装完毕后发现导入sqlite3仍然失败，只能重装python了</div><div class="line">&gt;&gt;&gt; import sqlite3</div><div class="line">Traceback (most recent call last):</div><div class="line">  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</div><div class="line">  File &quot;/usr/local/lib/python2.7/sqlite3/__init__.py&quot;, line 24, in &lt;module&gt;</div><div class="line">    from dbapi2 import *</div><div class="line">  File &quot;/usr/local/lib/python2.7/sqlite3/dbapi2.py&quot;, line 28, in &lt;module&gt;</div><div class="line">    from _sqlite3 import *</div><div class="line">ImportError: No module named _sqlite3</div><div class="line">&gt;&gt;&gt; exit()</div></pre></td></tr></table></figure>
+<h3 id="修改python安装源文件setup-py"><a href="#修改python安装源文件setup-py" class="headerlink" title="修改python安装源文件setup.py"></a>修改python安装源文件setup.py</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mysql1 src]# tar -xvf Python-2.7.10.tgz </div><div class="line">[root@mysql1 src]# cd Python-2.7.10    </div><div class="line">[root@mysql1 Python-2.7.10]# vi setup.py </div><div class="line">搜索sqlite3找到第1105行，在其下面加入一行上面我们安装的sqlite3的路径：</div><div class="line">   1097         # We hunt for #define SQLITE_VERSION &quot;n.n.n&quot;</div><div class="line">   1098         # We need to find &gt;= sqlite version 3.0.8</div><div class="line">   1099         sqlite_incdir = sqlite_libdir = None</div><div class="line">   1100         sqlite_inc_paths = [ &apos;/usr/include&apos;,</div><div class="line">   1101                              &apos;/usr/include/sqlite&apos;,</div><div class="line">   1102                              &apos;/usr/include/sqlite3&apos;,</div><div class="line">   1103                              &apos;/usr/local/include&apos;,</div><div class="line">   1104                              &apos;/usr/local/include/sqlite&apos;,</div><div class="line">   1105                              &apos;/usr/local/include/sqlite3&apos;,</div><div class="line">   1106                              &apos;/usr/local/lib/python2.7/dist-packages/sqlite3&apos;,  #新增此行</div><div class="line">   1107                            ]</div><div class="line">保存退出。</div></pre></td></tr></table></figure>
+<h3 id="重新编译python2-7"><a href="#重新编译python2-7" class="headerlink" title="重新编译python2.7"></a>重新编译python2.7</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mysql1 Python-2.7.10]# ./configure </div><div class="line">[root@mysql1 Python-2.7.10]# make &amp;&amp; make install</div></pre></td></tr></table></figure>
+<h2 id="验证安装"><a href="#验证安装" class="headerlink" title="验证安装"></a>验证安装</h2><h3 id="检查lib文件是否生成"><a href="#检查lib文件是否生成" class="headerlink" title="检查lib文件是否生成"></a>检查lib文件是否生成</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mysql1 Python-2.7.10]# ll /usr/local/lib/python2.7/lib-dynload/_sqlite3.so </div><div class="line">-rwxr-xr-x 1 root root 243444 Aug 30 01:15 /usr/local/lib/python2.7/lib-dynload/_sqlite3.so</div></pre></td></tr></table></figure>
+<h3 id="验证sqlite3模块导入是否成功"><a href="#验证sqlite3模块导入是否成功" class="headerlink" title="验证sqlite3模块导入是否成功"></a>验证sqlite3模块导入是否成功</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mysql1 Python-2.7.10]# python</div><div class="line">Python 2.7.10 (default, Aug 30 2017, 01:14:38) </div><div class="line">[GCC 4.4.7 20120313 (Red Hat 4.4.7-16)] on linux2</div><div class="line">Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.</div><div class="line">&gt;&gt;&gt; import sqlite3</div><div class="line">&gt;&gt;&gt; exit()</div><div class="line">[root@mysql1 Python-2.7.10]#</div></pre></td></tr></table></figure>
+<p>&lt;完&gt;</p>
+</the>
       
     </div>
     
@@ -327,13 +322,13 @@
   
     
     <div class="copyright">
-        <p><span>本文标题:</span><a href="/2017/03/21/hello-world/">Hello World</a></p>
+        <p><span>本文标题:</span><a href="/2017/08/29/sqlite3-install-for-python/">python2.7安装sqlite3模块</a></p>
         <p><span>文章作者:</span><a href="/" title="回到主页">一条大河</a></p>
-        <p><span>发布时间:</span>2017-03-21, 16:44:04</p>
-        <p><span>最后更新:</span>2017-07-13, 17:20:26</p>
+        <p><span>发布时间:</span>2017-08-29, 16:58:29</p>
+        <p><span>最后更新:</span>2017-08-29, 17:19:58</p>
         <p>
-            <span>原始链接:</span><a class="post-url" href="/2017/03/21/hello-world/" title="Hello World">http://riverdba.github.io/2017/03/21/hello-world/</a>
-            <span class="copy-path" data-clipboard-text="原文: http://riverdba.github.io/2017/03/21/hello-world/　　作者: 一条大河" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <span>原始链接:</span><a class="post-url" href="/2017/08/29/sqlite3-install-for-python/" title="python2.7安装sqlite3模块">http://riverdba.github.io/2017/08/29/sqlite3-install-for-python/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://riverdba.github.io/2017/08/29/sqlite3-install-for-python/　　作者: 一条大河" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
             <script> var clipboard = new Clipboard('.copy-path'); </script>
         </p>
         <p>
@@ -345,12 +340,12 @@
 
     <nav id="article-nav">
         
-            <div id="article-nav-newer" class="article-nav-title">
-                <a href="/2017/03/22/join-elimination-technique-of-mysql/">
-                    mysql查询优化技术之连接消除
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2017/07/13/mysql-transcation-uncommitted/">
+                    mysql事务未提交引发的阻塞
                 </a>
             </div>
-        
         
     </nav>
 
@@ -360,7 +355,7 @@
     <div id="toc" class="toc-article">
         <strong class="toc-title">文章目录</strong>
         
-            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Quick-Start"><span class="toc-number">1.</span> <span class="toc-text">Quick Start</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Create-a-new-post"><span class="toc-number">1.1.</span> <span class="toc-text">Create a new post</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Run-server"><span class="toc-number">1.2.</span> <span class="toc-text">Run server</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Generate-static-files"><span class="toc-number">1.3.</span> <span class="toc-text">Generate static files</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Deploy-to-remote-sites"><span class="toc-number">1.4.</span> <span class="toc-text">Deploy to remote sites</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#清除-public"><span class="toc-number">1.5.</span> <span class="toc-text">清除 public</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Tips"><span class="toc-number">1.6.</span> <span class="toc-text">Tips</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Markdown语法"><span class="toc-number">1.7.</span> <span class="toc-text">Markdown语法</span></a></li></ol></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#安装sqlite3"><span class="toc-number">1.</span> <span class="toc-text">安装sqlite3</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#尝试使用pip安装，安装失败："><span class="toc-number">1.1.</span> <span class="toc-text">尝试使用pip安装，安装失败：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#下载安装sqlite3"><span class="toc-number">1.2.</span> <span class="toc-text">下载安装sqlite3</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#修改python安装源文件setup-py"><span class="toc-number">1.3.</span> <span class="toc-text">修改python安装源文件setup.py</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#重新编译python2-7"><span class="toc-number">1.4.</span> <span class="toc-text">重新编译python2.7</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#验证安装"><span class="toc-number">2.</span> <span class="toc-text">验证安装</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#检查lib文件是否生成"><span class="toc-number">2.1.</span> <span class="toc-text">检查lib文件是否生成</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#验证sqlite3模块导入是否成功"><span class="toc-number">2.2.</span> <span class="toc-text">验证sqlite3模块导入是否成功</span></a></li></ol></li></ol>
         
     </div>
     <style>
@@ -396,7 +391,7 @@
         </div>
         <script>
             window._bd_share_config={
-                "common":{"bdSnsKey":{},"bdText":"Hello World　| Yangtze River's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+                "common":{"bdSnsKey":{},"bdText":"python2.7安装sqlite3模块　| Yangtze River's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
         </script>
     
 
@@ -415,8 +410,8 @@
     <div id="disqus_thread"></div>
     <script>
         var disqus_config = function(){
-            this.page.url = 'http://riverdba.github.io/2017/03/21/hello-world/';
-            this.page.identifier = '2017/03/21/hello-world/';
+            this.page.url = 'http://riverdba.github.io/2017/08/29/sqlite3-install-for-python/';
+            this.page.identifier = '2017/08/29/sqlite3-install-for-python/';
         };
         var loadComment = function(){
             var d = document, s = d.createElement('script');
@@ -438,15 +433,15 @@
 
     <div class="scroll" id="post-nav-button">
         
-            <a href="/2017/03/22/join-elimination-technique-of-mysql/" title="上一篇: mysql查询优化技术之连接消除">
-                <i class="fa fa-angle-left"></i>
-            </a>
+            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
         
 
         <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
 
         
-            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
+            <a href="/2017/07/13/mysql-transcation-uncommitted/" title="下一篇: mysql事务未提交引发的阻塞">
+                <i class="fa fa-angle-right"></i>
+            </a>
         
     </div>
 
