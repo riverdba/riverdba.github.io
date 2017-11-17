@@ -15,20 +15,16 @@
 
 
 
-<meta name="description" content="摘要：mysql更新大量数据引发的故障处理记录1">
+<meta name="description" content="摘要：用于快速恢复MySQL的DML误操作，适用于mysql5.6、5.7且binlog格式为row。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="update大量数据引发的故障">
-<meta property="og:url" content="http://riverdba.github.io/2017/03/30/mysql-troubleshooting01/index.html">
+<meta property="og:title" content="MySQL闪回工具之MyFlash">
+<meta property="og:url" content="http://riverdba.github.io/2017/11/17/The-DB-flashback-for-MyFlash/index.html">
 <meta property="og:site_name" content="Yangtze River's blog">
-<meta property="og:description" content="摘要：mysql更新大量数据引发的故障处理记录1">
-<meta property="og:image" content="http://riverdba.github.io/2017/03/30/mysql-troubleshooting01/1.png">
-<meta property="og:image" content="http://riverdba.github.io/2017/03/30/mysql-troubleshooting01/2.png">
-<meta property="og:image" content="http://riverdba.github.io/2017/03/30/mysql-troubleshooting01/3.png">
-<meta property="og:updated_time" content="2017-07-13T09:23:58.000Z">
+<meta property="og:description" content="摘要：用于快速恢复MySQL的DML误操作，适用于mysql5.6、5.7且binlog格式为row。">
+<meta property="og:updated_time" content="2017-11-17T06:38:42.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="update大量数据引发的故障">
-<meta name="twitter:description" content="摘要：mysql更新大量数据引发的故障处理记录1">
-<meta name="twitter:image" content="http://riverdba.github.io/2017/03/30/mysql-troubleshooting01/1.png">
+<meta name="twitter:title" content="MySQL闪回工具之MyFlash">
+<meta name="twitter:description" content="摘要：用于快速恢复MySQL的DML误操作，适用于mysql5.6、5.7且binlog格式为row。">
 
 <link rel="apple-touch-icon" href= "/apple-touch-icon.png">
 
@@ -60,7 +56,7 @@
 <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
 
 
-<title>update大量数据引发的故障 | Yangtze River&#39;s blog</title>
+<title>MySQL闪回工具之MyFlash | Yangtze River&#39;s blog</title>
 
 <script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
 <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
@@ -264,11 +260,11 @@
     </div>
     <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
 </nav>
-      <div class="body-wrap"><article id="post-mysql-troubleshooting01" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-The-DB-flashback-for-MyFlash" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2017/03/30/mysql-troubleshooting01/" class="article-date">
-      <time datetime="2017-03-30T02:18:34.000Z" itemprop="datePublished">2017-03-30</time>
+      <a href="/2017/11/17/The-DB-flashback-for-MyFlash/" class="article-date">
+      <time datetime="2017-11-17T02:57:50.000Z" itemprop="datePublished">2017-11-17</time>
 </a>
 
 
@@ -283,7 +279,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      update大量数据引发的故障
+      MySQL闪回工具之MyFlash
     </h1>
   
 
@@ -292,13 +288,13 @@
       <div class="article-info article-info-post">
         
     <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/MySQL/">MySQL</a>
+    <a class="article-category-link" href="/categories/TOOLS/">TOOLS</a>
     </div>
 
 
         
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/故障诊断/">故障诊断</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/数据库恢复/">数据库恢复</a></li></ul>
     </div>
 
         <div class="clearfix"></div>
@@ -308,14 +304,27 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-        <p><excerpt in="" index="" |="" 首页摘要=""><br>摘要：mysql更新大量数据引发的故障处理记录1<a id="more"></a></excerpt></p>
+        <p><excerpt in="" index="" |="" 首页摘要=""><br>摘要：用于快速恢复MySQL的DML误操作，适用于mysql5.6、5.7且binlog格式为row。<a id="more"></a></excerpt></p>
 <the rest="" of="" contents="" |="" 余下全文="">
 
-<h3 id="发现故障"><a href="#发现故障" class="headerlink" title="发现故障"></a>发现故障</h3><p>2017-03-29日晚上20点30突然同时收到2条微信告警：（mysql告警:threads_running超过阀值，os告警：cpu usage超过阀值）<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">Type: mysql </div><div class="line">Tags: XXX </div><div class="line">Host: 192.168.XXX.XXX:3306 </div><div class="line">Level: critical </div><div class="line">Item: threads_running </div><div class="line">Value: 314 </div><div class="line">Message: too many threads running </div><div class="line">Type: os </div><div class="line">Tags: XXX </div><div class="line">Host: 192.168.XXX.XXX: </div><div class="line">Level: critical </div><div class="line">Item: cpu_idle </div><div class="line">Value: 39% </div><div class="line">Message: too little cpu idle</div></pre></td></tr></table></figure></p>
-<h3 id="处理故障"><a href="#处理故障" class="headerlink" title="处理故障"></a>处理故障</h3><p>第一时间登录数据库查看当前运行的SQL：<br><img src="/2017/03/30/mysql-troubleshooting01/1.png" alt="图1"><br>查看慢查询：<br><img src="/2017/03/30/mysql-troubleshooting01/2.png" alt="图2"><br>发现该SQL就是阻塞的根源！<br>查看当前连接数，发现有800多个并发连接卡住，于是第一时间kill掉这些连接以保证业务正常！kill掉连接后数据库连接数下降到正常范围，同时主机CPU也恢复正常！</p>
-<h3 id="分析故障"><a href="#分析故障" class="headerlink" title="分析故障"></a>分析故障</h3><p>通过分析这个SQL语句，发现identifying_code字段上是有索引的，这个where条件匹配到的数据存在大量重复（最多的一个identifying_code有十几W行）：<br><img src="/2017/03/30/mysql-troubleshooting01/3.png" alt="图3"><br>而且这些数据中大部分的delete_flag已经是1了。可见这个SQL每次都是将大部分1改为1，并发量大的时候导致每次都锁很多行最终导致连接阻塞。因此可以优化SQL为如下：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">UPDATE XXX</div><div class="line">    set</div><div class="line">      delete_flag = 1</div><div class="line">    where</div><div class="line">    identifying_code = &apos;1517bfd3f7f4558885a&apos; and delete_flag = 0;</div></pre></td></tr></table></figure></p>
-<p>这样每次都只将delete_flag为0的改为1，这个条件过滤后每次符合条件的数据只有1行。就避免了每次update大量数据，减少行锁的发生！</p>
-<h3 id="故障总结"><a href="#故障总结" class="headerlink" title="故障总结"></a>故障总结</h3><p>这个属于开发的业务逻辑没考虑完善，同时作为DBA没有结合业务做更细的SQL审核也需要自我检讨。</p>
+<h3 id="下载安装"><a href="#下载安装" class="headerlink" title="下载安装"></a>下载安装</h3><p>MyFlash是由美团点评公司技术工程部开发维护的一个回滚DML操作的工具。该工具通过解析v4版本的binlog，完成回滚操作。相对已有的回滚工具，其增加了更多的过滤选项，让回滚更加容易。</p>
+<h4 id="下载地址"><a href="#下载地址" class="headerlink" title="下载地址"></a>下载地址</h4><p><a href="https://github.com/Meituan-Dianping/MyFlash" target="_blank" rel="external">https://github.com/Meituan-Dianping/MyFlash</a></p>
+<h4 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h4><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mysql MyFlash-master]# cat build.sh </div><div class="line">gcc -w  `pkg-config --cflags --libs glib-2.0` source/binlogParseGlib.c  -o binary/flashback</div><div class="line">[root@mysql MyFlash-master]# sh build.sh </div><div class="line">Package glib-2.0 was not found in the pkg-config search path.</div><div class="line">Perhaps you should add the directory containing `glib-2.0.pc&apos;</div><div class="line">to the PKG_CONFIG_PATH environment variable</div><div class="line">No package &apos;glib-2.0&apos; found</div><div class="line">source/binlogParseGlib.c:2:18: error: glib.h: No such file or directory</div><div class="line">[root@mysql MyFlash-master]# yum install libgnomeui-devel -y #安装glib</div><div class="line">[root@mysql MyFlash-master]# sh build.sh</div></pre></td></tr></table></figure>
+<h4 id="查看帮助"><a href="#查看帮助" class="headerlink" title="查看帮助"></a>查看帮助</h4><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mysql MyFlash-master]# cd binary/</div><div class="line">[root@mysql binary]# ./flashback --help</div><div class="line">Usage:</div><div class="line">  flashback [OPTION...]</div><div class="line"></div><div class="line">Help Options:</div><div class="line">  -h, --help                  Show help options</div><div class="line"></div><div class="line">Application Options:</div><div class="line">  --databaseNames             databaseName to apply. if multiple, seperate by comma(,)</div><div class="line">  --tableNames                tableName to apply. if multiple, seperate by comma(,)</div><div class="line">  --start-position            start position</div><div class="line">  --stop-position             stop position</div><div class="line">  --start-datetime            start time (format %Y-%m-%d %H:%M:%S)</div><div class="line">  --stop-datetime             stop time (format %Y-%m-%d %H:%M:%S)</div><div class="line">  --sqlTypes                  sql type to filter . support INSERT, UPDATE ,DELETE. if multiple, seperate by comma(,)</div><div class="line">  --maxSplitSize              max file size after split, the uint is M</div><div class="line">  --binlogFileNames           binlog files to process. if multiple, seperate by comma(,)  </div><div class="line">  --outBinlogFileNameBase     output binlog file name base</div><div class="line">  --logLevel                  log level, available option is debug,warning,error</div><div class="line">  --include-gtids             gtids to process</div><div class="line">  --exclude-gtids             gtids to skip</div></pre></td></tr></table></figure>
+<h3 id="测试用例"><a href="#测试用例" class="headerlink" title="测试用例"></a>测试用例</h3><h4 id="回滚insert"><a href="#回滚insert" class="headerlink" title="回滚insert"></a>回滚insert</h4><p>root@test 11:51:47&gt;insert into t1 values(2,22,’b’);<br>Query OK, 1 row affected (0.00 sec)<br>插入一条语句：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">root@test 11:52:04&gt;show master status \G;</div><div class="line">*************************** 1. row ***************************</div><div class="line">             File: mysql-bin.000001</div><div class="line">         Position: 15650</div><div class="line">     Binlog_Do_DB: </div><div class="line"> Binlog_Ignore_DB: </div><div class="line">Executed_Gtid_Set: </div><div class="line">1 row in set (0.00 sec)</div><div class="line">ERROR: </div><div class="line">No query specified</div><div class="line">root@test 11:53:17&gt;insert into t1 values(3,33,&apos;c&apos;);</div><div class="line">Query OK, 1 row affected (0.01 sec)</div><div class="line">root@test 11:53:22&gt;show master status \G;</div><div class="line">*************************** 1. row ***************************</div><div class="line">             File: mysql-bin.000001</div><div class="line">         Position: 15849</div><div class="line">     Binlog_Do_DB: </div><div class="line"> Binlog_Ignore_DB: </div><div class="line">Executed_Gtid_Set: </div><div class="line">1 row in set (0.00 sec)</div><div class="line">ERROR: </div><div class="line">No query specified</div><div class="line"></div><div class="line">root@test 11:53:26&gt;</div></pre></td></tr></table></figure></p>
+<p>生成回滚语句：–outBinlogFileNameBase指定输出的binlog文件前缀，如不指定，则默认为binlog_output_base.flashback。文件名后缀为：.flashback<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mysql binary]# ./flashback --sqlTypes=&apos;INSERT&apos; --binlogFileNames=/data/mysql/log/mysql-bin.000001 --start-position=15650 --stop-position=15849 --outBinlogFileNameBase=insert</div><div class="line">查看回滚语句：输出的回滚日志依然是binlog格式所以要用mysqlbinlog查看</div></pre></td></tr></table></figure></p>
+<p>[root@mysql binary]# ls -lrt insert.flashback<br>-rw-r–r–. 1 root root 216 Nov 17 11:55 insert.flashback<br>[root@mysql binary]# /opt/mysql/bin/mysqlbinlog -vvv insert.flashback<br>/<em>!50530 SET @@SESSION.PSEUDO_SLAVE_MODE=1</em>/;<br>/<em>!40019 SET @@session.max_insert_delayed_threads=0</em>/;<br>/<em>!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0</em>/;<br>DELIMITER /<em>!</em>/;</p>
+<h1 id="at-4"><a href="#at-4" class="headerlink" title="at 4"></a>at 4</h1><p>#171117  9:49:12 server id 3  end_log_pos 120 CRC32 0x408f46ed  Start: binlog v 4, server v 5.6.12-r5436-log created 171117  9:49:12 at startup</p>
+<h1 id="Warning-this-binlog-is-either-in-use-or-was-not-closed-properly"><a href="#Warning-this-binlog-is-either-in-use-or-was-not-closed-properly" class="headerlink" title="Warning: this binlog is either in use or was not closed properly."></a>Warning: this binlog is either in use or was not closed properly.</h1><p>ROLLBACK/<em>!</em>/;<br>BINLOG ‘<br>GEAOWg8DAAAAdAAAAHgAAAABAAQANS42LjEyLXI1NDM2LWxvZwAAAAAAAAAAAAAAAAAAAAAAAAAA<br>AAAAAAAAAAAAAAAAAAAYQA5aEzgNAAgAEgAEBAQEEgAAXAAEGggAAAAICAgCAAAACgoKGRkAAe1G<br>j0A=<br>‘/<em>!</em>/;</p>
+<h1 id="at-120"><a href="#at-120" class="headerlink" title="at 120"></a>at 120</h1><p>#171117 11:53:22 server id 3  end_log_pos 169 CRC32 0x462ec044  Table_map: <code>test</code>.<code>t1</code> mapped to number 2105</p>
+<h1 id="at-169"><a href="#at-169" class="headerlink" title="at 169"></a>at 169</h1><p>#171117 11:53:22 server id 3  end_log_pos 216 CRC32 0x7cef2b2f  Delete_rows: table id 2105 flags: STMT_END_F</p>
+<p>BINLOG ‘<br>Ml0OWhMDAAAAMQAAAKkAAAAAADkIAAAAAAEABHRlc3QAAnQxAAMDAw8CgAEGRMAuRg==<br>Ml0OWiADAAAALwAAANgAAAAAADkIAAAAAAEAAgAD//gDAAAAIQAAAAEAYy8r73w=<br>‘/<em>!</em>/;</p>
+<h3 id="DELETE-FROM-test-t1"><a href="#DELETE-FROM-test-t1" class="headerlink" title="DELETE FROM test.t1"></a>DELETE FROM <code>test</code>.<code>t1</code></h3><h3 id="WHERE"><a href="#WHERE" class="headerlink" title="WHERE"></a>WHERE</h3><h3 id="1-3-INT-meta-0-nullable-0-is-null-0"><a href="#1-3-INT-meta-0-nullable-0-is-null-0" class="headerlink" title="@1=3 / INT meta=0 nullable=0 is_null=0 /"></a>@1=3 /<em> INT meta=0 nullable=0 is_null=0 </em>/</h3><h3 id="2-33-INT-meta-0-nullable-1-is-null-0"><a href="#2-33-INT-meta-0-nullable-1-is-null-0" class="headerlink" title="@2=33 / INT meta=0 nullable=1 is_null=0 /"></a>@2=33 /<em> INT meta=0 nullable=1 is_null=0 </em>/</h3><h3 id="3-’c’-VARSTRING-384-meta-384-nullable-1-is-null-0"><a href="#3-’c’-VARSTRING-384-meta-384-nullable-1-is-null-0" class="headerlink" title="@3=’c’ / VARSTRING(384) meta=384 nullable=1 is_null=0 /"></a>@3=’c’ /<em> VARSTRING(384) meta=384 nullable=1 is_null=0 </em>/</h3><p>DELIMITER ;</p>
+<h1 id="End-of-log-file"><a href="#End-of-log-file" class="headerlink" title="End of log file"></a>End of log file</h1><p>ROLLBACK /<em> added by mysqlbinlog </em>/;<br>/<em>!50003 SET COMPLETION_TYPE=@OLD_COMPLETION_TYPE</em>/;<br>/<em>!50530 SET @@SESSION.PSEUDO_SLAVE_MODE=0</em>/;<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">执行回滚：</div></pre></td></tr></table></figure></p>
+<p>[root@mysql binary]# mysql -uxldev -pxueledev -h192.168.1.3 -Dtest -e”select <em> from t1;”<br>Warning: Using a password on the command line interface can be insecure.<br>+—-+——+——+<br>| id | c1   | c2   |<br>+—-+——+——+<br>|  1 |   11 | a    |<br>|  2 |   22 | b    |<br>|  3 |   33 | c    |<br>+—-+——+——+<br>[root@mysql binary]# /opt/mysql/bin/mysqlbinlog insert.flashback|mysql -uxldev -pxueledev -h192.168.1.3 -Dtest<br>Warning: Using a password on the command line interface can be insecure.<br>[root@mysql binary]# mysql -uxldev -pxueledev -h192.168.1.3 -Dtest -e”select </em> from t1;”<br>Warning: Using a password on the command line interface can be insecure.<br>+—-+——+——+<br>| id | c1   | c2   |<br>+—-+——+——+<br>|  1 |   11 | a    |<br>|  2 |   22 | b    |<br>+—-+——+——+<br>可以看到最后插入的数据被delete掉了。<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">#### 回滚update</div></pre></td></tr></table></figure></p>
+<p>[root@mysql binary]# mysql -uxldev -pxueledev -h192.168.1.3 -Dtest -e”update t1 set c2=’bb’ where id=2;”<br>Warning: Using a password on the command line interface can be insecure.<br>[root@mysql binary]# mysql -uxldev -pxueledev -h192.168.1.3 -Dtest -e”select <em> from t1;”<br>Warning: Using a password on the command line interface can be insecure.<br>+—-+——+——+<br>| id | c1   | c2   |<br>+—-+——+——+<br>|  1 |   11 | a    |<br>|  2 |   22 | bb   |<br>+—-+——+——+<br>[root@mysql binary]# ./flashback –sqlTypes=’UPDATE’ –binlogFileNames=/data/mysql/log/mysql-bin.000001 –start-position=15849 –outBinlogFileNameBase=update<br>[root@mysql binary]# /opt/mysql/bin/mysqlbinlog update.flashback|mysql -uxldev -pxueledev -h192.168.1.3 -Dtest<br>Warning: Using a password on the command line interface can be insecure.<br>[root@mysql binary]# mysql -uxldev -pxueledev -h192.168.1.3 -Dtest -e”select </em> from t1;”<br>Warning: Using a password on the command line interface can be insecure.<br>+—-+——+——+<br>| id | c1   | c2   |<br>+—-+——+——+<br>|  1 |   11 | a    |<br>|  2 |   22 | b    |<br>+—-+——+——+<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">#### 回滚delete</div></pre></td></tr></table></figure></p>
+<p>[root@mysql binary]# mysql -uxldev -pxueledev -h192.168.1.3 -Dtest -e”select <em> from t1;show master status;”<br>Warning: Using a password on the command line interface can be insecure.<br>+—-+——+——+<br>| id | c1   | c2   |<br>+—-+——+——+<br>|  1 |   11 | a    |<br>|  2 |   22 | b    |<br>+—-+——+——+<br>+——————+———-+————–+——————+——————-+<br>| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB | Executed_Gtid_Set |<br>+——————+———-+————–+——————+——————-+<br>| mysql-bin.000001 |    16474 |              |                  |                   |<br>+——————+———-+————–+——————+——————-+<br>[root@mysql binary]# mysql -uxldev -pxueledev -h192.168.1.3 -Dtest -e”delete from t1;show master status;select </em> from t1;”<br>Warning: Using a password on the command line interface can be insecure.<br>+——————+———-+————–+——————+——————-+<br>| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB | Executed_Gtid_Set |<br>+——————+———-+————–+——————+——————-+<br>| mysql-bin.000001 |    16685 |              |                  |                   |<br>+——————+———-+————–+——————+——————-+<br>[root@mysql binary]# ./flashback –sqlTypes=’DELETE’ –binlogFileNames=/data/mysql/log/mysql-bin.000001 –start-position=16474 –stop-position=16685 –outBinlogFileNameBase=delete<br>[root@mysql binary]# /opt/mysql/bin/mysqlbinlog delete.flashback|mysql -uxldev -pxueledev -h192.168.1.3 -Dtest<br>Warning: Using a password on the command line interface can be insecure.<br>[root@mysql binary]# mysql -uxldev -pxueledev -h192.168.1.3 -Dtest -e”select * from t1;”<br>Warning: Using a password on the command line interface can be insecure.<br>+—-+——+——+<br>| id | c1   | c2   |<br>+—-+——+——+<br>|  1 |   11 | a    |<br>|  2 |   22 | b    |<br>+—-+——+——+<br>[root@mysql binary]#<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">#### 回滚混合DML</div></pre></td></tr></table></figure></p>
+<p>[root@mysql binary]# ./flashback –sqlTypes=’INSERT,UPDATE,DELETE’ –binlogFileNames=/data/mysql/log/mysql-bin.000001 –start-position=15650 –stop-position=16685 –outBinlogFileNameBase=all<br>[root@mysql binary]# /opt/mysql/bin/mysqlbinlog -vvv all.flashback<br>输出结果省略<br>```<br>更多详情请参考：<br><a href="https://github.com/Meituan-Dianping/MyFlash/blob/master/doc/how_to_use.md" target="_blank" rel="external">https://github.com/Meituan-Dianping/MyFlash/blob/master/doc/how_to_use.md</a><br><a href="http://url.cn/5yVTfLY" target="_blank" rel="external">http://url.cn/5yVTfLY</a></p>
 </the>
       
     </div>
@@ -324,13 +333,13 @@
   
     
     <div class="copyright">
-        <p><span>本文标题:</span><a href="/2017/03/30/mysql-troubleshooting01/">update大量数据引发的故障</a></p>
+        <p><span>本文标题:</span><a href="/2017/11/17/The-DB-flashback-for-MyFlash/">MySQL闪回工具之MyFlash</a></p>
         <p><span>文章作者:</span><a href="/" title="回到主页">一条大河</a></p>
-        <p><span>发布时间:</span>2017-03-30, 10:18:34</p>
-        <p><span>最后更新:</span>2017-07-13, 17:23:58</p>
+        <p><span>发布时间:</span>2017-11-17, 10:57:50</p>
+        <p><span>最后更新:</span>2017-11-17, 14:38:42</p>
         <p>
-            <span>原始链接:</span><a class="post-url" href="/2017/03/30/mysql-troubleshooting01/" title="update大量数据引发的故障">http://riverdba.github.io/2017/03/30/mysql-troubleshooting01/</a>
-            <span class="copy-path" data-clipboard-text="原文: http://riverdba.github.io/2017/03/30/mysql-troubleshooting01/　　作者: 一条大河" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <span>原始链接:</span><a class="post-url" href="/2017/11/17/The-DB-flashback-for-MyFlash/" title="MySQL闪回工具之MyFlash">http://riverdba.github.io/2017/11/17/The-DB-flashback-for-MyFlash/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://riverdba.github.io/2017/11/17/The-DB-flashback-for-MyFlash/　　作者: 一条大河" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
             <script> var clipboard = new Clipboard('.copy-path'); </script>
         </p>
         <p>
@@ -342,16 +351,10 @@
 
     <nav id="article-nav">
         
-            <div id="article-nav-newer" class="article-nav-title">
-                <a href="/2017/04/01/MVCC-theory-study/">
-                    Innodb的MVCC实现原理
-                </a>
-            </div>
-        
         
             <div id="article-nav-older" class="article-nav-title">
-                <a href="/2017/03/29/Deep-comprehend-mysql-replication/">
-                    深入理解mysql的主从复制
+                <a href="/2017/08/29/sqlite3-install-for-python/">
+                    python2.7安装sqlite3模块
                 </a>
             </div>
         
@@ -363,7 +366,7 @@
     <div id="toc" class="toc-article">
         <strong class="toc-title">文章目录</strong>
         
-            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#发现故障"><span class="toc-number">1.</span> <span class="toc-text">发现故障</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#处理故障"><span class="toc-number">2.</span> <span class="toc-text">处理故障</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#分析故障"><span class="toc-number">3.</span> <span class="toc-text">分析故障</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#故障总结"><span class="toc-number">4.</span> <span class="toc-text">故障总结</span></a></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#下载安装"><span class="toc-number">1.</span> <span class="toc-text">下载安装</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#下载地址"><span class="toc-number">1.1.</span> <span class="toc-text">下载地址</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#安装"><span class="toc-number">1.2.</span> <span class="toc-text">安装</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#查看帮助"><span class="toc-number">1.3.</span> <span class="toc-text">查看帮助</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#测试用例"><span class="toc-number">2.</span> <span class="toc-text">测试用例</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#回滚insert"><span class="toc-number">2.1.</span> <span class="toc-text">回滚insert</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#at-4"><span class="toc-number"></span> <span class="toc-text">at 4</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Warning-this-binlog-is-either-in-use-or-was-not-closed-properly"><span class="toc-number"></span> <span class="toc-text">Warning: this binlog is either in use or was not closed properly.</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#at-120"><span class="toc-number"></span> <span class="toc-text">at 120</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#at-169"><span class="toc-number"></span> <span class="toc-text">at 169</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#DELETE-FROM-test-t1"><span class="toc-number">1.</span> <span class="toc-text">DELETE FROM test.t1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#WHERE"><span class="toc-number">2.</span> <span class="toc-text">WHERE</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-INT-meta-0-nullable-0-is-null-0"><span class="toc-number">3.</span> <span class="toc-text">@1=3 / INT meta=0 nullable=0 is_null=0 /</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-33-INT-meta-0-nullable-1-is-null-0"><span class="toc-number">4.</span> <span class="toc-text">@2=33 / INT meta=0 nullable=1 is_null=0 /</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-’c’-VARSTRING-384-meta-384-nullable-1-is-null-0"><span class="toc-number">5.</span> <span class="toc-text">@3=’c’ / VARSTRING(384) meta=384 nullable=1 is_null=0 /</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#End-of-log-file"><span class="toc-number"></span> <span class="toc-text">End of log file</span></a>
         
     </div>
     <style>
@@ -399,7 +402,7 @@
         </div>
         <script>
             window._bd_share_config={
-                "common":{"bdSnsKey":{},"bdText":"update大量数据引发的故障　| Yangtze River's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+                "common":{"bdSnsKey":{},"bdText":"MySQL闪回工具之MyFlash　| Yangtze River's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
         </script>
     
 
@@ -418,8 +421,8 @@
     <div id="disqus_thread"></div>
     <script>
         var disqus_config = function(){
-            this.page.url = 'http://riverdba.github.io/2017/03/30/mysql-troubleshooting01/';
-            this.page.identifier = '2017/03/30/mysql-troubleshooting01/';
+            this.page.url = 'http://riverdba.github.io/2017/11/17/The-DB-flashback-for-MyFlash/';
+            this.page.identifier = '2017/11/17/The-DB-flashback-for-MyFlash/';
         };
         var loadComment = function(){
             var d = document, s = d.createElement('script');
@@ -441,15 +444,13 @@
 
     <div class="scroll" id="post-nav-button">
         
-            <a href="/2017/04/01/MVCC-theory-study/" title="上一篇: Innodb的MVCC实现原理">
-                <i class="fa fa-angle-left"></i>
-            </a>
+            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
         
 
         <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
 
         
-            <a href="/2017/03/29/Deep-comprehend-mysql-replication/" title="下一篇: 深入理解mysql的主从复制">
+            <a href="/2017/08/29/sqlite3-install-for-python/" title="下一篇: python2.7安装sqlite3模块">
                 <i class="fa fa-angle-right"></i>
             </a>
         
