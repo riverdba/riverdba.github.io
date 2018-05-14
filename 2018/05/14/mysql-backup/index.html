@@ -15,16 +15,16 @@
 
 
 
-<meta name="description" content="摘要：使用sqlmap时遇到一个问题，需要给python安装sqlite3。记录下安装过程！">
+<meta name="description" content="mysql使用innobackupex备份失败记录">
 <meta property="og:type" content="article">
-<meta property="og:title" content="python2.7安装sqlite3模块">
-<meta property="og:url" content="http://riverdba.github.io/2017/08/29/sqlite3-install-for-python/index.html">
+<meta property="og:title" content="mysql备份失败">
+<meta property="og:url" content="http://riverdba.github.io/2018/05/14/mysql-backup/index.html">
 <meta property="og:site_name" content="Yangtze River's blog">
-<meta property="og:description" content="摘要：使用sqlmap时遇到一个问题，需要给python安装sqlite3。记录下安装过程！">
-<meta property="og:updated_time" content="2017-08-29T09:19:58.000Z">
+<meta property="og:description" content="mysql使用innobackupex备份失败记录">
+<meta property="og:updated_time" content="2018-05-14T03:19:52.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="python2.7安装sqlite3模块">
-<meta name="twitter:description" content="摘要：使用sqlmap时遇到一个问题，需要给python安装sqlite3。记录下安装过程！">
+<meta name="twitter:title" content="mysql备份失败">
+<meta name="twitter:description" content="mysql使用innobackupex备份失败记录">
 
 <link rel="apple-touch-icon" href= "/apple-touch-icon.png">
 
@@ -56,7 +56,7 @@
 <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
 
 
-<title>python2.7安装sqlite3模块 | Yangtze River&#39;s blog</title>
+<title>mysql备份失败 | Yangtze River&#39;s blog</title>
 
 <script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
 <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
@@ -260,11 +260,11 @@
     </div>
     <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
 </nav>
-      <div class="body-wrap"><article id="post-sqlite3-install-for-python" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-mysql-backup" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2017/08/29/sqlite3-install-for-python/" class="article-date">
-      <time datetime="2017-08-29T08:58:29.000Z" itemprop="datePublished">2017-08-29</time>
+      <a href="/2018/05/14/mysql-backup/" class="article-date">
+      <time datetime="2018-05-14T03:12:17.940Z" itemprop="datePublished">2018-05-14</time>
 </a>
 
 
@@ -279,7 +279,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      python2.7安装sqlite3模块
+      mysql备份失败
     </h1>
   
 
@@ -288,13 +288,13 @@
       <div class="article-info article-info-post">
         
     <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/Python/">Python</a>
+    <a class="article-category-link" href="/categories/MySQL/">MySQL</a>
     </div>
 
 
         
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/sqlite3/">sqlite3</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/工作笔记/">工作笔记</a></li></ul>
     </div>
 
         <div class="clearfix"></div>
@@ -304,16 +304,13 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-        <p><excerpt in="" index="" |="" 首页摘要=""><br>摘要：使用sqlmap时遇到一个问题，需要给python安装sqlite3。记录下安装过程！<a id="more"></a></excerpt></p>
+        <p><excerpt in="" index="" |="" 首页摘要=""><br>mysql使用innobackupex备份失败记录<a id="more"></a></excerpt></p>
 <the rest="" of="" contents="" |="" 余下全文="">
 
-<h2 id="安装sqlite3"><a href="#安装sqlite3" class="headerlink" title="安装sqlite3"></a>安装sqlite3</h2><h3 id="尝试使用pip安装，安装失败："><a href="#尝试使用pip安装，安装失败：" class="headerlink" title="尝试使用pip安装，安装失败："></a>尝试使用pip安装，安装失败：</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mysql1 src]# pip install sqlite3</div><div class="line">Collecting sqlite3</div><div class="line">  Using cached sqlite3-99.0.tar.gz</div><div class="line">    Complete output from command python setup.py egg_info:</div><div class="line">    Traceback (most recent call last):</div><div class="line">      File &quot;&lt;string&gt;&quot;, line 1, in &lt;module&gt;</div><div class="line">      File &quot;/tmp/pip-build-GKbPwN/sqlite3/setup.py&quot;, line 2, in &lt;module&gt;</div><div class="line">        raise RuntimeError(&quot;Package &apos;sqlite3&apos; must not be downloaded from pypi&quot;)</div><div class="line">    RuntimeError: Package &apos;sqlite3&apos; must not be downloaded from pypi</div><div class="line">    </div><div class="line">    ----------------------------------------</div><div class="line">Command &quot;python setup.py egg_info&quot; failed with error code 1 in /tmp/pip-build-GKbPwN/sqlite3/</div></pre></td></tr></table></figure>
-<h3 id="下载安装sqlite3"><a href="#下载安装sqlite3" class="headerlink" title="下载安装sqlite3"></a>下载安装sqlite3</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mysql1 src]# wget https://sqlite.org/2017/sqlite-autoconf-3190300.tar.gz</div><div class="line">[root@mysql1 src]# tar -xvf sqlite-autoconf-3190300.tar.gz </div><div class="line">[root@mysql1 sqlite-autoconf-3190300]# ./configure --prefix=/usr/local/lib/python2.7/dist-packages/sqlite3</div><div class="line">[root@mysql1 sqlite-autoconf-3190300]# make &amp;&amp; make install</div><div class="line">安装完毕后发现导入sqlite3仍然失败，只能重装python了</div><div class="line">&gt;&gt;&gt; import sqlite3</div><div class="line">Traceback (most recent call last):</div><div class="line">  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</div><div class="line">  File &quot;/usr/local/lib/python2.7/sqlite3/__init__.py&quot;, line 24, in &lt;module&gt;</div><div class="line">    from dbapi2 import *</div><div class="line">  File &quot;/usr/local/lib/python2.7/sqlite3/dbapi2.py&quot;, line 28, in &lt;module&gt;</div><div class="line">    from _sqlite3 import *</div><div class="line">ImportError: No module named _sqlite3</div><div class="line">&gt;&gt;&gt; exit()</div></pre></td></tr></table></figure>
-<h3 id="修改python安装源文件setup-py"><a href="#修改python安装源文件setup-py" class="headerlink" title="修改python安装源文件setup.py"></a>修改python安装源文件setup.py</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mysql1 src]# tar -xvf Python-2.7.10.tgz </div><div class="line">[root@mysql1 src]# cd Python-2.7.10    </div><div class="line">[root@mysql1 Python-2.7.10]# vi setup.py </div><div class="line">搜索sqlite3找到第1105行，在其下面加入一行上面我们安装的sqlite3的路径：</div><div class="line">   1097         # We hunt for #define SQLITE_VERSION &quot;n.n.n&quot;</div><div class="line">   1098         # We need to find &gt;= sqlite version 3.0.8</div><div class="line">   1099         sqlite_incdir = sqlite_libdir = None</div><div class="line">   1100         sqlite_inc_paths = [ &apos;/usr/include&apos;,</div><div class="line">   1101                              &apos;/usr/include/sqlite&apos;,</div><div class="line">   1102                              &apos;/usr/include/sqlite3&apos;,</div><div class="line">   1103                              &apos;/usr/local/include&apos;,</div><div class="line">   1104                              &apos;/usr/local/include/sqlite&apos;,</div><div class="line">   1105                              &apos;/usr/local/include/sqlite3&apos;,</div><div class="line">   1106                              &apos;/usr/local/lib/python2.7/dist-packages/sqlite3&apos;,  #新增此行</div><div class="line">   1107                            ]</div><div class="line">保存退出。</div></pre></td></tr></table></figure>
-<h3 id="重新编译python2-7"><a href="#重新编译python2-7" class="headerlink" title="重新编译python2.7"></a>重新编译python2.7</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mysql1 Python-2.7.10]# ./configure </div><div class="line">[root@mysql1 Python-2.7.10]# make &amp;&amp; make install</div></pre></td></tr></table></figure>
-<h2 id="验证安装"><a href="#验证安装" class="headerlink" title="验证安装"></a>验证安装</h2><h3 id="检查lib文件是否生成"><a href="#检查lib文件是否生成" class="headerlink" title="检查lib文件是否生成"></a>检查lib文件是否生成</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mysql1 Python-2.7.10]# ll /usr/local/lib/python2.7/lib-dynload/_sqlite3.so </div><div class="line">-rwxr-xr-x 1 root root 243444 Aug 30 01:15 /usr/local/lib/python2.7/lib-dynload/_sqlite3.so</div></pre></td></tr></table></figure>
-<h3 id="验证sqlite3模块导入是否成功"><a href="#验证sqlite3模块导入是否成功" class="headerlink" title="验证sqlite3模块导入是否成功"></a>验证sqlite3模块导入是否成功</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mysql1 Python-2.7.10]# python</div><div class="line">Python 2.7.10 (default, Aug 30 2017, 01:14:38) </div><div class="line">[GCC 4.4.7 20120313 (Red Hat 4.4.7-16)] on linux2</div><div class="line">Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.</div><div class="line">&gt;&gt;&gt; import sqlite3</div><div class="line">&gt;&gt;&gt; exit()</div><div class="line">[root@mysql1 Python-2.7.10]#</div></pre></td></tr></table></figure>
-<p>&lt;完&gt;</p>
+
+<h3 id="备份失败日志"><a href="#备份失败日志" class="headerlink" title="备份失败日志"></a>备份失败日志</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">Mon May 14 01:00:02 CST 2018</div><div class="line"></div><div class="line">InnoDB Backup Utility v1.5.1-xtrabackup; Copyright 2003, 2009 Innobase Oy</div><div class="line">and Percona LLC and/or its affiliates 2009-2013.  All Rights Reserved.</div><div class="line"></div><div class="line">This software is published under</div><div class="line">the GNU GENERAL PUBLIC LICENSE Version 2, June 1991.</div><div class="line"></div><div class="line">180514 01:00:05  innobackupex: Connecting to MySQL server with DSN &apos;dbi:mysql:;mysql_read_default_file=/opt/mysql/my.cnf;mysql_read_default_group=xtrabackup;mysql_</div><div class="line">socket=/opt/mysql/run/mysql.sock&apos; (using password: NO).</div><div class="line">180514 01:00:05  innobackupex: Connected to MySQL server</div><div class="line">IMPORTANT: Please check that the backup run completes successfully.</div><div class="line">           At the end of a successful backup run innobackupex</div><div class="line">           prints &quot;completed OK!&quot;.</div><div class="line"></div><div class="line">innobackupex: Using mysql server version 5.6.21-70.0-log</div><div class="line"></div><div class="line">innobackupex: Created backup directory /root</div><div class="line"></div><div class="line">180514 01:00:05  innobackupex: Starting ibbackup with command: xtrabackup_56  --defaults-file=&quot;/opt/mysql/my.cnf&quot;  --defaults-group=&quot;mysqld&quot; --backup --suspend-at-</div><div class="line">end --target-dir=/data/mysql/tmp --tmpdir=/data/mysql/tmp --throttle=10 --stream=tar</div><div class="line">innobackupex: Waiting for ibbackup (pid=23547) to suspend</div><div class="line">innobackupex: Suspend file &apos;/data/mysql/tmp/xtrabackup_suspended_2&apos;</div><div class="line"></div><div class="line">xtrabackup_56 version 2.1.5 for Percona Server 5.1.70 unknown-linux-gnu (x86_64) (revision id: undefined)</div><div class="line">xtrabackup: uses posix_fadvise().</div><div class="line">xtrabackup: cd to /data/mysql/data</div><div class="line">xtrabackup: using the following InnoDB configuration:</div><div class="line">xtrabackup:   innodb_data_home_dir = ./</div><div class="line">xtrabackup:   innodb_data_file_path = ibdata1:12M:autoextend</div><div class="line">xtrabackup:   innodb_log_group_home_dir = ./</div><div class="line">xtrabackup:   innodb_log_files_in_group = 2</div><div class="line">xtrabackup:   innodb_log_file_size = 268435456</div><div class="line">xtrabackup: using O_DIRECT</div><div class="line">xtrabackup: error: log block numbers mismatch:</div><div class="line">xtrabackup: error: expected log block no. 1013117100, but got no. 1014165668 from the log file.</div><div class="line">xtrabackup: error: it looks like InnoDB log has wrapped around before xtrabackup could process all records due to either log copying being too slow, or  log files </div><div class="line">being too small.</div><div class="line">xtrabackup: Error: xtrabackup_copy_logfile() failed.</div><div class="line">innobackupex: Error: The xtrabackup child process has died at /usr/bin/innobackupex line 2579.</div></pre></td></tr></table></figure>
+<h3 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">1、redo log的文件大小（innodb_log_file_size*innodb_log_files_in_group）设置过小；</div><div class="line">2、XtraBackup拷贝redo log的速度有些慢（可能受其他的系统任务的比较频繁的磁盘IO影响）；</div><div class="line">3、如果备份文件是存储在远程文件系统上，则还有可能是受网络带宽较小或拥堵导致；</div></pre></td></tr></table></figure>
+<h3 id="解决办法"><a href="#解决办法" class="headerlink" title="解决办法"></a>解决办法</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">由于修改innodb_log_file_size的话需要重启mysqld服务，因此先调整定时备份任务的开始时间，错开IO高峰期。经测备份可以成功。</div><div class="line">后面找停机窗口再调整redo参数。</div></pre></td></tr></table></figure>
 </the>
       
     </div>
@@ -322,13 +319,13 @@
   
     
     <div class="copyright">
-        <p><span>本文标题:</span><a href="/2017/08/29/sqlite3-install-for-python/">python2.7安装sqlite3模块</a></p>
+        <p><span>本文标题:</span><a href="/2018/05/14/mysql-backup/">mysql备份失败</a></p>
         <p><span>文章作者:</span><a href="/" title="回到主页">一条大河</a></p>
-        <p><span>发布时间:</span>2017-08-29, 16:58:29</p>
-        <p><span>最后更新:</span>2017-08-29, 17:19:58</p>
+        <p><span>发布时间:</span>2018-05-14, 11:12:17</p>
+        <p><span>最后更新:</span>2018-05-14, 11:19:52</p>
         <p>
-            <span>原始链接:</span><a class="post-url" href="/2017/08/29/sqlite3-install-for-python/" title="python2.7安装sqlite3模块">http://riverdba.github.io/2017/08/29/sqlite3-install-for-python/</a>
-            <span class="copy-path" data-clipboard-text="原文: http://riverdba.github.io/2017/08/29/sqlite3-install-for-python/　　作者: 一条大河" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <span>原始链接:</span><a class="post-url" href="/2018/05/14/mysql-backup/" title="mysql备份失败">http://riverdba.github.io/2018/05/14/mysql-backup/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://riverdba.github.io/2018/05/14/mysql-backup/　　作者: 一条大河" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
             <script> var clipboard = new Clipboard('.copy-path'); </script>
         </p>
         <p>
@@ -340,16 +337,10 @@
 
     <nav id="article-nav">
         
-            <div id="article-nav-newer" class="article-nav-title">
-                <a href="/2017/11/17/The-DB-flashback-for-MyFlash/">
-                    MySQL闪回工具之MyFlash
-                </a>
-            </div>
-        
         
             <div id="article-nav-older" class="article-nav-title">
-                <a href="/2017/07/13/mysql-transcation-uncommitted/">
-                    mysql事务未提交引发的阻塞
+                <a href="/2018/05/09/route-add/">
+                    linux路由添加和删除
                 </a>
             </div>
         
@@ -361,7 +352,7 @@
     <div id="toc" class="toc-article">
         <strong class="toc-title">文章目录</strong>
         
-            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#安装sqlite3"><span class="toc-number">1.</span> <span class="toc-text">安装sqlite3</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#尝试使用pip安装，安装失败："><span class="toc-number">1.1.</span> <span class="toc-text">尝试使用pip安装，安装失败：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#下载安装sqlite3"><span class="toc-number">1.2.</span> <span class="toc-text">下载安装sqlite3</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#修改python安装源文件setup-py"><span class="toc-number">1.3.</span> <span class="toc-text">修改python安装源文件setup.py</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#重新编译python2-7"><span class="toc-number">1.4.</span> <span class="toc-text">重新编译python2.7</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#验证安装"><span class="toc-number">2.</span> <span class="toc-text">验证安装</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#检查lib文件是否生成"><span class="toc-number">2.1.</span> <span class="toc-text">检查lib文件是否生成</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#验证sqlite3模块导入是否成功"><span class="toc-number">2.2.</span> <span class="toc-text">验证sqlite3模块导入是否成功</span></a></li></ol></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#备份失败日志"><span class="toc-number">1.</span> <span class="toc-text">备份失败日志</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#原因分析"><span class="toc-number">2.</span> <span class="toc-text">原因分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#解决办法"><span class="toc-number">3.</span> <span class="toc-text">解决办法</span></a></li></ol>
         
     </div>
     <style>
@@ -397,7 +388,7 @@
         </div>
         <script>
             window._bd_share_config={
-                "common":{"bdSnsKey":{},"bdText":"python2.7安装sqlite3模块　| Yangtze River's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+                "common":{"bdSnsKey":{},"bdText":"mysql备份失败　| Yangtze River's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
         </script>
     
 
@@ -416,8 +407,8 @@
     <div id="disqus_thread"></div>
     <script>
         var disqus_config = function(){
-            this.page.url = 'http://riverdba.github.io/2017/08/29/sqlite3-install-for-python/';
-            this.page.identifier = '2017/08/29/sqlite3-install-for-python/';
+            this.page.url = 'http://riverdba.github.io/2018/05/14/mysql-backup/';
+            this.page.identifier = '2018/05/14/mysql-backup/';
         };
         var loadComment = function(){
             var d = document, s = d.createElement('script');
@@ -439,15 +430,13 @@
 
     <div class="scroll" id="post-nav-button">
         
-            <a href="/2017/11/17/The-DB-flashback-for-MyFlash/" title="上一篇: MySQL闪回工具之MyFlash">
-                <i class="fa fa-angle-left"></i>
-            </a>
+            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
         
 
         <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
 
         
-            <a href="/2017/07/13/mysql-transcation-uncommitted/" title="下一篇: mysql事务未提交引发的阻塞">
+            <a href="/2018/05/09/route-add/" title="下一篇: linux路由添加和删除">
                 <i class="fa fa-angle-right"></i>
             </a>
         
