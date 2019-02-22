@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+
+    <!--[if lt IE 9]>
+        <style>body {display: none; background: none !important} </style>
+        <meta http-equiv="Refresh" Content="0; url=//outdatedbrowser.com/" />
+    <![endif]-->
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no" />
+<meta name="author" content="一条大河" />
+
+
+
+<meta name="description" content="使用MySQL的调试模式跟踪一些常见报错信息的过程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL5.7之Debug模式">
+<meta property="og:url" content="http://riverdba.github.io/2018/11/14/mysql57-debug/index.html">
+<meta property="og:site_name" content="Yangtze River's blog">
+<meta property="og:description" content="使用MySQL的调试模式跟踪一些常见报错信息的过程">
+<meta property="og:updated_time" content="2019-02-22T06:58:04.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MySQL5.7之Debug模式">
+<meta name="twitter:description" content="使用MySQL的调试模式跟踪一些常见报错信息的过程">
+
+<link rel="apple-touch-icon" href= "/apple-touch-icon.png">
+
+
+    <link rel="alternate" href="/atom.xml" title="Yangtze River&#39;s blog" type="application/atom+xml">
+
+
+
+    <link rel="shortcut icon" href="/yangtzeriver.jpg">
+
+
+
+    <link href="//cdn.bootcss.com/animate.css/3.5.1/animate.min.css" rel="stylesheet">
+
+
+
+    <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+
+
+
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+
+
+<title>MySQL5.7之Debug模式 | Yangtze River&#39;s blog</title>
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+
+<script>
+    var yiliaConfig = {
+        fancybox: true,
+        animate: true,
+        isHome: false,
+        isPost: true,
+        isArchive: false,
+        isTag: false,
+        isCategory: false,
+        fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+        scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
+        search: true
+    }
+</script>
+
+
+    <script>
+        yiliaConfig.jquery_ui = [true, "//cdn.bootcss.com/jqueryui/1.10.4/jquery-ui.min.js", "//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css"];
+    </script>
+
+
+
+    <script> yiliaConfig.rootUrl = "\/";</script>
+
+
+
+
+
+
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/img/yangtzeriver.jpg" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">一条大河</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">为学患无疑，疑则进也！</p>
+        
+
+        
+            <form id="search-form">
+            <input type="text" id="local-search-input" name="q" placeholder="search..." class="search form-control" autocomplete="off" autocorrect="off" searchonload="false" />
+            <i class="fa fa-times" onclick="resetSearch()"></i>
+            </form>
+            <div id="local-search-result"></div>
+            <p class='no-result'>No results found <i class='fa fa-spinner fa-pulse'></i></p>
+        
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" href="mailto:river_dba@foxmail.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" href="#" title="GitHub"></a>
+                            
+                                <a class="fa RSS" href="/atom.xml" title="RSS"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/GDB/">GDB</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hexo-Quick-Start/">Hexo Quick Start</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL性能调优技术/">MySQL性能调优技术</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL查询优化技术/">MySQL查询优化技术</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Python-pt-kill/">Python+pt-kill</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SQL审核工具/">SQL审核工具</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/disqus/">disqus</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/online-ddl/">online ddl</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/scrapy/">scrapy</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sqlite3/">sqlite3</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sysbench/">sysbench</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/学习笔记/">学习笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工作笔记/">工作笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/故障诊断/">故障诊断</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据库恢复/">数据库恢复</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="http://moxfive.xyz/">MOxFIVE</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="http://moxfive.xyz/yelee/">yelee主题</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://dbanote.github.io">刘雅君</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">一条大河</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/img/yangtzeriver.jpg" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">一条大河</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">为学患无疑，疑则进也！</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" target="_blank" href="mailto:river_dba@foxmail.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" target="_blank" href="#" title="GitHub"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-mysql57-debug" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2018/11/14/mysql57-debug/" class="article-date">
+      <time datetime="2018-11-14T09:20:01.560Z" itemprop="datePublished">2018-11-14</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      MySQL5.7之Debug模式
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/MySQL/">MySQL</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/学习笔记/">学习笔记</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p><excerpt in="" index="" |="" 首页摘要=""><br>使用MySQL的调试模式跟踪一些常见报错信息的过程<a id="more"></a></excerpt></p>
+<the rest="" of="" contents="" |="" 余下全文="">
+
+<h3 id="编译MySQL5-7"><a href="#编译MySQL5-7" class="headerlink" title="编译MySQL5.7"></a>编译MySQL5.7</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mysql3 percona-server-5.7.23-24]# mkdir -p /opt/mysql57</div><div class="line">[root@mysql3 percona-server-5.7.23-24]# mkdir -p /data/mysql57/data</div><div class="line">#编译的时候加上with_debug</div><div class="line">cmake . -DCMAKE_INSTALL_PREFIX=/opt/mysql57 -DMYSQL_DATADIR=/data/mysql57/data -DSYSCONFDIR=/opt/mysql57 -DWITH_BOOST=/usr/local/boost -DWITH_DEBUG=1 </div><div class="line">#初始化db</div><div class="line">[root@mysql3 mysql57]# /opt/mysql57/bin/mysqld --initialize --user=mysql --basedir=/opt/mysql57 --datadir=/data/mysql57/data</div><div class="line">[root@mysql3 mysql57]# cp support-files/mysql.server /etc/rc.d/init.d/mysqld3308</div><div class="line">启动db</div><div class="line">[root@mysql3 mysql57]# /etc/rc.d/init.d/mysqld3308 start </div><div class="line">Starting MySQL (Percona Server).... SUCCESS! </div><div class="line">[root@mysql3 mysql57]# ps -ef|grep mysqld</div><div class="line">root      1354     1  0 Oct28 ?        00:00:00 /bin/sh /opt/mysql/bin/mysqld_safe --datadir=/data/mysql/data --pid-file=/data/mysql/data/mysql3.pid</div><div class="line">mysql     2524  1354  0 Oct28 ?        01:31:38 /opt/mysql/bin/mysqld --basedir=/opt/mysql --datadir=/data/mysql/data --plugin-dir=/opt/mysql/lib/mysql/plugin --user=mysql --log-error=/data/mysql/log/alert.log --open-files-limit=135582 --pid-file=/data/mysql/data/mysql3.pid --socket=/data/mysql/run/mysql.sock --port=3306</div><div class="line">root      3776     1  0 09:23 pts/3    00:00:00 /bin/sh /opt/mysql57/bin/mysqld_safe --datadir=/data/mysql57/data --pid-file=/data/mysql57/data/mysql3.pid</div><div class="line">mysql     4934  3776 22 09:23 pts/3    00:00:03 /opt/mysql57/bin/mysqld --basedir=/opt/mysql57 --datadir=/data/mysql57/data --plugin-dir=/opt/mysql57/lib/mysql/plugin --user=mysql --log-error=/data/mysql57/log/alert.log --open-files-limit=135582 --pid-file=/data/mysql57/data/mysql3.pid --socket=/data/mysql57/run/mysql.sock --port=3308</div><div class="line">root      4983 27157  0 09:23 pts/3    00:00:00 grep mysqld</div><div class="line">[root@mysql3 mysql57]# </div><div class="line">登录db</div><div class="line">[root@mysql3 mysql57]# /opt/mysql57/bin/mysql --socket=/data/mysql57/run/mysql.sock</div><div class="line">ERROR 1045 (28000): Access denied for user &apos;root&apos;@&apos;localhost&apos; (using password: NO)</div><div class="line">忘记了初始化db时的密码，my.cnf中加入skip-grant-tables重启mysqld</div><div class="line">[root@mysql3 mysql57]# </div><div class="line">[root@mysql3 mysql57]# /etc/rc.d/init.d/mysqld3308 restart                         </div><div class="line">Shutting down MySQL (Percona Server).. SUCCESS! </div><div class="line">Starting MySQL (Percona Server).... SUCCESS! </div><div class="line">[root@mysql3 mysql57]# </div><div class="line">[root@mysql3 mysql57]# /opt/mysql57/bin/mysql --socket=/data/mysql57/run/mysql.sock</div><div class="line">Welcome to the MySQL monitor.  Commands end with ; or \g.</div><div class="line">Your MySQL connection id is 2</div><div class="line">Server version: 5.7.23-24-debug-log Source distribution</div><div class="line"></div><div class="line">Copyright (c) 2009-2018 Percona LLC and/or its affiliates</div><div class="line">Copyright (c) 2000, 2018, Oracle and/or its affiliates. All rights reserved.</div><div class="line"></div><div class="line">Oracle is a registered trademark of Oracle Corporation and/or its</div><div class="line">affiliates. Other names may be trademarks of their respective</div><div class="line">owners.</div><div class="line"></div><div class="line">Type &apos;help;&apos; or &apos;\h&apos; for help. Type &apos;\c&apos; to clear the current input statement.</div><div class="line"></div><div class="line">root@(none) 09:27:15&gt;show databases;</div><div class="line">+--------------------+</div><div class="line">| Database           |</div><div class="line">+--------------------+</div><div class="line">| information_schema |</div><div class="line">| mysql              |</div><div class="line">| performance_schema |</div><div class="line">| sys                |</div><div class="line">+--------------------+</div><div class="line">4 rows in set (0.00 sec)</div><div class="line"></div><div class="line">root@(none) 09:27:18&gt;</div><div class="line">root@mysql 09:28:28&gt;select user,host,authentication_string from user;</div><div class="line">+---------------+-----------+-------------------------------------------+</div><div class="line">| user          | host      | authentication_string                     |</div><div class="line">+---------------+-----------+-------------------------------------------+</div><div class="line">| root          | localhost | *89C6AA92FB4A025F12E4016BA0A7EDDB685AC1A9 |</div><div class="line">| mysql.session | localhost | *THISISNOTAVALIDPASSWORDTHATCANBEUSEDHERE |</div><div class="line">| mysql.sys     | localhost | *THISISNOTAVALIDPASSWORDTHATCANBEUSEDHERE |</div><div class="line">+---------------+-----------+-------------------------------------------+</div><div class="line">3 rows in set (0.00 sec)</div><div class="line"></div><div class="line">root@mysql 09:28:41&gt;alter user root@localhost identified by &apos;&apos;;</div><div class="line">ERROR 1290 (HY000): The MySQL server is running with the --skip-grant-tables option so it cannot execute this statement</div><div class="line">root@mysql 09:29:36&gt;update mysql.user set authentication_string=password(&apos;xueledba&apos;) where user=&apos;root&apos; ;</div><div class="line">Query OK, 1 row affected, 1 warning (0.01 sec)</div><div class="line">Rows matched: 1  Changed: 1  Warnings: 1</div><div class="line"></div><div class="line">root@mysql 09:29:49&gt;flush privileges;</div><div class="line">Query OK, 0 rows affected (0.00 sec)</div><div class="line">注释掉my.cnf中的skip-grant-tables重启mysqld，用设置的新密码登录：</div><div class="line">[root@mysql3 mysql57]# /opt/mysql57/bin/mysql --socket=/data/mysql57/run/mysql.sock -pxueledba</div><div class="line">mysql: [Warning] Using a password on the command line interface can be insecure.</div><div class="line">Welcome to the MySQL monitor.  Commands end with ; or \g.</div><div class="line">Your MySQL connection id is 4</div><div class="line">Server version: 5.7.23-24-debug-log</div><div class="line"></div><div class="line">Copyright (c) 2009-2018 Percona LLC and/or its affiliates</div><div class="line">Copyright (c) 2000, 2018, Oracle and/or its affiliates. All rights reserved.</div><div class="line"></div><div class="line">Oracle is a registered trademark of Oracle Corporation and/or its</div><div class="line">affiliates. Other names may be trademarks of their respective</div><div class="line">owners.</div><div class="line"></div><div class="line">Type &apos;help;&apos; or &apos;\h&apos; for help. Type &apos;\c&apos; to clear the current input statement.</div><div class="line"></div><div class="line">(unknown)@(none) 09:31:15&gt;use mysql;</div><div class="line">ERROR 1820 (HY000): You must reset your password using ALTER USER statement before executing this statement.</div><div class="line">(unknown)@(none) 09:31:30&gt;alter user root@localhost identified by &apos;&apos;;</div><div class="line">Query OK, 0 rows affected (0.00 sec)</div><div class="line"></div><div class="line">root@(none) 09:31:38&gt;flush privileges;</div><div class="line">Query OK, 0 rows affected (0.00 sec)</div><div class="line"></div><div class="line">root@(none) 09:31:43&gt;use mysql;</div><div class="line">Database changed</div><div class="line">root@mysql 09:31:46&gt;show databases;</div><div class="line">+--------------------+</div><div class="line">| Database           |</div><div class="line">+--------------------+</div><div class="line">| information_schema |</div><div class="line">| mysql              |</div><div class="line">| performance_schema |</div><div class="line">| sys                |</div><div class="line">+--------------------+</div><div class="line">4 rows in set (0.00 sec)</div><div class="line">退出再登录，就不需要密码了</div><div class="line">[root@mysql3 mysql57]# /opt/mysql57/bin/mysql --socket=/data/mysql57/run/mysql.sock</div><div class="line">Welcome to the MySQL monitor.  Commands end with ; or \g.</div><div class="line">Your MySQL connection id is 5</div><div class="line">Server version: 5.7.23-24-debug-log Source distribution</div><div class="line"></div><div class="line">Copyright (c) 2009-2018 Percona LLC and/or its affiliates</div><div class="line">Copyright (c) 2000, 2018, Oracle and/or its affiliates. All rights reserved.</div><div class="line"></div><div class="line">Oracle is a registered trademark of Oracle Corporation and/or its</div><div class="line">affiliates. Other names may be trademarks of their respective</div><div class="line">owners.</div><div class="line"></div><div class="line">Type &apos;help;&apos; or &apos;\h&apos; for help. Type &apos;\c&apos; to clear the current input statement.</div><div class="line"></div><div class="line">root@(none) 09:32:48&gt;show databases;</div><div class="line">+--------------------+</div><div class="line">| Database           |</div><div class="line">+--------------------+</div><div class="line">| information_schema |</div><div class="line">| mysql              |</div><div class="line">| performance_schema |</div><div class="line">| sys                |</div><div class="line">+--------------------+</div><div class="line">4 rows in set (0.00 sec)</div><div class="line"></div><div class="line">root@(none) 09:32:53&gt;exit</div><div class="line">Bye</div><div class="line">设置别名：</div><div class="line">[root@mysql3 mysql57]# vi ~/.bash_profile </div><div class="line">alias mysql2=&apos;/opt/mysql57/bin/mysql&apos;</div><div class="line">[root@mysql3 mysql57]# source ~/.bash_profile </div><div class="line">[root@mysql3 mysql57]# mysql2</div><div class="line">Welcome to the MySQL monitor.  Commands end with ; or \g.</div><div class="line">Your MySQL connection id is 6</div><div class="line">Server version: 5.7.23-24-debug-log Source distribution</div><div class="line"></div><div class="line">Copyright (c) 2009-2018 Percona LLC and/or its affiliates</div><div class="line">Copyright (c) 2000, 2018, Oracle and/or its affiliates. All rights reserved.</div><div class="line"></div><div class="line">Oracle is a registered trademark of Oracle Corporation and/or its</div><div class="line">affiliates. Other names may be trademarks of their respective</div><div class="line">owners.</div><div class="line"></div><div class="line">Type &apos;help;&apos; or &apos;\h&apos; for help. Type &apos;\c&apos; to clear the current input statement.</div><div class="line"></div><div class="line">root@(none) 09:34:12&gt;exit</div><div class="line">Bye</div></pre></td></tr></table></figure>
+<h3 id="以debug模式启动"><a href="#以debug模式启动" class="headerlink" title="以debug模式启动"></a>以debug模式启动</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mysql3 mysql57]# /etc/rc.d/init.d/mysqld3308 start --debug --console</div><div class="line">Starting MySQL (Percona Server).... SUCCESS! </div><div class="line">[root@mysql3 mysql57]# ps -ef|grep mysqld|grep mysql57</div><div class="line">root      8912     1  0 09:46 pts/3    00:00:00 /bin/sh /opt/mysql57/bin/mysqld_safe --datadir=/data/mysql57/data --pid-file=/data/mysql57/data/mysql3.pid --debug --console</div><div class="line">mysql    10099  8912  6 09:46 pts/3    00:00:03 /opt/mysql57/bin/mysqld --basedir=/opt/mysql57 --datadir=/data/mysql57/data --plugin-dir=/opt/mysql57/lib/mysql/plugin --user=mysql --debug --console --log-error=/data/mysql57/log/alert.log --open-files-limit=135582 --pid-file=/data/mysql57/data/mysql3.pid --socket=/data/mysql57/run/mysql.sock --port=3308</div><div class="line">[root@mysql3 mysql57]#</div></pre></td></tr></table></figure>
+<h3 id="创建dba库和测试表"><a href="#创建dba库和测试表" class="headerlink" title="创建dba库和测试表"></a>创建dba库和测试表</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">root@(none) 09:38:15&gt;create database dba;</div><div class="line">Query OK, 1 row affected (0.00 sec)</div><div class="line"></div><div class="line">root@(none) 09:38:36&gt;use dba;</div><div class="line">Database changed</div><div class="line">root@dba 09:38:41&gt;create table t1(a int,b varchar(10));</div><div class="line">Query OK, 0 rows affected (0.02 sec)</div><div class="line"></div><div class="line">root@dba 09:41:02&gt;insert into t1 values(1,&apos;aaaaa&apos;),(2,&apos;bbbbb&apos;);</div><div class="line">Query OK, 2 rows affected (0.02 sec)</div><div class="line">Records: 2  Duplicates: 0  Warnings: 0</div><div class="line"></div><div class="line">root@dba 09:41:36&gt;select * from t1;</div><div class="line">+------+-------+</div><div class="line">| a    | b     |</div><div class="line">+------+-------+</div><div class="line">|    1 | aaaaa |</div><div class="line">|    2 | bbbbb |</div><div class="line">+------+-------+</div><div class="line">2 rows in set (0.00 sec)</div></pre></td></tr></table></figure>
+<h3 id="验证一个报错"><a href="#验证一个报错" class="headerlink" title="验证一个报错"></a>验证一个报错</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">root@dba 09:41:41&gt;select * from t1 where c=1;</div><div class="line">ERROR 1054 (42S22): Unknown column &apos;c&apos; in &apos;where clause&apos;</div><div class="line">root@dba 09:41:56&gt;</div><div class="line">请问：这个c字段不存在的报错是在Server层的哪个阶段报出来的？</div><div class="line"></div><div class="line">跟踪trace文件可以看到这个过程：分析器阶段</div><div class="line"> 113632 T@2: | | &gt;mysql_parse</div><div class="line"> 113633 T@2: | | | mysql_parse: query: &apos;select * from t1 where c=1&apos;</div><div class="line"> 113634 T@2: | | | &gt;mysql_reset_thd_for_next_command</div><div class="line"> 113635 T@2: | | | | debug: reset_unsafe_rollback_flags</div><div class="line"> 113636 T@2: | | | | &gt;clear_error</div><div class="line"> 113637 T@2: | | | | &lt;clear_error 3809</div><div class="line"> 113638 T@2: | | | | &gt;reset_diagnostics_area</div><div class="line"> 113639 T@2: | | | | &lt;reset_diagnostics_area 371</div><div class="line"> 113640 T@2: | | | | &gt;THD::clear_slow_extended</div><div class="line"> 113641 T@2: | | | | &lt;THD::clear_slow_extended 4415</div><div class="line"> 113642 T@2: | | | | &gt;reset_current_stmt_binlog_format_row</div><div class="line"> 113643 T@2: | | | | | debug: in_sub_stmt: no, system_thread: NON_SYSTEM_THREAD</div><div class="line"> 113644 T@2: | | | | | &gt;set_current_stmt_binlog_format_row</div><div class="line"> 113645 T@2: | | | | | &lt;set_current_stmt_binlog_format_row 4099</div><div class="line"> 113646 T@2: | | | | &lt;reset_current_stmt_binlog_format_row 4121</div><div class="line"> 113647 T@2: | | | | &gt;THD::set_trans_pos</div><div class="line"> 113648 T@2: | | | | | return: m_trans_log_file: (null), m_trans_fixed_log_file: (null), m_trans_end_pos: 0</div><div class="line"> 113649 T@2: | | | | &lt;THD::set_trans_pos 3145</div><div class="line"> 113650 T@2: | | | | debug: is_current_stmt_binlog_format_row(): 1</div><div class="line"> 113651 T@2: | | | &lt;mysql_reset_thd_for_next_command 5623</div><div class="line">查询缓存：如果缓存中有结果则直接返回给客户端 </div><div class="line"> 113677 T@2: | | | &gt;Query_cache::send_result_to_client</div><div class="line"> 113678 T@2: | | | &lt;Query_cache::send_result_to_client 2255</div><div class="line">解析SQL：</div><div class="line"> 113679 T@2: | | | &gt;parse_sql</div><div class="line"> 113680 T@2: | | | | &gt;alloc_root</div><div class="line"> 113681 T@2: | | | | | enter: root: 0x7f0e98003ca8</div><div class="line"> 113682 T@2: | | | | | exit: ptr: 0x7f0e98006600</div><div class="line"> 113683 T@2: | | | | &lt;alloc_root 304</div><div class="line"> 113684 T@2: | | | | &gt;alloc_root</div><div class="line"> 113685 T@2: | | | | | enter: root: 0x7f0e98003ca8</div><div class="line"> 113686 T@2: | | | | | exit: ptr: 0x7f0e98006720</div><div class="line"> 113687 T@2: | | | | &lt;alloc_root 304</div><div class="line">检查权限：</div><div class="line"> 113832 T@2: | | | | &gt;check_access</div><div class="line"> 113833 T@2: | | | | | enter: db: dba  want_access: 1  master_access: 536870911</div><div class="line"> 113834 T@2: | | | | | THD::enter_stage: &apos;checking permissions&apos; /data/src/percona-server-5.7.23-24/sql/auth/sql_authorization.cc:818</div><div class="line"> 113835 T@2: | | | | | &gt;PROFILING::status_change</div><div class="line"> 113836 T@2: | | | | | &lt;PROFILING::status_change 384</div><div class="line"> 113837 T@2: | | | | &lt;check_access 889</div><div class="line"> 113838 T@2: | | | | &gt;check_grant</div><div class="line"> 113839 T@2: | | | | &lt;check_grant 2218</div><div class="line">打开表：</div><div class="line"> 113855 T@2: | | | | | | &gt;open_and_process_table</div><div class="line"> 113856 T@2: | | | | | | | tcache: opening table: &apos;dba&apos;.&apos;t1&apos;  item: 0x7f0e98006bc0</div><div class="line"> 113857 T@2: | | | | | | | &gt;open_table</div><div class="line"> 113858 T@2: | | | | | | | | &gt;my_hash_first_from_hash_value</div><div class="line"> 113859 T@2: | | | | | | | | | exit: found key at 0</div><div class="line">判断字段是否存在：</div><div class="line"> 113949 T@2: | | | | | | &gt;SELECT_LEX::setup_conds</div><div class="line"> 113950 T@2: | | | | | | | info: thd-&gt;mark_used_columns: 1</div><div class="line"> 113951 T@2: | | | | | | | &gt;find_field_in_table_ref</div><div class="line"> 113952 T@2: | | | | | | | | enter: table: &apos;t1&apos;  field name: &apos;c&apos;  item name: &apos;c&apos;  ref 0x7f0e98007328</div><div class="line"> 113953 T@2: | | | | | | | | &gt;find_field_in_table</div><div class="line"> 113954 T@2: | | | | | | | | | enter: table: &apos;t1&apos;, field name: &apos;c&apos;</div><div class="line"> 113955 T@2: | | | | | | | | &lt;find_field_in_table 7532</div><div class="line"> 113956 T@2: | | | | | | | &lt;find_field_in_table_ref 7731</div><div class="line"> 113957 T@2: | | | | | | | &gt;find_field_in_table_ref</div><div class="line"> 113958 T@2: | | | | | | | | enter: table: &apos;t1&apos;  field name: &apos;c&apos;  item name: &apos;c&apos;  ref 0x7f0e98007328</div><div class="line"> 113959 T@2: | | | | | | | | &gt;find_field_in_table</div><div class="line"> 113960 T@2: | | | | | | | | | enter: table: &apos;t1&apos;, field name: &apos;c&apos;</div><div class="line"> 113961 T@2: | | | | | | | | &lt;find_field_in_table 7532</div><div class="line"> 113962 T@2: | | | | | | | &lt;find_field_in_table_ref 7731</div><div class="line"> 113963 T@2: | | | | | | | &gt;check_grant_column</div><div class="line"> 113964 T@2: | | | | | | | | enter: table: t1  want_privilege: 1</div><div class="line"> 113965 T@2: | | | | | | | &lt;check_grant_column 2274</div><div class="line"> 113966 T@2: | | | | | | | &gt;my_error</div><div class="line"> 113967 T@2: | | | | | | | | my: nr: 1054  MyFlags: 0  errno: 11</div><div class="line"> 113968 T@2: | | | | | | | | &gt;my_message_sql</div><div class="line"> 113969 T@2: | | | | | | | | | error: error: 1054  message: &apos;Unknown column &apos;c&apos; in &apos;where clause&apos;&apos;</div><div class="line">解析器关闭表</div><div class="line"> 114032 T@2: | | | | THD::enter_stage: &apos;closing tables&apos; /data/src/percona-server-5.7.23-24/sql/sql_parse.cc:5278</div></pre></td></tr></table></figure>
+</the>
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2018/11/14/mysql57-debug/">MySQL5.7之Debug模式</a></p>
+        <p><span>文章作者:</span><a href="/" title="回到主页">一条大河</a></p>
+        <p><span>发布时间:</span>2018-11-14, 17:20:01</p>
+        <p><span>最后更新:</span>2019-02-22, 14:58:04</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2018/11/14/mysql57-debug/" title="MySQL5.7之Debug模式">http://riverdba.github.io/2018/11/14/mysql57-debug/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://riverdba.github.io/2018/11/14/mysql57-debug/　　作者: 一条大河" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2018/05/14/mysql-backup/">
+                    mysql备份失败
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">文章目录</strong>
+        
+            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#编译MySQL5-7"><span class="toc-number">1.</span> <span class="toc-text">编译MySQL5.7</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#以debug模式启动"><span class="toc-number">2.</span> <span class="toc-text">以debug模式启动</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#创建dba库和测试表"><span class="toc-number">3.</span> <span class="toc-text">创建dba库和测试表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#验证一个报错"><span class="toc-number">4.</span> <span class="toc-text">验证一个报错</span></a></li></ol>
+        
+    </div>
+    <style>
+        .left-col .switch-btn,
+        .left-col .switch-area {
+            display: none;
+        }
+        .toc-level-6 i,
+        .toc-level-6 ol {
+            display: none !important;
+        }
+    </style>
+
+    <input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+    <script>
+        yiliaConfig.toc = ["隐藏目录", "显示目录", !!"false"];
+    </script>
+
+
+
+    
+<div class="share">
+    
+        <div class="bdsharebuttonbox">
+            <a href="#" class="fa fa-twitter bds_twi" data-cmd="twi" title="分享到推特"></a>
+            <a href="#" class="fa fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+            <a href="#" class="fa fa-qq bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+            <a href="#" class="fa fa-files-o bds_copy" data-cmd="copy" title="复制网址"></a>
+            <a href="#" class="fa fa fa-envelope-o bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+            <a href="#" class="fa fa-weixin bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+            <a href="#" class="fa fa-share-alt bds_more" data-cmd="more"></i></a>
+        </div>
+        <script>
+            window._bd_share_config={
+                "common":{"bdSnsKey":{},"bdText":"MySQL5.7之Debug模式　| Yangtze River's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+        </script>
+    
+
+    
+</div>
+
+
+
+
+
+
+
+    
+        <section id="comments">
+    <style> aside.comment-bar { margin: auto 30px; }</style>
+    <div id="disqus_thread"></div>
+    <script>
+        var disqus_config = function(){
+            this.page.url = 'http://riverdba.github.io/2018/11/14/mysql57-debug/';
+            this.page.identifier = '2018/11/14/mysql57-debug/';
+        };
+        var loadComment = function(){
+            var d = document, s = d.createElement('script');
+            s.src = '//https-riverdba-github-io.disqus.com/embed.js';
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        }
+    </script>
+    
+    <script> loadComment(); </script>
+
+</section>
+
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2018/05/14/mysql-backup/" title="下一篇: mysql备份失败">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2018/11/14/mysql57-debug/">MySQL5.7之Debug模式</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/14/mysql-backup/">mysql备份失败</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/09/route-add/">linux路由添加和删除</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/11/17/The-DB-flashback-for-MyFlash/">MySQL闪回工具之MyFlash</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/08/29/sqlite3-install-for-python/">python2.7安装sqlite3模块</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/07/13/mysql-transcation-uncommitted/">mysql事务未提交引发的阻塞</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/07/11/scrapy-install/">Python爬虫框架scrapy的安装</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/06/02/pt-kill/">使用pt-kill实现MySQL的过载保护</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/05/25/mysql-binlog-filename/">mysql binlog文件扩展序号最大是多少</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/05/15/mysql-performance-schema/">mysql5.6之performance schema初探</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/05/04/gdb-debug-mysql/">使用GDB调试mysql源码</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/24/mycat-faq/">mycat常见问题集锦</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/24/select-on-mycat/">在mycat上使用select * 的影响</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/22/mycat-upgrade/">mycat1.4升级到1.5</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/21/mysql-sleep-process-too-many/">mysql sleep连接太多怎么办</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/20/online-ddl-tools-by-oak/">MySQL在线DDL工具之OAK</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/19/hive2mycat/">将hive输出文件导入mycat</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/15/archer-install/">archer安装及使用</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/13/inception-install/">Inception安装及使用</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/11/sysbench-for-mysql/">mysql基准测试</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/06/String-handling-of-mysql/">MySQL字符串处理一则</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/05/Non-SPJ-Optimization-of-mysql/">MySQL查询优化技术之非SPJ优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/01/MVCC-theory-study/">Innodb的MVCC实现原理</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/30/mysql-troubleshooting01/">update大量数据引发的故障</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/29/Deep-comprehend-mysql-replication/">深入理解mysql的主从复制</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/28/Sematic-Optimization-of-mysql/">mysql查询优化技术之语义优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/28/hexo-s-tips/">hexo's tips</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/27/hexo-s-comment/">实现hexo的评论功能</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/27/Performance-tuning-key-points-of-mysql/">mysql性能调优的关键点</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/22/join-elimination-technique-of-mysql/">mysql查询优化技术之连接消除</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/21/hello-world/">Hello World</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2017-2019 一条大河
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题  v3.5">Yelee</a> by MOxFIVE <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" title="本站到访数"><i class="fa fa-user" aria-hidden="true"></i><span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>| </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit"  title="本页阅读量"><i class="fa fa-eye animated infinite pulse" aria-hidden="true"></i><span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+    </div>
+    
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.2.0/require.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" onclick="load$hide();" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    // Open in New Window
+    
+        var oOpenInNew = {
+            
+            
+            
+            
+            
+            
+             archives: ".archive-article-title", 
+             miniArchives: "a.post-list-link", 
+            
+             friends: "#js-friends a", 
+             socail: ".social a" 
+        }
+        for (var x in oOpenInNew) {
+            $(oOpenInNew[x]).attr("target", "_blank");
+        }
+    
+</script>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  </div>
+</body>
+</html>
