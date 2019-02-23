@@ -15,19 +15,15 @@
 
 
 
-<meta name="description" content="摘要：select * 写法对mycat结果集的影响">
-<meta property="og:type" content="article">
-<meta property="og:title" content="在mycat上使用select * 的影响">
-<meta property="og:url" content="http://riverdba.github.io/2017/04/24/select-on-mycat/index.html">
+<meta name="description" content="i am a dba">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Yangtze River's blog">
+<meta property="og:url" content="http://riverdba.github.io/archives/2019/02/index.html">
 <meta property="og:site_name" content="Yangtze River's blog">
-<meta property="og:description" content="摘要：select * 写法对mycat结果集的影响">
-<meta property="og:image" content="http://riverdba.github.io/2017/04/24/select-on-mycat/1.png">
-<meta property="og:image" content="http://riverdba.github.io/2017/04/24/select-on-mycat/2.png">
-<meta property="og:updated_time" content="2017-04-24T05:28:52.000Z">
+<meta property="og:description" content="i am a dba">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="在mycat上使用select * 的影响">
-<meta name="twitter:description" content="摘要：select * 写法对mycat结果集的影响">
-<meta name="twitter:image" content="http://riverdba.github.io/2017/04/24/select-on-mycat/1.png">
+<meta name="twitter:title" content="Yangtze River's blog">
+<meta name="twitter:description" content="i am a dba">
 
 <link rel="apple-touch-icon" href= "/apple-touch-icon.png">
 
@@ -59,7 +55,7 @@
 <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
 
 
-<title>在mycat上使用select * 的影响 | Yangtze River&#39;s blog</title>
+<title>Archives: 2019/2 | Yangtze River&#39;s blog</title>
 
 <script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
 <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
@@ -69,8 +65,8 @@
         fancybox: true,
         animate: true,
         isHome: false,
-        isPost: true,
-        isArchive: false,
+        isPost: false,
+        isArchive: true,
         isTag: false,
         isCategory: false,
         fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
@@ -263,202 +259,96 @@
     </div>
     <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
 </nav>
-      <div class="body-wrap"><article id="post-select-on-mycat" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap">
   
-    <div class="article-meta">
-      <a href="/2017/04/24/select-on-mycat/" class="article-date">
-      <time datetime="2017-04-24T03:44:17.000Z" itemprop="datePublished">2017-04-24</time>
+  
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2019" class="archive-year">2019</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+          <div class="article-meta">
+              <a href="/2019/02/23/mysql-data-safety/" class="archive-article-date">
+      <time datetime="2019-02-23T08:15:07.000Z" itemprop="datePublished">02-23</time>
 </a>
 
 
-    </div>
+        </div>
+         
   
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 class="article-title" itemprop="name">
-      在mycat上使用select * 的影响
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2019/02/23/mysql-data-safety/">MySQL数据安全策略</a>
     </h1>
   
 
-      </header>
-      
-      <div class="article-info article-info-post">
-        
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/MyCAT/">MyCAT</a>
-    </div>
-
-
-        
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/工作笔记/">工作笔记</a></li></ul>
-    </div>
-
-        <div class="clearfix"></div>
-      </div>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
+        <div class="article-info info-on-archive">
           
-        <p><excerpt in="" index="" |="" 首页摘要=""><br>摘要：select * 写法对mycat结果集的影响<a id="more"></a></excerpt></p>
-<the rest="" of="" contents="" |="" 余下全文="">
-
-<h3 id="为什么要避免SELECT"><a href="#为什么要避免SELECT" class="headerlink" title="为什么要避免SELECT *"></a>为什么要避免SELECT *</h3><p>select *会将不需要读的字段数据都从MySQL里读出来，给网络传输造成不必要的压力。且表字段一旦更新，但model层没有来得及更新的话，系统会报错。</p>
-<h3 id="SELECT-对MyCAT的影响"><a href="#SELECT-对MyCAT的影响" class="headerlink" title="SELECT *对MyCAT的影响"></a>SELECT *对MyCAT的影响</h3><p>mycat版本：1.5.1-RELEASE<br>使用select *查询结果：<br><img src="/2017/04/24/select-on-mycat/1.png" alt="图1"><br>将每个字段列出来查询结果：<br><img src="/2017/04/24/select-on-mycat/2.png" alt="图2"><br>可以看到，使用select *导致mycat返回结果集错乱了。<br>再次强调：SELECT语句必须指定具体字段名称！</p>
-</the>
-      
-    </div>
-    
-  </div>
-  
-    
-    <div class="copyright">
-        <p><span>本文标题:</span><a href="/2017/04/24/select-on-mycat/">在mycat上使用select * 的影响</a></p>
-        <p><span>文章作者:</span><a href="/" title="回到主页">一条大河</a></p>
-        <p><span>发布时间:</span>2017-04-24, 11:44:17</p>
-        <p><span>最后更新:</span>2017-04-24, 13:28:52</p>
-        <p>
-            <span>原始链接:</span><a class="post-url" href="/2017/04/24/select-on-mycat/" title="在mycat上使用select * 的影响">http://riverdba.github.io/2017/04/24/select-on-mycat/</a>
-            <span class="copy-path" data-clipboard-text="原文: http://riverdba.github.io/2017/04/24/select-on-mycat/　　作者: 一条大河" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
-            <script> var clipboard = new Clipboard('.copy-path'); </script>
-        </p>
-        <p>
-            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
-        </p>
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/MySQL/">MySQL</a>
     </div>
 
 
-
-    <nav id="article-nav">
-        
-            <div id="article-nav-newer" class="article-nav-title">
-                <a href="/2017/04/24/mycat-faq/">
-                    mycat常见问题集锦
-                </a>
-            </div>
-        
-        
-            <div id="article-nav-older" class="article-nav-title">
-                <a href="/2017/04/22/mycat-upgrade/">
-                    mycat1.4升级到1.5
-                </a>
-            </div>
-        
-    </nav>
-
-  
-</article>
-
-    <div id="toc" class="toc-article">
-        <strong class="toc-title">文章目录</strong>
-        
-            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#为什么要避免SELECT"><span class="toc-number">1.</span> <span class="toc-text">为什么要避免SELECT *</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SELECT-对MyCAT的影响"><span class="toc-number">2.</span> <span class="toc-text">SELECT *对MyCAT的影响</span></a></li></ol>
-        
+          
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/学习笔记/">学习笔记</a></li></ul>
     </div>
-    <style>
-        .left-col .switch-btn,
-        .left-col .switch-area {
-            display: none;
-        }
-        .toc-level-6 i,
-        .toc-level-6 ol {
-            display: none !important;
-        }
-    </style>
 
-    <input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
-
-    <script>
-        yiliaConfig.toc = ["隐藏目录", "显示目录", !!"false"];
-    </script>
-
-
-
-    
-<div class="share">
-    
-        <div class="bdsharebuttonbox">
-            <a href="#" class="fa fa-twitter bds_twi" data-cmd="twi" title="分享到推特"></a>
-            <a href="#" class="fa fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
-            <a href="#" class="fa fa-qq bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
-            <a href="#" class="fa fa-files-o bds_copy" data-cmd="copy" title="复制网址"></a>
-            <a href="#" class="fa fa fa-envelope-o bds_mail" data-cmd="mail" title="通过邮件分享"></a>
-            <a href="#" class="fa fa-weixin bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
-            <a href="#" class="fa fa-share-alt bds_more" data-cmd="more"></i></a>
         </div>
-        <script>
-            window._bd_share_config={
-                "common":{"bdSnsKey":{},"bdText":"在mycat上使用select * 的影响　| Yangtze River's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
-        </script>
+        <div class="clearfix"></div>
+    </header>
+  </div>
+</article>
+  
     
-
     
-</div>
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+          <div class="article-meta">
+              <a href="/2019/02/22/mycat-consul-mgr/" class="archive-article-date">
+      <time datetime="2019-02-22T07:13:44.000Z" itemprop="datePublished">02-22</time>
+</a>
 
 
+        </div>
+         
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2019/02/22/mycat-consul-mgr/">探究MyCat+Consul+MGR高可用架构</a>
+    </h1>
+  
 
-
-
-
-
-    
-        <section id="comments">
-    <style> aside.comment-bar { margin: auto 30px; }</style>
-    <div id="disqus_thread"></div>
-    <script>
-        var disqus_config = function(){
-            this.page.url = 'http://riverdba.github.io/2017/04/24/select-on-mycat/';
-            this.page.identifier = '2017/04/24/select-on-mycat/';
-        };
-        var loadComment = function(){
-            var d = document, s = d.createElement('script');
-            s.src = '//https-riverdba-github-io.disqus.com/embed.js';
-            s.setAttribute('data-timestamp', +new Date());
-            (d.head || d.body).appendChild(s);
-        }
-    </script>
-    
-    <script> loadComment(); </script>
-
-</section>
-
-
-    
-
-
-
-
-    <div class="scroll" id="post-nav-button">
-        
-            <a href="/2017/04/24/mycat-faq/" title="上一篇: mycat常见问题集锦">
-                <i class="fa fa-angle-left"></i>
-            </a>
-        
-
-        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
-
-        
-            <a href="/2017/04/22/mycat-upgrade/" title="下一篇: mycat1.4升级到1.5">
-                <i class="fa fa-angle-right"></i>
-            </a>
-        
+        <div class="article-info info-on-archive">
+          
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/MySQL/">MySQL</a>
     </div>
 
-    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/02/23/mysql-data-safety/">MySQL数据安全策略</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/22/mycat-consul-mgr/">探究MyCat+Consul+MGR高可用架构</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/11/14/mysql57-debug/">MySQL5.7之Debug模式</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/14/mysql-backup/">mysql备份失败</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/09/route-add/">linux路由添加和删除</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/11/17/The-DB-flashback-for-MyFlash/">MySQL闪回工具之MyFlash</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/08/29/sqlite3-install-for-python/">python2.7安装sqlite3模块</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/07/13/mysql-transcation-uncommitted/">mysql事务未提交引发的阻塞</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/07/11/scrapy-install/">Python爬虫框架scrapy的安装</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/06/02/pt-kill/">使用pt-kill实现MySQL的过载保护</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/05/25/mysql-binlog-filename/">mysql binlog文件扩展序号最大是多少</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/05/15/mysql-performance-schema/">mysql5.6之performance schema初探</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/05/04/gdb-debug-mysql/">使用GDB调试mysql源码</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/24/mycat-faq/">mycat常见问题集锦</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/24/select-on-mycat/">在mycat上使用select * 的影响</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/22/mycat-upgrade/">mycat1.4升级到1.5</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/21/mysql-sleep-process-too-many/">mysql sleep连接太多怎么办</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/20/online-ddl-tools-by-oak/">MySQL在线DDL工具之OAK</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/19/hive2mycat/">将hive输出文件导入mycat</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/15/archer-install/">archer安装及使用</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/13/inception-install/">Inception安装及使用</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/11/sysbench-for-mysql/">mysql基准测试</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/06/String-handling-of-mysql/">MySQL字符串处理一则</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/05/Non-SPJ-Optimization-of-mysql/">MySQL查询优化技术之非SPJ优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/01/MVCC-theory-study/">Innodb的MVCC实现原理</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/30/mysql-troubleshooting01/">update大量数据引发的故障</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/29/Deep-comprehend-mysql-replication/">深入理解mysql的主从复制</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/28/Sematic-Optimization-of-mysql/">mysql查询优化技术之语义优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/28/hexo-s-tips/">hexo's tips</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/27/hexo-s-comment/">实现hexo的评论功能</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/27/Performance-tuning-key-points-of-mysql/">mysql性能调优的关键点</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/22/join-elimination-technique-of-mysql/">mysql查询优化技术之连接消除</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/21/hello-world/">Hello World</a></li></ul>
 
+          
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/学习笔记/">学习笔记</a></li></ul>
+    </div>
 
+        </div>
+        <div class="clearfix"></div>
+    </header>
+  </div>
+</article>
+  
+  
+    </div></section>
+  
 
-
-    <script>
-        
-    </script>
+    
 </div>
       <footer id="footer">
     <div class="outer">

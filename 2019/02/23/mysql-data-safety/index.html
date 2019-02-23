@@ -15,18 +15,16 @@
 
 
 
-<meta name="description" content="摘要：hexo小技巧汇总">
+<meta name="description" content="摘要：MySQL数据安全策略（转自：知数堂–老叶茶馆http://t.cn/EfvKeFD）">
 <meta property="og:type" content="article">
-<meta property="og:title" content="hexo's tips">
-<meta property="og:url" content="http://riverdba.github.io/2017/03/28/hexo-s-tips/index.html">
+<meta property="og:title" content="MySQL数据安全策略">
+<meta property="og:url" content="http://riverdba.github.io/2019/02/23/mysql-data-safety/index.html">
 <meta property="og:site_name" content="Yangtze River's blog">
-<meta property="og:description" content="摘要：hexo小技巧汇总">
-<meta property="og:image" content="http://riverdba.github.io/2017/03/28/hexo-s-tips/1.png">
-<meta property="og:updated_time" content="2018-05-09T06:15:58.000Z">
+<meta property="og:description" content="摘要：MySQL数据安全策略（转自：知数堂–老叶茶馆http://t.cn/EfvKeFD）">
+<meta property="og:updated_time" content="2019-02-23T08:25:54.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="hexo's tips">
-<meta name="twitter:description" content="摘要：hexo小技巧汇总">
-<meta name="twitter:image" content="http://riverdba.github.io/2017/03/28/hexo-s-tips/1.png">
+<meta name="twitter:title" content="MySQL数据安全策略">
+<meta name="twitter:description" content="摘要：MySQL数据安全策略（转自：知数堂–老叶茶馆http://t.cn/EfvKeFD）">
 
 <link rel="apple-touch-icon" href= "/apple-touch-icon.png">
 
@@ -58,7 +56,7 @@
 <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
 
 
-<title>hexo&#39;s tips | Yangtze River&#39;s blog</title>
+<title>MySQL数据安全策略 | Yangtze River&#39;s blog</title>
 
 <script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
 <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
@@ -262,11 +260,11 @@
     </div>
     <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
 </nav>
-      <div class="body-wrap"><article id="post-hexo-s-tips" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-mysql-data-safety" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2017/03/28/hexo-s-tips/" class="article-date">
-      <time datetime="2017-03-28T01:04:36.000Z" itemprop="datePublished">2017-03-28</time>
+      <a href="/2019/02/23/mysql-data-safety/" class="article-date">
+      <time datetime="2019-02-23T08:15:07.000Z" itemprop="datePublished">2019-02-23</time>
 </a>
 
 
@@ -281,7 +279,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      hexo&#39;s tips
+      MySQL数据安全策略
     </h1>
   
 
@@ -290,11 +288,15 @@
       <div class="article-info article-info-post">
         
     <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/Hexo/">Hexo</a>
+    <a class="article-category-link" href="/categories/MySQL/">MySQL</a>
     </div>
 
 
         
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/学习笔记/">学习笔记</a></li></ul>
+    </div>
+
         <div class="clearfix"></div>
       </div>
       
@@ -302,15 +304,89 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-        <p><excerpt in="" index="" |="" 首页摘要=""><br>摘要：hexo小技巧汇总<a id="more"></a></excerpt></p>
+        <p><excerpt in="" index="" |="" 首页摘要=""><br>摘要：MySQL数据安全策略（转自：知数堂–老叶茶馆<a href="http://t.cn/EfvKeFD）" target="_blank" rel="external">http://t.cn/EfvKeFD）</a><a id="more"></a></excerpt></p>
 <the rest="" of="" contents="" |="" 余下全文="">
 
-<h3 id="如何修改新建文章模板"><a href="#如何修改新建文章模板" class="headerlink" title="如何修改新建文章模板"></a>如何修改新建文章模板</h3><p>一般文章都需要添加分类和摘要，我们可以加到模板中。进入到hexo根目录的scaffolds下可以看到三个md文件：draft.md\page.md\post.md<br>在post.md中添加分类和摘要后：<br><img src="/2017/03/28/hexo-s-tips/1.png" alt="图片1"><br>这样新建文章的时候就包含分类和摘要了。</p>
-<h3 id="如何在博客中引用本地图片"><a href="#如何在博客中引用本地图片" class="headerlink" title="如何在博客中引用本地图片"></a>如何在博客中引用本地图片</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">首先修改_config.yml中参数 post_asset_folder:true，这样设置后在新建文章时，Hexo会自动创建一个与文章同名的文件夹用来存放图片</div><div class="line">然后安装插件：npm install https://github.com/CodeFalling/hexo-asset-image --save</div><div class="line">引用图片：将图片放在文章同名的文件夹中，比如图片名称：1.png，在md中书写：![图1](hexo-s-comment/1.png)即可。</div></pre></td></tr></table></figure>
-<h3 id="报错日志及解决"><a href="#报错日志及解决" class="headerlink" title="报错日志及解决"></a>报错日志及解决</h3><p>1、发布博客遇到报错<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">YAMLException: can not read a block mapping entry; a multiline key may not be an implicit key at line 5, column 1:</div></pre></td></tr></table></figure></p>
-<p>报错原因：根据日志定位到第5行，第1列的内容是：categories:Hexo。分类冒号后面需要加个空格再写内容！<br>解决办法：改成categories: Hexo即可！<br>2、将博客发布到远程报错<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">ssh: connect to host github.com port 22: Connection timed out</div><div class="line">fatal: Could not read from remote repository.</div><div class="line">Please make sure you have the correct access rights</div><div class="line">and the repository exists.</div><div class="line">FATAL Something&apos;s wrong. Maybe you can find the solution here: http://hexo.io/docs/troubleshooting.html</div><div class="line">Error: ssh: connect to host github.com port 22: Connection timed out</div><div class="line">fatal: Could not read from remote repository.</div><div class="line">Please make sure you have the correct access rights</div><div class="line">and the repository exists.</div><div class="line">    at ChildProcess.&lt;anonymous&gt; (D:\src\Git\imdba\node_modules\hexo-util\lib\spawn.js:37:17)</div><div class="line">    at emitTwo (events.js:106:13)</div><div class="line">    at ChildProcess.emit (events.js:191:7)</div><div class="line">    at ChildProcess.cp.emit (D:\src\Git\imdba\node_modules\cross-spawn\lib\enoent.js:40:29)</div><div class="line">    at maybeClose (internal/child_process.js:877:16)</div><div class="line">    at Socket.&lt;anonymous&gt; (internal/child_process.js:334:11)</div><div class="line">    at emitOne (events.js:96:13)</div><div class="line">    at Socket.emit (events.js:188:7)</div><div class="line">    at Pipe._handle.close [as _onclose] (net.js:498:12)</div><div class="line">FATAL ssh: connect to host github.com port 22: Connection timed out</div><div class="line">fatal: Could not read from remote repository.</div><div class="line">Please make sure you have the correct access rights</div><div class="line">and the repository exists.</div><div class="line">Error: ssh: connect to host github.com port 22: Connection timed out</div><div class="line">fatal: Could not read from remote repository.</div><div class="line">Please make sure you have the correct access rights</div><div class="line">and the repository exists.</div><div class="line">    at ChildProcess.&lt;anonymous&gt; (D:\src\Git\imdba\node_modules\hexo-util\lib\spawn.js:37:17)</div><div class="line">    at emitTwo (events.js:106:13)</div><div class="line">    at ChildProcess.emit (events.js:191:7)</div><div class="line">    at ChildProcess.cp.emit (D:\src\Git\imdba\node_modules\cross-spawn\lib\enoent.js:40:29)</div><div class="line">    at maybeClose (internal/child_process.js:877:16)</div><div class="line">    at Socket.&lt;anonymous&gt; (internal/child_process.js:334:11)</div><div class="line">    at emitOne (events.js:96:13)</div><div class="line">    at Socket.emit (events.js:188:7)</div><div class="line">    at Pipe._handle.close [as _onclose] (net.js:498:12)</div></pre></td></tr></table></figure></p>
-<p>报错原因：网络问题<br>解决办法：关闭VPN，重新发布即可。<br>3、执行hexo命令提示：bash: hexo: command not found<br>解决办法：将hexo的bin目录加入环境变量（D:\src\Git\imdba\node_modules\hexo\bin）<br>同时确保相关组件运行正常：<br>Administrator@dba MINGW64 /imdba/node_modules<br>$ npm -v<br>3.10.10</p>
-<p>Administrator@dba MINGW64 /imdba/node_modules<br>$ node -v<br>v6.11.5</p>
+<h3 id="导读"><a href="#导读" class="headerlink" title="导读"></a>导读</h3><p>MySQL被运用于越来越多的业务中，在关键业务中对数据安全性的要求也更高，如何保证MySQL的数据安全？</p>
+<p>MySQL被运用于越来越多的业务中，在关键业务中对数据安全性的要求也更高，如何保证MySQL的数据安全。</p>
+<p>数据安全如果只靠MySQL应用层面显然是不够的，是需要在多个层面来保护的，包括网络、系统、逻辑应用层、数据库层等。</p>
+<p>下面是我们可借鉴的一些安全策略。</p>
+<h3 id="网络、系统层面"><a href="#网络、系统层面" class="headerlink" title="网络、系统层面"></a>网络、系统层面</h3><p>在这个层面可以做很多的事情，我们可以把这些安全要求作为新系统安装时的标准要求，放到自动化装机方案中。</p>
+<p>把运行MySQL的服务器放在内网中，不要启用公网；</p>
+<p>迫不得已启用公网的话，修改sshd端口到10000以上；</p>
+<p>设置防火墙策略，只允许信任的服务器连接sshd和MySQL端口；</p>
+<p>修改idrac/imm密码，设置GRUB密码；</p>
+<p>设置密码安全策略，比如要求 PASS_MIN_LEN 不低于8位，其实最好是直接用一个复杂密码做MD5之后再作为正式密码，32位长度的安全程度够高吧；</p>
+<p>将操作日志记入syslog并且发送到远程log server上，坚决不能只存储在本地；</p>
+<p>除了必须的账号，其他的都设为无登入权限；</p>
+<p>尽量把运行MySQL的服务器独立出来，不要和web server、app server放一起。必须放一起的话，也要设置好权限分离，不允许web server、app server进程的属主有直接访问MySQL datadir的权限；</p>
+<p>禁用web server层的autoindex配置；</p>
+<p>可能的话，采用https代替http；</p>
+<p>关键应用保持更新，避免老版本的漏洞风险；</p>
+<p>设置nginx、php等应用服务的安全策略，禁用危险函数等；</p>
+<p>可以考虑购买运营商提供的一些安全防护、扫描器等产品；</p>
+<p>坚决杜绝二逼行为，把关键配置文件上传到公共网络上（如把公司项目代码放在github上作为个人项目，内含内网账号密码信息）。</p>
+<h3 id="逻辑应用层"><a href="#逻辑应用层" class="headerlink" title="逻辑应用层"></a>逻辑应用层</h3><p>在这个层面，等多的是依赖运营及开发人员的安全意识，很多本可以避免的低级安全漏洞完全可以在这个层面处理掉，比如下面提到的XSS、CSRF、SQL注入等漏洞。</p>
+<p>尽量不要在公网上使用开源的cms、blog、论坛等系统，除非做过代码安全审计，或者事先做好安全策略。这类系统一般都是黑客重点研究对象，很容易被搞；</p>
+<p>在web server层，可以用一些安全模块，比如nginx的WAF模块；</p>
+<p>在app server层，可以做好代码安全审计、安全扫描，防止XSS攻击、CSRF攻击、SQL注入、文件上传攻击、绕过cookie检测等安全漏洞；</p>
+<p>应用程序中涉及账号密码的地方例如JDBC连接串配置，尽量把明文密码采用加密方式存储，再利用内部私有的解密工具进行反解密后再使用。或者可以让应用程序先用中间账号连接proxy层，再由proxy连接MySQL，避免应用层直连MySQL；</p>
+<p>应用层启用关键日志记录，例如交易日志，方便后续对账什么的。</p>
+<h3 id="MySQL数据库层"><a href="#MySQL数据库层" class="headerlink" title="MySQL数据库层"></a>MySQL数据库层</h3><p>前面几层如果都做的不够安全的话，在这层也几乎是岌岌可危了。但我们依然可以做些事情的。</p>
+<p>启用 safe-update 选项，避免没有 WHERE 条件的全表数据被修改；</p>
+<p>将 binlog 的保存周期加长，便于后续的审计、审查；</p>
+<p>应用账号只赋予SELECT、UPDATE、INSERT权限，取消DELETE权限。把需要DELETE权限的逻辑改成用UPDATE实现，避免被物理删除；</p>
+<p>需要真正删除时，交由DBA先备份后再物理删除；</p>
+<p>可以采用Percona的SQL审计插件，据说还有macfee的插件；</p>
+<p>还可以采用触发器来做一些辅助功能，比如防止黑客恶意篡改数据。</p>
+<h3 id="按外网安全和内网安全分为如下两部分"><a href="#按外网安全和内网安全分为如下两部分" class="headerlink" title="按外网安全和内网安全分为如下两部分"></a>按外网安全和内网安全分为如下两部分</h3><h4 id="内部操作安全策略"><a href="#内部操作安全策略" class="headerlink" title="内部操作安全策略"></a>内部操作安全策略</h4><ol>
+<li><p>是否回收DBA全部权限<br>试想，如果DBA没权限了，日常DB运维的活，以及紧急故障处理，该怎么实施呢？因此，建议在没有成熟的自动化运维平台前，不应该粗暴的回收DBA的太多权限，否则可能会导致工作效率降低的，甚至DBA有一种不被信任的负面情绪。</p>
+</li>
+<li><p>MySQL层安全策略<br>业务帐号最多只可以通过内网远程登录，而不能通过公网远程连接。</p>
+</li>
+</ol>
+<p>增加运维平台账号，该账号允许从专用的管理平台服务器远程连接。当然了，要对管理平台部署所在服务器做好安全措施以及必要的安全审计策略。</p>
+<p>建议启用数据库审计功能。这需要使用MySQL企业版，或者Percona/MariaDB分支版本，MySQL社区版本不支持该功能。</p>
+<p>启用 safe-update 选项，避免没有 WHERE 条件的全表数据被修改；</p>
+<p>在应用中尽量不直接DELETE删除数据，而是设置一个标志位就好了。需要真正删除时，交由DBA先备份后再物理删除，避免误操作删除全部数据。</p>
+<p>还可以采用触发器来做一些辅助功能，比如防止黑客恶意篡改数据。</p>
+<ol>
+<li>MySQL账号权限规则<br>业务帐号，权限最小化，坚决不允许DROP、TRUNCATE权限。</li>
+</ol>
+<p>业务账号默认只授予普通的DML所需权限，也就是select、update、insert、delete、execute等几个权限，其余不给。</p>
+<p>MySQL初始化后，先行删除无用账号，删除匿名test数据库<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">mysql&gt; delete from mysql.user where user!=&apos;root&apos; or host!=&apos;localhost&apos;; flush privileges;</div><div class="line"></div><div class="line">mysql&gt; drop database test;</div></pre></td></tr></table></figure></p>
+<p>创建备份专用账号，只有SELECT权限，且只允许本机可登入。</p>
+<p>设置MySQL账号的密码安全策略，包括长度、复杂性。</p>
+<ol>
+<li>关于数据备份<br>记住，做好数据全量备份是系统崩溃无法修复时的最后一概救命稻草。<br>备份数据还可以用来做数据审计或是用于数据仓库的数据源拉取之用。<br>一般来说，备份策略是这样的：每天一次全备，并且定期对binlog做增备，或者直接利用binlog server机制将binlog传输到其他远程主机上。有了全备+binlog，就可以按需恢复到任何时间点。<br>特别提醒：当采用xtrabackup的流式备份时，考虑采用加密传输，避免备份数据被恶意截取。</li>
+</ol>
+<h4 id="外网安全策略"><a href="#外网安全策略" class="headerlink" title="外网安全策略"></a>外网安全策略</h4><p>事实上，操作系统安及应用安全要比数据库自身的安全策略更重要。同理，应用程序及其所在的服务器端的系统安全也很重要，很多数据安全事件，都是通过代码漏洞入侵到应用服务器，再去探测数据库，最后成功拖库。</p>
+<ol>
+<li>操作系统安全建议<br>运行MySQL的Linux必须只运行在内部网络，不允许直接对公网暴露，实在有需要从公网连接的话，再通过跳板机做端口转发，并且如上面所述，要严格限制数据库账号权限级别。</li>
+</ol>
+<p>系统账号都改成基于ssh key认证，不允许远程密码登入，且ssh key的算法、长度有要求以确保相对安全。这样就没有密码丢失的风险，除非个人的私钥被盗。</p>
+<p>进一步的话，甚至可以对全部服务器启用PAM认证，做到账号的统一管理，也更方便、安全。</p>
+<p>关闭不必要的系统服务，只开必须的进程，例如 mysqld、sshd、networking、crond、syslogd 等服务，其它的都关闭。</p>
+<p>禁止root账号远程登录。</p>
+<p>禁止用root账号启动mysqld等普通业务服务进程。</p>
+<p>sshd服务的端口号建议修改成10000以上。</p>
+<p>在不影响性能的前提下，尽可能启用对MySQL服务端口的防火墙策略（高并发时，采用iptables可能影响性能，建议改用ip route策略）。</p>
+<p>GRUB必须设置密码，物理服务器的Idrac/imm/ilo等账号默认密码也要修改。</p>
+<p>每个需要登入系统的员工，都使用每个人私有帐号，而不是使用公共账号。</p>
+<p>应该启用系统层的操作审计，记录所有ssh日志，或利bash记录相应的操作命令并发送到远程服务器，然后进行相应的安全审计，及时发现不安全操作。</p>
+<p>正确设置MySQL及其他数据库服务相关目录权限，不要全是755，一般750就够了。</p>
+<p>可以考虑部署堡垒机，所有连接远程服务器都需要先通过堡垒机，堡垒机上就可以实现所有操作记录以及审计功能了。</p>
+<p>脚本加密对安全性提升其实没太大帮助。对有经验的黑客来说，只要有系统登入权限，就可以通过提权等方式轻松获得root。</p>
+<ol>
+<li>应用安全建议<br>禁用web server的autoindex配置。</li>
+</ol>
+<p>从制度层面，杜绝员工将代码上传到外部github上，因为很可能存在内部IP、账号密码泄露的风险，真的要上传必须先经过安全审核。</p>
+<p>尽量不要在公网上使用开源的cms、blog、论坛等系统，除非做过代码安全审计，或者事先做好安全策略。这类系统一般都是黑客重点研究对象，很容易被搞；</p>
+<p>在web server层，可以用一些安全模块，比如nginx的WAF模块；</p>
+<p>在app server层，可以做好代码安全审计、安全扫描，防止XSS攻击、CSRF攻击、SQL注入、文件上传攻击、绕过cookie检测等安全漏洞；</p>
+<p>应用程序中涉及账号密码的地方例如JDBC连接串配置，尽量把明文密码采用加密方式存储，再利用内部私有的解密工具进行反解密后再使用。或者可以让应用程序先用中间账号连接proxy层，再由proxy连接MySQL，避免应用层直连MySQL；</p>
+<p>最后我们想说，任何高明的安全策略，都不如内部员工的安全意识来的重要。以前发生过一起案例，公司内有位员工的PC不慎中毒，结果导致内网数据被盗。</p>
+<p>安全无小事，每个人都应铭记于心。在数据安全面前，可以适当牺牲一些便利性，当然也不能太过，否则可能得不偿失。</p>
 </the>
       
     </div>
@@ -319,13 +395,13 @@
   
     
     <div class="copyright">
-        <p><span>本文标题:</span><a href="/2017/03/28/hexo-s-tips/">hexo&#39;s tips</a></p>
+        <p><span>本文标题:</span><a href="/2019/02/23/mysql-data-safety/">MySQL数据安全策略</a></p>
         <p><span>文章作者:</span><a href="/" title="回到主页">一条大河</a></p>
-        <p><span>发布时间:</span>2017-03-28, 09:04:36</p>
-        <p><span>最后更新:</span>2018-05-09, 14:15:58</p>
+        <p><span>发布时间:</span>2019-02-23, 16:15:07</p>
+        <p><span>最后更新:</span>2019-02-23, 16:25:54</p>
         <p>
-            <span>原始链接:</span><a class="post-url" href="/2017/03/28/hexo-s-tips/" title="hexo&#39;s tips">http://riverdba.github.io/2017/03/28/hexo-s-tips/</a>
-            <span class="copy-path" data-clipboard-text="原文: http://riverdba.github.io/2017/03/28/hexo-s-tips/　　作者: 一条大河" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <span>原始链接:</span><a class="post-url" href="/2019/02/23/mysql-data-safety/" title="MySQL数据安全策略">http://riverdba.github.io/2019/02/23/mysql-data-safety/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://riverdba.github.io/2019/02/23/mysql-data-safety/　　作者: 一条大河" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
             <script> var clipboard = new Clipboard('.copy-path'); </script>
         </p>
         <p>
@@ -337,16 +413,10 @@
 
     <nav id="article-nav">
         
-            <div id="article-nav-newer" class="article-nav-title">
-                <a href="/2017/03/28/Sematic-Optimization-of-mysql/">
-                    mysql查询优化技术之语义优化
-                </a>
-            </div>
-        
         
             <div id="article-nav-older" class="article-nav-title">
-                <a href="/2017/03/27/hexo-s-comment/">
-                    实现hexo的评论功能
+                <a href="/2019/02/22/mycat-consul-mgr/">
+                    探究MyCat+Consul+MGR高可用架构
                 </a>
             </div>
         
@@ -358,7 +428,7 @@
     <div id="toc" class="toc-article">
         <strong class="toc-title">文章目录</strong>
         
-            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#如何修改新建文章模板"><span class="toc-number">1.</span> <span class="toc-text">如何修改新建文章模板</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#如何在博客中引用本地图片"><span class="toc-number">2.</span> <span class="toc-text">如何在博客中引用本地图片</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#报错日志及解决"><span class="toc-number">3.</span> <span class="toc-text">报错日志及解决</span></a></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#导读"><span class="toc-number">1.</span> <span class="toc-text">导读</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#网络、系统层面"><span class="toc-number">2.</span> <span class="toc-text">网络、系统层面</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#逻辑应用层"><span class="toc-number">3.</span> <span class="toc-text">逻辑应用层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MySQL数据库层"><span class="toc-number">4.</span> <span class="toc-text">MySQL数据库层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#按外网安全和内网安全分为如下两部分"><span class="toc-number">5.</span> <span class="toc-text">按外网安全和内网安全分为如下两部分</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#内部操作安全策略"><span class="toc-number">5.1.</span> <span class="toc-text">内部操作安全策略</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#外网安全策略"><span class="toc-number">5.2.</span> <span class="toc-text">外网安全策略</span></a></li></ol></li></ol>
         
     </div>
     <style>
@@ -394,7 +464,7 @@
         </div>
         <script>
             window._bd_share_config={
-                "common":{"bdSnsKey":{},"bdText":"hexo's tips　| Yangtze River's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+                "common":{"bdSnsKey":{},"bdText":"MySQL数据安全策略　| Yangtze River's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
         </script>
     
 
@@ -413,8 +483,8 @@
     <div id="disqus_thread"></div>
     <script>
         var disqus_config = function(){
-            this.page.url = 'http://riverdba.github.io/2017/03/28/hexo-s-tips/';
-            this.page.identifier = '2017/03/28/hexo-s-tips/';
+            this.page.url = 'http://riverdba.github.io/2019/02/23/mysql-data-safety/';
+            this.page.identifier = '2019/02/23/mysql-data-safety/';
         };
         var loadComment = function(){
             var d = document, s = d.createElement('script');
@@ -436,15 +506,13 @@
 
     <div class="scroll" id="post-nav-button">
         
-            <a href="/2017/03/28/Sematic-Optimization-of-mysql/" title="上一篇: mysql查询优化技术之语义优化">
-                <i class="fa fa-angle-left"></i>
-            </a>
+            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
         
 
         <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
 
         
-            <a href="/2017/03/27/hexo-s-comment/" title="下一篇: 实现hexo的评论功能">
+            <a href="/2019/02/22/mycat-consul-mgr/" title="下一篇: 探究MyCat+Consul+MGR高可用架构">
                 <i class="fa fa-angle-right"></i>
             </a>
         
