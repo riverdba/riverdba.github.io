@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+
+    <!--[if lt IE 9]>
+        <style>body {display: none; background: none !important} </style>
+        <meta http-equiv="Refresh" Content="0; url=//outdatedbrowser.com/" />
+    <![endif]-->
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no" />
+<meta name="author" content="一条大河" />
+
+
+
+<meta name="description" content="摘要：使用strace跟踪分析mysql的运行过程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用strace跟踪mysql的运行">
+<meta property="og:url" content="http://riverdba.github.io/2019/03/18/strace-mysql/index.html">
+<meta property="og:site_name" content="Yangtze River's blog">
+<meta property="og:description" content="摘要：使用strace跟踪分析mysql的运行过程">
+<meta property="og:updated_time" content="2019-03-19T03:10:18.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用strace跟踪mysql的运行">
+<meta name="twitter:description" content="摘要：使用strace跟踪分析mysql的运行过程">
+
+<link rel="apple-touch-icon" href= "/apple-touch-icon.png">
+
+
+    <link rel="alternate" href="/atom.xml" title="Yangtze River&#39;s blog" type="application/atom+xml">
+
+
+
+    <link rel="shortcut icon" href="/yangtzeriver.jpg">
+
+
+
+    <link href="//cdn.bootcss.com/animate.css/3.5.1/animate.min.css" rel="stylesheet">
+
+
+
+    <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+
+
+
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+
+
+<title>使用strace跟踪mysql的运行 | Yangtze River&#39;s blog</title>
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+
+<script>
+    var yiliaConfig = {
+        fancybox: true,
+        animate: true,
+        isHome: false,
+        isPost: true,
+        isArchive: false,
+        isTag: false,
+        isCategory: false,
+        fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+        scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
+        search: true
+    }
+</script>
+
+
+    <script>
+        yiliaConfig.jquery_ui = [true, "//cdn.bootcss.com/jqueryui/1.10.4/jquery-ui.min.js", "//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css"];
+    </script>
+
+
+
+    <script> yiliaConfig.rootUrl = "\/";</script>
+
+
+
+
+
+
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/img/yangtzeriver.jpg" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">一条大河</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">为学患无疑，疑则进也！</p>
+        
+
+        
+            <form id="search-form">
+            <input type="text" id="local-search-input" name="q" placeholder="search..." class="search form-control" autocomplete="off" autocorrect="off" searchonload="false" />
+            <i class="fa fa-times" onclick="resetSearch()"></i>
+            </form>
+            <div id="local-search-result"></div>
+            <p class='no-result'>No results found <i class='fa fa-spinner fa-pulse'></i></p>
+        
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" href="mailto:river_dba@foxmail.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" href="#" title="GitHub"></a>
+                            
+                                <a class="fa RSS" href="/atom.xml" title="RSS"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/GDB/">GDB</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hexo-Quick-Start/">Hexo Quick Start</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL性能调优技术/">MySQL性能调优技术</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL查询优化技术/">MySQL查询优化技术</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Python-pt-kill/">Python+pt-kill</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SQL审核工具/">SQL审核工具</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/disqus/">disqus</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/online-ddl/">online ddl</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/scrapy/">scrapy</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sqlite3/">sqlite3</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sysbench/">sysbench</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/学习笔记/">学习笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工作笔记/">工作笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/故障诊断/">故障诊断</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据库恢复/">数据库恢复</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="http://moxfive.xyz/">MOxFIVE</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="http://moxfive.xyz/yelee/">yelee主题</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://dbanote.github.io">刘雅君</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">一条大河</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/img/yangtzeriver.jpg" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">一条大河</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">为学患无疑，疑则进也！</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" target="_blank" href="mailto:river_dba@foxmail.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" target="_blank" href="#" title="GitHub"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-strace-mysql" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2019/03/18/strace-mysql/" class="article-date">
+      <time datetime="2019-03-18T05:48:11.000Z" itemprop="datePublished">2019-03-18</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      使用strace跟踪mysql的运行
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/MySQL/">MySQL</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/学习笔记/">学习笔记</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p><excerpt in="" index="" |="" 首页摘要=""><br>摘要：使用strace跟踪分析mysql的运行过程<a id="more"></a></excerpt></p>
+<the rest="" of="" contents="" |="" 余下全文="">
+
+<h3 id="Strace简介"><a href="#Strace简介" class="headerlink" title="Strace简介"></a>Strace简介</h3><p>官网：<a href="https://strace.io/" target="_blank" rel="external">https://strace.io/</a><br>strace是个功能强大的Linux调试分析诊断工具，可用于跟踪程序执行时进程系统调用(system call)和所接收的信号，尤其是针对源码不可读或源码无法再编译的程序。<br>使用strace的正确姿势：<br>• strace -T -tt -o /tmp/strace.log CMD<br>• strace -T -tt CMD 2&gt;&amp;1 |tee /tmp/strace.log<br>• strace -T -tt -s 100 -o /tmp/strace.log CMD<br>• strace -T -tt -s 100 -ff -o /tmp/strace.log CMD  #加ff强制strace主线程，如果跟踪mysql，则将CMD替换为/usr/local/mysqld<br>• strace -T -tt -s 100 -e trace=XXXX -o /tmp/strace.log CMD<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">root@:mysql_dev:~$strace -c ls &gt; /dev/null</div><div class="line">% time     seconds  usecs/call     calls    errors syscall</div><div class="line">------ ----------- ----------- --------- --------- ----------------</div><div class="line">100.00    0.000024           2        11           open</div><div class="line">  0.00    0.000000           0        10           read</div><div class="line">  0.00    0.000000           0         1           write</div><div class="line">  0.00    0.000000           0        14           close</div><div class="line">  0.00    0.000000           0        12           fstat</div><div class="line">  0.00    0.000000           0        28           mmap</div><div class="line">  0.00    0.000000           0        16           mprotect</div><div class="line">  0.00    0.000000           0         3           munmap</div><div class="line">  0.00    0.000000           0         3           brk</div><div class="line">  0.00    0.000000           0         2           rt_sigaction</div><div class="line">  0.00    0.000000           0         1           rt_sigprocmask</div><div class="line">  0.00    0.000000           0         3         3 ioctl</div><div class="line">  0.00    0.000000           0         1         1 access</div><div class="line">  0.00    0.000000           0         1           execve</div><div class="line">  0.00    0.000000           0         1           fcntl</div><div class="line">  0.00    0.000000           0         2           getdents</div><div class="line">  0.00    0.000000           0         1           getrlimit</div><div class="line">  0.00    0.000000           0         1           statfs</div><div class="line">  0.00    0.000000           0         1           arch_prctl</div><div class="line">  0.00    0.000000           0         2         1 futex</div><div class="line">  0.00    0.000000           0         1           set_tid_address</div><div class="line">  0.00    0.000000           0         1           openat</div><div class="line">  0.00    0.000000           0         1           set_robust_list</div><div class="line">------ ----------- ----------- --------- --------- ----------------</div><div class="line">100.00    0.000024                   117         5 total</div></pre></td></tr></table></figure></p>
+<h3 id="跟踪MySQL启动时，依次读取my-cnf的顺序"><a href="#跟踪MySQL启动时，依次读取my-cnf的顺序" class="headerlink" title="跟踪MySQL启动时，依次读取my.cnf的顺序"></a>跟踪MySQL启动时，依次读取my.cnf的顺序</h3><p>首先查看mysqld命令行帮助信息，可以看到默认查找My.cnf的顺序：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mysql-118 ~]# /opt/my4406/bin/mysqld --verbose --help|more</div><div class="line">... ...</div><div class="line">Default options are read from the following files in the given order:</div><div class="line">/etc/my.cnf /etc/mysql/my.cnf /usr/local/Percona-Server-5.7.24-27-Linux.x86_64.ssl101/etc/my.cnf ~/.my.cnf</div></pre></td></tr></table></figure></p>
+<p>使用strace跟踪验证：strace /opt/my4406/bin/mysqld 2&gt;&amp;1|tee strace_1.log<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mysql-119 ~]# more strace_1.log|grep &quot;my.cnf&quot; </div><div class="line">stat(&quot;/etc/my.cnf&quot;, 0x7ffcd22ba4e0)     = -1 ENOENT (No such file or directory)</div><div class="line">stat(&quot;/etc/mysql/my.cnf&quot;, 0x7ffcd22ba4e0) = -1 ENOENT (No such file or directory)</div><div class="line">stat(&quot;/usr/local/Percona-Server-5.7.24-27-Linux.x86_64.ssl101/etc/my.cnf&quot;, 0x7ffcd22ba4e0) = -1 ENOENT (No such file or directory)</div><div class="line">stat(&quot;/root/.my.cnf&quot;, 0x7ffcd22ba4e0)   = -1 ENOENT (No such file or directory)</div></pre></td></tr></table></figure></p>
+<p>由于mysql8.0支持参数修改持久化，每次参数修改会保存到mysqld-auto.cnf，重启mysqld时最后都会读取该配置文件里面的内容覆盖掉前面的配置。所以starce可以看到mysql8多查找了一个配置文件：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mysql-118 ~]# cat strace_mysql8.log|grep &quot;.cnf&quot;  </div><div class="line">stat(&quot;/etc/my.cnf&quot;, 0x7ffc58c1eaf0)     = -1 ENOENT (No such file or directory)</div><div class="line">stat(&quot;/etc/mysql/my.cnf&quot;, 0x7ffc58c1eaf0) = -1 ENOENT (No such file or directory)</div><div class="line">stat(&quot;/usr/local/mysql/etc/my.cnf&quot;, 0x7ffc58c1eaf0) = -1 ENOENT (No such file or directory)</div><div class="line">stat(&quot;/root/.my.cnf&quot;, 0x7ffc58c1eaf0)   = -1 ENOENT (No such file or directory)</div><div class="line">stat(&quot;data/mysqld-auto.cnf&quot;, 0x7ffc58c22620) = -1 ENOENT (No such file or directory)</div></pre></td></tr></table></figure></p>
+<p>为strace输出添加时间戳<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mysql-119 ~]# strace -T -tt -s 100 -o /tmp/strace_2.log /opt/my4406/bin/mysqld</div><div class="line">08:02:42.959913 stat(&quot;/etc/my.cnf&quot;, 0x7ffdd3d6a1e0) = -1 ENOENT (No such file or directory) &lt;0.000011&gt;</div><div class="line">08:02:42.960008 stat(&quot;/etc/mysql/my.cnf&quot;, 0x7ffdd3d6a1e0) = -1 ENOENT (No such file or directory) &lt;0.000011&gt;</div><div class="line">08:02:42.960064 stat(&quot;/usr/local/Percona-Server-5.7.24-27-Linux.x86_64.ssl101/etc/my.cnf&quot;, 0x7ffdd3d6a1e0) = -1 ENOENT (No such file or directory) &lt;0.000007&gt;</div><div class="line">08:02:42.960105 stat(&quot;/root/.my.cnf&quot;, 0x7ffdd3d6a1e0) = -1 ENOENT (No such file or directory) &lt;0.000011&gt;</div></pre></td></tr></table></figure></p>
+<h3 id="MySQL默认启动的线程数"><a href="#MySQL默认启动的线程数" class="headerlink" title="MySQL默认启动的线程数"></a>MySQL默认启动的线程数</h3><h4 id="操作系统查看：ps-T-pidof-mysqld"><a href="#操作系统查看：ps-T-pidof-mysqld" class="headerlink" title="操作系统查看：ps -T pidof mysqld"></a>操作系统查看：ps -T <code>pidof mysqld</code></h4><p>无法看出每个线程具体是什么，不推荐使用。</p>
+<h4 id="利用pstack查看：pstack-pidof-mysql"><a href="#利用pstack查看：pstack-pidof-mysql" class="headerlink" title="利用pstack查看：pstack pidof mysql"></a>利用pstack查看：pstack <code>pidof mysql</code></h4><p>不可直接在生产库执行，会导致mysql变的更慢，不推荐使用。</p>
+<h4 id="查询performance-schema-threads"><a href="#查询performance-schema-threads" class="headerlink" title="查询performance_schema.threads"></a>查询performance_schema.threads</h4><p>mysql5.7以上的版本，推荐使用此方法。可以详细的看出每个线程是什么线程<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mysql-119 ~]#  mysql  --socket=/opt/my4406/run/mysql.sock</div><div class="line">Welcome to the MySQL monitor.  Commands end with ; or \g.</div><div class="line">Your MySQL connection id is 509</div><div class="line">Server version: 5.7.24-27-log Percona Server (GPL), Release 27, Revision bd42700</div><div class="line"></div><div class="line">Copyright (c) 2009-2017 Percona LLC and/or its affiliates</div><div class="line">Copyright (c) 2000, 2017, Oracle and/or its affiliates. All rights reserved.</div><div class="line"></div><div class="line">Oracle is a registered trademark of Oracle Corporation and/or its</div><div class="line">affiliates. Other names may be trademarks of their respective</div><div class="line">owners.</div><div class="line"></div><div class="line">Type &apos;help;&apos; or &apos;\h&apos; for help. Type &apos;\c&apos; to clear the current input statement.</div><div class="line"></div><div class="line">mysql&gt; select thread_id, name from performance_schema.threads ;</div><div class="line">+-----------+----------------------------------------+</div><div class="line">| thread_id | name                                   |</div><div class="line">+-----------+----------------------------------------+</div><div class="line">|         1 | thread/sql/main                        |</div><div class="line">|         2 | thread/sql/thread_timer_notifier       |</div><div class="line">|         3 | thread/innodb/io_ibuf_thread           |</div><div class="line">|         4 | thread/innodb/io_log_thread            |</div><div class="line">|         5 | thread/innodb/io_read_thread           |</div><div class="line">|         6 | thread/innodb/io_read_thread           |</div><div class="line">|         7 | thread/innodb/io_read_thread           |</div><div class="line">|         8 | thread/innodb/io_read_thread           |</div><div class="line">|         9 | thread/innodb/io_read_thread           |</div><div class="line">|        10 | thread/innodb/io_read_thread           |</div><div class="line">|        11 | thread/innodb/io_read_thread           |</div><div class="line">|        12 | thread/innodb/io_read_thread           |</div><div class="line">|        13 | thread/innodb/io_write_thread          |</div><div class="line">|        14 | thread/innodb/io_write_thread          |</div><div class="line">|        15 | thread/innodb/io_write_thread          |</div><div class="line">|        16 | thread/innodb/io_write_thread          |</div><div class="line">|        17 | thread/innodb/io_write_thread          |</div><div class="line">|        18 | thread/innodb/io_write_thread          |</div><div class="line">|        19 | thread/innodb/io_write_thread          |</div><div class="line">|        20 | thread/innodb/io_write_thread          |</div><div class="line">|        21 | thread/innodb/page_cleaner_thread      |</div><div class="line">|        22 | thread/innodb/page_cleaner_thread      |</div><div class="line">|        23 | thread/innodb/page_cleaner_thread      |</div><div class="line">|        24 | thread/innodb/page_cleaner_thread      |</div><div class="line">|        25 | thread/innodb/buf_lru_manager_thread   |</div><div class="line">|        26 | thread/innodb/buf_lru_manager_thread   |</div><div class="line">|        27 | thread/innodb/buf_lru_manager_thread   |</div><div class="line">|        28 | thread/innodb/buf_lru_manager_thread   |</div><div class="line">|        29 | thread/innodb/srv_monitor_thread       |</div><div class="line">|        31 | thread/innodb/srv_lock_timeout_thread  |</div><div class="line">|        32 | thread/innodb/srv_error_monitor_thread |</div><div class="line">|        33 | thread/innodb/srv_master_thread        |</div><div class="line">|        34 | thread/innodb/srv_purge_thread         |</div><div class="line">|        35 | thread/innodb/srv_worker_thread        |</div><div class="line">|        36 | thread/innodb/srv_worker_thread        |</div><div class="line">|        37 | thread/innodb/srv_worker_thread        |</div><div class="line">|        38 | thread/innodb/buf_dump_thread          |</div><div class="line">|        39 | thread/innodb/dict_stats_thread        |</div><div class="line">|        40 | thread/sql/slave_io                    |</div><div class="line">|        41 | thread/sql/slave_sql                   |</div><div class="line">|        42 | thread/sql/slave_worker                |</div><div class="line">|        43 | thread/sql/slave_worker                |</div><div class="line">|        44 | thread/sql/slave_worker                |</div><div class="line">|        45 | thread/sql/slave_worker                |</div><div class="line">|        46 | thread/sql/signal_handler              |</div><div class="line">|        47 | thread/sql/compress_gtid_table         |</div><div class="line">|       549 | thread/sql/one_connection              |</div><div class="line">+-----------+----------------------------------------+</div><div class="line">47 rows in set (0.00 sec)</div></pre></td></tr></table></figure></p>
+<p>去除重复：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">mysql&gt; select name,count(*) as cnt from performance_schema.threads group by name order by cnt ;</div><div class="line">+----------------------------------------+-----+</div><div class="line">| name                                   | cnt |</div><div class="line">+----------------------------------------+-----+</div><div class="line">| thread/innodb/buf_dump_thread          |   1 |</div><div class="line">| thread/sql/main                        |   1 |</div><div class="line">| thread/sql/slave_io                    |   1 |</div><div class="line">| thread/innodb/srv_lock_timeout_thread  |   1 |</div><div class="line">| thread/innodb/io_ibuf_thread           |   1 |</div><div class="line">| thread/innodb/srv_master_thread        |   1 |</div><div class="line">| thread/sql/compress_gtid_table         |   1 |</div><div class="line">| thread/innodb/dict_stats_thread        |   1 |</div><div class="line">| thread/innodb/srv_monitor_thread       |   1 |</div><div class="line">| thread/sql/thread_timer_notifier       |   1 |</div><div class="line">| thread/sql/slave_sql                   |   1 |</div><div class="line">| thread/innodb/srv_error_monitor_thread |   1 |</div><div class="line">| thread/innodb/io_log_thread            |   1 |</div><div class="line">| thread/sql/signal_handler              |   1 |</div><div class="line">| thread/innodb/srv_purge_thread         |   1 |</div><div class="line">| thread/sql/one_connection              |   1 |</div><div class="line">| thread/innodb/srv_worker_thread        |   3 |</div><div class="line">| thread/innodb/buf_lru_manager_thread   |   4 |</div><div class="line">| thread/sql/slave_worker                |   4 |</div><div class="line">| thread/innodb/page_cleaner_thread      |   4 |</div><div class="line">| thread/innodb/io_read_thread           |   8 |</div><div class="line">| thread/innodb/io_write_thread          |   8 |</div><div class="line">+----------------------------------------+-----+</div><div class="line">22 rows in set (0.00 sec)</div></pre></td></tr></table></figure></p>
+<p>以上看到io_read_thread和io_write_thread都是8，可以查看和参数配置的线程数是否一致：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">mysql&gt; show variables like &apos;innodb_%io_threads&apos;;      </div><div class="line">+-------------------------+-------+</div><div class="line">| Variable_name           | Value |</div><div class="line">+-------------------------+-------+</div><div class="line">| innodb_read_io_threads  | 8     |</div><div class="line">| innodb_write_io_threads | 8     |</div><div class="line">+-------------------------+-------+</div><div class="line">2 rows in set (0.00 sec)</div></pre></td></tr></table></figure></p>
+<p>page_cleaner_thread是4：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">mysql&gt; show variables like &apos;innodb_page_cleaner%&apos;;</div><div class="line">+----------------------+-------+</div><div class="line">| Variable_name        | Value |</div><div class="line">+----------------------+-------+</div><div class="line">| innodb_page_cleaners | 4     |</div><div class="line">+----------------------+-------+</div><div class="line">1 row in set (0.00 sec)</div></pre></td></tr></table></figure></p>
+<p>slave_worker是4:<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">mysql&gt; show variables like &apos;%slave%worker%&apos;; </div><div class="line">+------------------------+-------+</div><div class="line">| Variable_name          | Value |</div><div class="line">+------------------------+-------+</div><div class="line">| slave_parallel_workers | 4     |</div><div class="line">+------------------------+-------+</div><div class="line">1 row in set (0.00 sec)</div></pre></td></tr></table></figure></p>
+<h3 id="conn-id和os-thread-id如何对应（mysql5-7以上）"><a href="#conn-id和os-thread-id如何对应（mysql5-7以上）" class="headerlink" title="conn_id和os_thread_id如何对应（mysql5.7以上）"></a>conn_id和os_thread_id如何对应（mysql5.7以上）</h3><p>通过sql关联查询：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">mysql&gt; select a.thd_id, a.conn_id, b.thread_os_id, b.name from sys.processlist a ,</div><div class="line">    -&gt; performance_schema.threads b where a.thd_id =b.thread_id and</div><div class="line">    -&gt; conn_id &gt;0;</div><div class="line">+--------+---------+--------------+--------------------------------+</div><div class="line">| thd_id | conn_id | thread_os_id | name                           |</div><div class="line">+--------+---------+--------------+--------------------------------+</div><div class="line">|     40 |       1 |        23863 | thread/sql/slave_io            |</div><div class="line">|     41 |       2 |        23864 | thread/sql/slave_sql           |</div><div class="line">|     42 |       3 |        23865 | thread/sql/slave_worker        |</div><div class="line">|     43 |       4 |        23866 | thread/sql/slave_worker        |</div><div class="line">|     44 |       5 |        23867 | thread/sql/slave_worker        |</div><div class="line">|     45 |       6 |        23868 | thread/sql/slave_worker        |</div><div class="line">|     47 |       7 |        23870 | thread/sql/compress_gtid_table |</div><div class="line">|    550 |     510 |        23933 | thread/sql/one_connection      |</div><div class="line">+--------+---------+--------------+--------------------------------+</div><div class="line">8 rows in set (0.14 sec)</div></pre></td></tr></table></figure></p>
+<p>假如要跟踪一下one_connection这个连接进来都在做什么<br>另外开启一个OS命令窗口：<br>[root@mysql-119 ~]# strace -p 23933<br>strace: Process 23933 attached<br>restart_syscall(&lt;…<br>然后在当前sql命令行窗口执行一个命令：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">mysql&gt; show databases;</div><div class="line">+--------------------+</div><div class="line">| Database           |</div><div class="line">+--------------------+</div><div class="line">| information_schema |</div><div class="line">| meta               |</div><div class="line">| mgr1               |</div><div class="line">| mysql              |</div><div class="line">| performance_schema |</div><div class="line">| sys                |</div><div class="line">+--------------------+</div><div class="line">6 rows in set (0.00 sec)</div></pre></td></tr></table></figure></p>
+<p>OS命令行窗口即可看到执行show databases命令的一系列跟踪输出：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mysql-119 ~]# strace -p 23933</div><div class="line">strace: Process 23933 attached</div><div class="line">restart_syscall(&lt;... resuming interrupted poll ...&gt;) = 1</div><div class="line">recvfrom(53, &quot;\17\0\0\0&quot;, 4, MSG_DONTWAIT, NULL, NULL) = 4</div><div class="line">recvfrom(53, &quot;\3show databases&quot;, 15, MSG_DONTWAIT, NULL, NULL) = 15</div><div class="line">openat(AT_FDCWD, &quot;./&quot;, O_RDONLY|O_NONBLOCK|O_DIRECTORY|O_CLOEXEC) = 62</div><div class="line">getdents(62, /* 26 entries */, 32768)   = 872</div><div class="line">stat(&quot;./client-cert.pem&quot;, &#123;st_mode=S_IFREG|0644, st_size=1120, ...&#125;) = 0</div><div class="line">stat(&quot;./ca.pem&quot;, &#123;st_mode=S_IFREG|0644, st_size=1120, ...&#125;) = 0</div><div class="line">stat(&quot;./tikv3.pid&quot;, &#123;st_mode=S_IFREG|0640, st_size=6, ...&#125;) = 0</div><div class="line">stat(&quot;./ibtmp1&quot;, &#123;st_mode=S_IFREG|0640, st_size=12582912, ...&#125;) = 0</div><div class="line">stat(&quot;./ib_logfile1&quot;, &#123;st_mode=S_IFREG|0640, st_size=104857600, ...&#125;) = 0</div><div class="line">stat(&quot;./client-key.pem&quot;, &#123;st_mode=S_IFREG|0600, st_size=1680, ...&#125;) = 0</div><div class="line">stat(&quot;./xb_doublewrite&quot;, &#123;st_mode=S_IFREG|0640, st_size=15728640, ...&#125;) = 0</div><div class="line">stat(&quot;./private_key.pem&quot;, &#123;st_mode=S_IFREG|0600, st_size=1680, ...&#125;) = 0</div><div class="line">stat(&quot;./auto.cnf&quot;, &#123;st_mode=S_IFREG|0640, st_size=56, ...&#125;) = 0</div><div class="line">stat(&quot;./..&quot;, &#123;st_mode=S_IFDIR|0755, st_size=4096, ...&#125;) = 0</div><div class="line">stat(&quot;./mgr1&quot;, &#123;st_mode=S_IFDIR|0750, st_size=4096, ...&#125;) = 0</div><div class="line">stat(&quot;./sys&quot;, &#123;st_mode=S_IFDIR|0750, st_size=12288, ...&#125;) = 0</div><div class="line">stat(&quot;./mysql&quot;, &#123;st_mode=S_IFDIR|0750, st_size=4096, ...&#125;) = 0</div><div class="line">stat(&quot;./.&quot;, &#123;st_mode=S_IFDIR|0755, st_size=4096, ...&#125;) = 0</div><div class="line">stat(&quot;./ib_logfile3&quot;, &#123;st_mode=S_IFREG|0640, st_size=104857600, ...&#125;) = 0</div><div class="line">stat(&quot;./performance_schema&quot;, &#123;st_mode=S_IFDIR|0750, st_size=4096, ...&#125;) = 0</div><div class="line">stat(&quot;./public_key.pem&quot;, &#123;st_mode=S_IFREG|0644, st_size=452, ...&#125;) = 0</div><div class="line">stat(&quot;./ibdata1&quot;, &#123;st_mode=S_IFREG|0640, st_size=12582912, ...&#125;) = 0</div><div class="line">stat(&quot;./ib_buffer_pool&quot;, &#123;st_mode=S_IFREG|0640, st_size=528, ...&#125;) = 0</div><div class="line">stat(&quot;./mysql-119.pid&quot;, &#123;st_mode=S_IFREG|0640, st_size=6, ...&#125;) = 0</div><div class="line">stat(&quot;./ib_logfile2&quot;, &#123;st_mode=S_IFREG|0640, st_size=104857600, ...&#125;) = 0</div><div class="line">stat(&quot;./ib_logfile0&quot;, &#123;st_mode=S_IFREG|0640, st_size=104857600, ...&#125;) = 0</div><div class="line">stat(&quot;./meta&quot;, &#123;st_mode=S_IFDIR|0750, st_size=4096, ...&#125;) = 0</div><div class="line">stat(&quot;./ca-key.pem&quot;, &#123;st_mode=S_IFREG|0600, st_size=1680, ...&#125;) = 0</div><div class="line">stat(&quot;./server-key.pem&quot;, &#123;st_mode=S_IFREG|0600, st_size=1676, ...&#125;) = 0</div><div class="line">stat(&quot;./server-cert.pem&quot;, &#123;st_mode=S_IFREG|0644, st_size=1120, ...&#125;) = 0</div><div class="line">getdents(62, /* 0 entries */, 32768)    = 0</div><div class="line">close(62)                               = 0</div><div class="line">open(&quot;./mgr1/db.opt&quot;, O_RDONLY)         = 62</div><div class="line">getcwd(&quot;/data/my4406/data&quot;, 4096)       = 18</div><div class="line">lstat(&quot;/data/my4406/data/mgr1&quot;, &#123;st_mode=S_IFDIR|0750, st_size=4096, ...&#125;) = 0</div><div class="line">lseek(62, 0, SEEK_CUR)                  = 0</div><div class="line">lseek(62, 0, SEEK_END)                  = 67</div><div class="line">lseek(62, 0, SEEK_SET)                  = 0</div><div class="line">read(62, &quot;default-character-set=utf8mb4\nde&quot;..., 67) = 67</div><div class="line">close(62)                               = 0</div><div class="line">open(&quot;./mysql/db.opt&quot;, O_RDONLY)        = 62</div><div class="line">getcwd(&quot;/data/my4406/data&quot;, 4096)       = 18</div><div class="line">lstat(&quot;/data/my4406/data/mysql&quot;, &#123;st_mode=S_IFDIR|0750, st_size=4096, ...&#125;) = 0</div><div class="line">lseek(62, 0, SEEK_CUR)                  = 0</div><div class="line">lseek(62, 0, SEEK_END)                  = 65</div><div class="line">lseek(62, 0, SEEK_SET)                  = 0</div><div class="line">read(62, &quot;default-character-set=latin1\ndef&quot;..., 65) = 65</div><div class="line">close(62)                               = 0</div><div class="line">open(&quot;./performance_schema/db.opt&quot;, O_RDONLY) = 62</div><div class="line">getcwd(&quot;/data/my4406/data&quot;, 4096)       = 18</div><div class="line">lstat(&quot;/data/my4406/data/performance_schema&quot;, &#123;st_mode=S_IFDIR|0750, st_size=4096, ...&#125;) = 0</div><div class="line">lseek(62, 0, SEEK_CUR)                  = 0</div><div class="line">lseek(62, 0, SEEK_END)                  = 61</div><div class="line">lseek(62, 0, SEEK_SET)                  = 0</div><div class="line">read(62, &quot;default-character-set=utf8\ndefau&quot;..., 61) = 61</div><div class="line">close(62)                               = 0</div><div class="line">madvise(0x7fb0ab709000, 73728, MADV_DONTNEED) = 0</div><div class="line">madvise(0x7fb0ab732000, 16384, MADV_DONTNEED) = 0</div><div class="line">madvise(0x7fb086006000, 1679360, MADV_DONTNEED) = 0</div><div class="line">sendto(53, &quot;\1\0\0\1\1K\0\0\2\3def\22information_schema&quot;..., 177, MSG_DONTWAIT, NULL, 0) = 177</div><div class="line">recvfrom(53, 0x7fb0ab488020, 4, MSG_DONTWAIT, NULL, NULL) = -1 EAGAIN (Resource temporarily unavailable)</div><div class="line">poll([&#123;fd=53, events=POLLIN|POLLPRI&#125;], 1, 6000000</div></pre></td></tr></table></figure></p>
+<h3 id="利用strace跟踪客户端sql执行"><a href="#利用strace跟踪客户端sql执行" class="headerlink" title="利用strace跟踪客户端sql执行"></a>利用strace跟踪客户端sql执行</h3><p>先到processlist中查询客户端的pid，然后到客户端上进行跟踪<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">mysql&gt; select thd_id, conn_id,user, pid,</div><div class="line">    -&gt; program_name,command,current_statement from sys.processlist where</div><div class="line">    -&gt; conn_id&gt;0 and pid&gt;0;</div><div class="line">+--------+---------+-----------------------------+-------+--------------+---------+-------------------------------------------------------------------+</div><div class="line">| thd_id | conn_id | user                        | pid   | program_name | command | current_statement                                                 |</div><div class="line">+--------+---------+-----------------------------+-------+--------------+---------+-------------------------------------------------------------------+</div><div class="line">|    551 |     511 | orchestrator@192.168.30.118 | 2270  | mysql        | Sleep   | NULL                                                              |</div><div class="line">|    550 |     510 | root@localhost              | 10474 | mysql        | Query   | select thd_id, conn_id,user, p ... list where conn_id&gt;0 and pid&gt;0 |</div><div class="line">+--------+---------+-----------------------------+-------+--------------+---------+-------------------------------------------------------------------+</div><div class="line">2 rows in set (0.12 sec)</div></pre></td></tr></table></figure></p>
+<p>这里可以看到192.168.30.118的pid是2270，到118上执行strace：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mysql-118 ~]# ps -ef|grep 2270</div><div class="line">root      2270 31643  0 18:31 pts/0    00:00:00 mysql -uorchestrator -px xxxx -h192.168.30.119 -P4406</div><div class="line">root      2288  2271  0 18:32 pts/2    00:00:00 grep --color=auto 2270</div><div class="line">[root@mysql-118 ~]# strace -T -tt -s 100 -o /tmp/strace.log -p 2270</div><div class="line">strace: Process 2270 attached</div><div class="line">查看日志，就可以看到执行的细节及耗时：</div><div class="line">[root@mysql-118 ~]# more /tmp/strace.log </div><div class="line">18:33:09.883979 read(0, &quot;\33&quot;, 1)       = 1 &lt;4.819426&gt;</div><div class="line">18:33:14.703966 read(0, &quot;[&quot;, 1)         = 1 &lt;0.000021&gt;</div><div class="line">18:33:14.704162 read(0, &quot;A&quot;, 1)         = 1 &lt;0.000017&gt;</div><div class="line">18:33:14.704385 write(1, &quot;select 1;&quot;, 9) = 9 &lt;0.000074&gt;</div><div class="line">18:33:14.704599 read(0, &quot;\33&quot;, 1)       = 1 &lt;0.382839&gt;</div><div class="line">18:33:15.087885 read(0, &quot;[&quot;, 1)         = 1 &lt;0.000102&gt;</div><div class="line">18:33:15.088450 read(0, &quot;D&quot;, 1)         = 1 &lt;0.000026&gt;</div><div class="line">18:33:15.088585 write(1, &quot;\10&quot;, 1)      = 1 &lt;0.000148&gt;</div><div class="line">18:33:15.088823 read(0, &quot;\10&quot;, 1)       = 1 &lt;0.558707&gt;</div><div class="line">18:33:15.647761 write(1, &quot;\10;\33[K\10&quot;, 6) = 6 &lt;0.000045&gt;</div><div class="line">18:33:15.647906 read(0, &quot;2&quot;, 1)         = 1 &lt;0.096305&gt;</div><div class="line">18:33:15.744375 write(1, &quot;2;\10&quot;, 3)    = 3 &lt;0.000048&gt;</div><div class="line">18:33:15.744584 read(0, &quot;\n&quot;, 1)        = 1 &lt;0.742984&gt;</div><div class="line">18:33:16.487718 write(1, &quot;\n&quot;, 1)       = 1 &lt;0.000056&gt;</div><div class="line">18:33:16.487910 ioctl(0, SNDCTL_TMR_STOP or TCSETSW, &#123;B38400 opost isig icanon echo ...&#125;) = 0 &lt;0.000022&gt;</div><div class="line">18:33:16.488088 rt_sigprocmask(SIG_BLOCK, [HUP INT QUIT TERM CONT TSTP WINCH], [], 8) = 0 &lt;0.000015&gt;</div><div class="line">18:33:16.488252 rt_sigaction(SIGINT, &#123;sa_handler=0x432aa0, sa_mask=[INT], sa_flags=SA_RESTORER|SA_RESTART, sa_restorer=0x7f6caf4095e0&#125;, NULL, 8) = 0 &lt;0.000012&gt;</div><div class="line">18:33:16.488328 rt_sigaction(SIGTSTP, &#123;sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7f6caf4095e0&#125;, NULL, 8) = 0 &lt;0.000011&gt;</div><div class="line">18:33:16.488385 rt_sigaction(SIGQUIT, &#123;sa_handler=0x434c70, sa_mask=[QUIT], sa_flags=SA_RESTORER|SA_RESTART, sa_restorer=0x7f6caf4095e0&#125;, NULL, 8) = 0 &lt;0.000014&gt;</div><div class="line">18:33:16.488489 rt_sigaction(SIGHUP, &#123;sa_handler=0x434f70, sa_mask=[HUP], sa_flags=SA_RESTORER|SA_RESTART, sa_restorer=0x7f6caf4095e0&#125;, NULL, 8) = 0 &lt;0.000011&gt;</div><div class="line">18:33:16.488549 rt_sigaction(SIGTERM, &#123;sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7f6caf4095e0&#125;, NULL, 8) = 0 &lt;0.000011&gt;</div><div class="line">18:33:16.488606 rt_sigaction(SIGCONT, &#123;sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7f6caf4095e0&#125;, NULL, 8) = 0 &lt;0.000012&gt;</div><div class="line">18:33:16.488663 rt_sigaction(SIGWINCH, &#123;sa_handler=0x430db0, sa_mask=[WINCH], sa_flags=SA_RESTORER|SA_RESTART, sa_restorer=0x7f6caf4095e0&#125;, NULL, 8) = 0 &lt;0.000011&gt;</div><div class="line">18:33:16.488718 rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0 &lt;0.000011&gt;</div><div class="line">18:33:16.488882 times(&#123;tms_utime=0, tms_stime=0, tms_cutime=0, tms_cstime=0&#125;) = 709457680 &lt;0.000014&gt;</div><div class="line">18:33:16.488999 write(3, &quot;\27\3\3\0%\221\276\366\215\360\223\177\231\200\5\311[s&#123;b,z\317\312\335^\366\331[\34\310M\227W9\25\3\232n\257\267\260&quot;, 42) = 42 &lt;0.000092&gt;</div><div class="line">18:33:16.489164 read(3, &quot;\27\3\3\0I&quot;, 5) = 5 &lt;0.000392&gt;</div><div class="line">18:33:16.489651 read(3, &quot;\274\276V\213\302Y^e\367\311B:\3706\215\265\261\214\35\31at\345;\274\356\17\361&#123;\277\335i\371\\Q\222\330\313\v\37&lt;p\273\201\f\335\371\3461y_\317\342&amp;</div><div class="line">g\260\342\7W\3037\205&amp;H\230_\32td\3416S\6&quot;, 73) = 73 &lt;0.000019&gt;</div><div class="line">18:33:16.489780 times(&#123;tms_utime=0, tms_stime=0, tms_cutime=0, tms_cstime=0&#125;) = 709457680 &lt;0.000023&gt;</div><div class="line">18:33:16.489917 write(1, &quot;+---+\n&quot;, 6)  = 6 &lt;0.000045&gt;</div><div class="line">18:33:16.490033 write(1, &quot;| 2 |\n&quot;, 6)  = 6 &lt;0.000021&gt;</div><div class="line">18:33:16.490108 write(1, &quot;+---+\n&quot;, 6)  = 6 &lt;0.000032&gt;</div><div class="line">18:33:16.490195 write(1, &quot;| 2 |\n&quot;, 6)  = 6 &lt;0.000021&gt;</div><div class="line">18:33:16.490265 write(1, &quot;+---+\n&quot;, 6)  = 6 &lt;0.000036&gt;</div><div class="line">18:33:16.490450 write(1, &quot;1 row in set (0.00 sec)\n&quot;, 24) = 24 &lt;0.000041&gt;</div><div class="line">18:33:16.490596 write(1, &quot;\n&quot;, 1)       = 1 &lt;0.000032&gt;</div><div class="line">18:33:16.490712 stat(&quot;/etc/localtime&quot;, &#123;st_mode=S_IFREG|0644, st_size=388, ...&#125;) = 0 &lt;0.000059&gt;</div><div class="line">18:33:16.490962 rt_sigprocmask(SIG_BLOCK, [HUP INT QUIT TERM CONT TSTP WINCH], [], 8) = 0 &lt;0.000013&gt;</div><div class="line">18:33:16.491034 rt_sigaction(SIGINT, &#123;sa_handler=0x4ca000, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7f6caf4095e0&#125;, &#123;sa_handler=0x432aa0, sa_mask=[INT], sa_flags=SA_RES</div><div class="line">TORER|SA_RESTART, sa_restorer=0x7f6caf4095e0&#125;, 8) = 0 &lt;0.000011&gt;</div><div class="line">18:33:16.491166 rt_sigaction(SIGTSTP, &#123;sa_handler=0x4ca000, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7f6caf4095e0&#125;, &#123;sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTOR</div><div class="line">ER, sa_restorer=0x7f6caf4095e0&#125;, 8) = 0 &lt;0.000012&gt;</div><div class="line">18:33:16.491241 rt_sigaction(SIGQUIT, &#123;sa_handler=0x4ca000, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7f6caf4095e0&#125;, &#123;sa_handler=0x434c70, sa_mask=[QUIT], sa_flags=SA_R</div><div class="line">ESTORER|SA_RESTART, sa_restorer=0x7f6caf4095e0&#125;, 8) = 0 &lt;0.000011&gt;</div><div class="line">18:33:16.491327 rt_sigaction(SIGHUP, &#123;sa_handler=0x4ca000, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7f6caf4095e0&#125;, &#123;sa_handler=0x434f70, sa_mask=[HUP], sa_flags=SA_RES</div><div class="line">TORER|SA_RESTART, sa_restorer=0x7f6caf4095e0&#125;, 8) = 0 &lt;0.000012&gt;</div><div class="line">18:33:16.491415 rt_sigaction(SIGTERM, &#123;sa_handler=0x4ca000, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7f6caf4095e0&#125;, &#123;sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTOR</div><div class="line">ER, sa_restorer=0x7f6caf4095e0&#125;, 8) = 0 &lt;0.000013&gt;</div><div class="line">18:33:16.491488 rt_sigaction(SIGCONT, &#123;sa_handler=0x4ca000, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7f6caf4095e0&#125;, &#123;sa_handler=SIG_DFL, sa_mask=[], sa_flags=SA_RESTOR</div><div class="line">ER, sa_restorer=0x7f6caf4095e0&#125;, 8) = 0 &lt;0.000011&gt;</div><div class="line">18:33:16.491549 rt_sigaction(SIGWINCH, &#123;sa_handler=0x4ca000, sa_mask=[], sa_flags=SA_RESTORER, sa_restorer=0x7f6caf4095e0&#125;, &#123;sa_handler=0x430db0, sa_mask=[WINCH], sa_flags=SA</div><div class="line">_RESTORER|SA_RESTART, sa_restorer=0x7f6caf4095e0&#125;, 8) = 0 &lt;0.000010&gt;</div><div class="line">18:33:16.491610 rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0 &lt;0.000011&gt;</div><div class="line">18:33:16.491666 rt_sigprocmask(SIG_BLOCK, [WINCH], [], 8) = 0 &lt;0.000011&gt;</div><div class="line">18:33:16.491728 ioctl(0, TIOCGWINSZ, &#123;ws_row=31, ws_col=174, ws_xpixel=0, ws_ypixel=0&#125;) = 0 &lt;0.000012&gt;</div><div class="line">18:33:16.491806 rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0 &lt;0.000023&gt;</div><div class="line">18:33:16.491934 write(1, &quot;mysql&gt; &quot;, 7)  = 7 &lt;0.000054&gt;</div><div class="line">18:33:16.492087 ioctl(0, TCGETS, &#123;B38400 opost isig icanon echo ...&#125;) = 0 &lt;0.000017&gt;</div><div class="line">18:33:16.492194 ioctl(0, SNDCTL_TMR_STOP or TCSETSW, &#123;B38400 opost isig -icanon -echo ...&#125;) = 0 &lt;0.000030&gt;</div><div class="line">18:33:16.492341 read(0,  &lt;detached ...&gt;</div><div class="line">[root@mysql-118 ~]#</div></pre></td></tr></table></figure></p>
+<p>注意：针对线上环境比较繁忙的时候，如果直接strace可能会导致线上环境更慢，因此不建议直接在生产环境进行跟踪。<br>我们可以将某台出问题的客户端的线上流量导入到测试环境进行回放分析。</p>
+<h3 id="利用strace跟踪mysql-server端的sql执行过程"><a href="#利用strace跟踪mysql-server端的sql执行过程" class="headerlink" title="利用strace跟踪mysql server端的sql执行过程"></a>利用strace跟踪mysql server端的sql执行过程</h3><p>首先找到连接线程的thread_os_id：23933<br>mysql&gt; select a.thd_id, a.conn_id, b.thread_os_id, b.name from sys.processlist a ,<br>    -&gt; performance_schema.threads b where a.thd_id =b.thread_id and<br>    -&gt; conn_id &gt;0;<br>+——–+———+————–+——————————–+<br>| thd_id | conn_id | thread_os_id | name                           |<br>+——–+———+————–+——————————–+<br>|     40 |       1 |        23863 | thread/sql/slave_io            |<br>|     41 |       2 |        23864 | thread/sql/slave_sql           |<br>|     42 |       3 |        23865 | thread/sql/slave_worker        |<br>|     43 |       4 |        23866 | thread/sql/slave_worker        |<br>|     44 |       5 |        23867 | thread/sql/slave_worker        |<br>|     45 |       6 |        23868 | thread/sql/slave_worker        |<br>|     47 |       7 |        23870 | thread/sql/compress_gtid_table |<br>|    550 |     510 |        23933 | thread/sql/one_connection      |<br>+——–+———+————–+——————————–+<br>8 rows in set (0.14 sec)<br>然后跟踪该线程：strace -p 23933<br>然后输入SQL1：use mgr1; 跟踪输出：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mysql-119 ~]# strace -p 23933</div><div class="line">strace: Process 23933 attached</div><div class="line">restart_syscall(&lt;... resuming interrupted poll ...&gt;</div><div class="line">) = 1</div><div class="line">recvfrom(53, &quot;\22\0\0\0&quot;, 4, MSG_DONTWAIT, NULL, NULL) = 4</div><div class="line">recvfrom(53, &quot;\3SELECT DATABASE()&quot;, 18, MSG_DONTWAIT, NULL, NULL) = 18</div><div class="line">sendto(53, &quot;\1\0\0\1\1 \0\0\2\3def\0\0\0\nDATABASE()\0\f!\0f&quot;..., 57, MSG_DONTWAIT, NULL, 0) = 57</div><div class="line">recvfrom(53, &quot;\5\0\0\0&quot;, 4, MSG_DONTWAIT, NULL, NULL) = 4</div><div class="line">recvfrom(53, &quot;\2mgr1&quot;, 5, MSG_DONTWAIT, NULL, NULL) = 5</div><div class="line">access(&quot;./mgr1&quot;, F_OK)                  = 0</div><div class="line">sendto(53, &quot;\20\0\0\1\0\0\0\2@\0\0\0\7\1\5\4mgr1&quot;, 20, MSG_DONTWAIT, NULL, 0) = 20</div><div class="line">recvfrom(53, &quot;\17\0\0\0&quot;, 4, MSG_DONTWAIT, NULL, NULL) = 4</div><div class="line">recvfrom(53, &quot;\3show databases&quot;, 15, MSG_DONTWAIT, NULL, NULL) = 15</div><div class="line">openat(AT_FDCWD, &quot;./&quot;, O_RDONLY|O_NONBLOCK|O_DIRECTORY|O_CLOEXEC) = 64</div><div class="line">getdents(64, /* 26 entries */, 32768)   = 872</div><div class="line">stat(&quot;./client-cert.pem&quot;, &#123;st_mode=S_IFREG|0644, st_size=1120, ...&#125;) = 0</div><div class="line">stat(&quot;./ca.pem&quot;, &#123;st_mode=S_IFREG|0644, st_size=1120, ...&#125;) = 0</div><div class="line">stat(&quot;./tikv3.pid&quot;, &#123;st_mode=S_IFREG|0640, st_size=6, ...&#125;) = 0</div><div class="line">stat(&quot;./ibtmp1&quot;, &#123;st_mode=S_IFREG|0640, st_size=12582912, ...&#125;) = 0</div><div class="line">stat(&quot;./ib_logfile1&quot;, &#123;st_mode=S_IFREG|0640, st_size=104857600, ...&#125;) = 0</div><div class="line">stat(&quot;./client-key.pem&quot;, &#123;st_mode=S_IFREG|0600, st_size=1680, ...&#125;) = 0</div><div class="line">stat(&quot;./xb_doublewrite&quot;, &#123;st_mode=S_IFREG|0640, st_size=15728640, ...&#125;) = 0</div><div class="line">stat(&quot;./private_key.pem&quot;, &#123;st_mode=S_IFREG|0600, st_size=1680, ...&#125;) = 0</div><div class="line">stat(&quot;./auto.cnf&quot;, &#123;st_mode=S_IFREG|0640, st_size=56, ...&#125;) = 0</div><div class="line">stat(&quot;./..&quot;, &#123;st_mode=S_IFDIR|0755, st_size=4096, ...&#125;) = 0</div><div class="line">stat(&quot;./mgr1&quot;, &#123;st_mode=S_IFDIR|0750, st_size=4096, ...&#125;) = 0</div><div class="line">stat(&quot;./sys&quot;, &#123;st_mode=S_IFDIR|0750, st_size=12288, ...&#125;) = 0</div><div class="line">stat(&quot;./mysql&quot;, &#123;st_mode=S_IFDIR|0750, st_size=4096, ...&#125;) = 0</div><div class="line">stat(&quot;./.&quot;, &#123;st_mode=S_IFDIR|0755, st_size=4096, ...&#125;) = 0</div><div class="line">stat(&quot;./ib_logfile3&quot;, &#123;st_mode=S_IFREG|0640, st_size=104857600, ...&#125;) = 0</div><div class="line">stat(&quot;./performance_schema&quot;, &#123;st_mode=S_IFDIR|0750, st_size=4096, ...&#125;) = 0</div><div class="line">stat(&quot;./public_key.pem&quot;, &#123;st_mode=S_IFREG|0644, st_size=452, ...&#125;) = 0</div><div class="line">stat(&quot;./ibdata1&quot;, &#123;st_mode=S_IFREG|0640, st_size=12582912, ...&#125;) = 0</div><div class="line">stat(&quot;./ib_buffer_pool&quot;, &#123;st_mode=S_IFREG|0640, st_size=528, ...&#125;) = 0</div><div class="line">stat(&quot;./mysql-119.pid&quot;, &#123;st_mode=S_IFREG|0640, st_size=6, ...&#125;) = 0</div><div class="line">stat(&quot;./ib_logfile2&quot;, &#123;st_mode=S_IFREG|0640, st_size=104857600, ...&#125;) = 0</div><div class="line">stat(&quot;./ib_logfile0&quot;, &#123;st_mode=S_IFREG|0640, st_size=104857600, ...&#125;) = 0</div><div class="line">stat(&quot;./meta&quot;, &#123;st_mode=S_IFDIR|0750, st_size=4096, ...&#125;) = 0</div><div class="line">stat(&quot;./ca-key.pem&quot;, &#123;st_mode=S_IFREG|0600, st_size=1680, ...&#125;) = 0</div><div class="line">stat(&quot;./server-key.pem&quot;, &#123;st_mode=S_IFREG|0600, st_size=1676, ...&#125;) = 0</div><div class="line">stat(&quot;./server-cert.pem&quot;, &#123;st_mode=S_IFREG|0644, st_size=1120, ...&#125;) = 0</div><div class="line">getdents(64, /* 0 entries */, 32768)    = 0</div><div class="line">close(64)                               = 0</div><div class="line">madvise(0x7fb0ab743000, 73728, MADV_DONTNEED) = 0</div><div class="line">madvise(0x7fb08a006000, 1679360, MADV_DONTNEED) = 0</div><div class="line">sendto(53, &quot;\1\0\0\1\1K\0\0\2\3def\22information_schema&quot;..., 177, MSG_DONTWAIT, NULL, 0) = 177</div></pre></td></tr></table></figure></p>
+<p>输入SQL2：show tables;跟踪输出：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">recvfrom(53, &quot;\f\0\0\0&quot;, 4, MSG_DONTWAIT, NULL, NULL) = 4</div><div class="line">recvfrom(53, &quot;\3show tables&quot;, 12, MSG_DONTWAIT, NULL, NULL) = 12</div><div class="line">openat(AT_FDCWD, &quot;./mgr1/&quot;, O_RDONLY|O_NONBLOCK|O_DIRECTORY|O_CLOEXEC) = 64</div><div class="line">getdents(64, /* 5 entries */, 32768)    = 144</div><div class="line">getdents(64, /* 0 entries */, 32768)    = 0</div><div class="line">close(64)                               = 0</div><div class="line">madvise(0x7fb0ab743000, 73728, MADV_DONTNEED) = 0</div><div class="line">madvise(0x7fb08a006000, 1679360, MADV_DONTNEED) = 0</div><div class="line">sendto(53, &quot;\1\0\0\1\1V\0\0\2\3def\22information_schema&quot;..., 113, MSG_DONTWAIT, NULL, 0) = 113</div><div class="line">recvfrom(53, &quot;\4\0\0\0&quot;, 4, MSG_DONTWAIT, NULL, NULL) = 4</div><div class="line">recvfrom(53, &quot;\4t1\0&quot;, 4, MSG_DONTWAIT, NULL, NULL) = 4</div><div class="line">open(&quot;./mgr1/t1.frm&quot;, O_RDONLY)         = 64</div><div class="line">getcwd(&quot;/data/my4406/data&quot;, 4096)       = 18</div><div class="line">lstat(&quot;/data/my4406/data/mgr1&quot;, &#123;st_mode=S_IFDIR|0750, st_size=4096, ...&#125;) = 0</div><div class="line">read(64, &quot;\376\1\n\f\3\0\0\20\1\0\0000\0\0i\1\237\0\0\0\0\0\0\0\0\0\0\2!\0\t\0&quot;..., 64) = 64</div><div class="line">lseek(64, 64, SEEK_SET)                 = 64</div><div class="line">read(64, &quot;//\0\0 \0\0&quot;, 7)              = 7</div><div class="line">lseek(64, 8192, SEEK_SET)               = 8192</div><div class="line">read(64, &quot;\252\1\0\20\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0&quot;..., 288) = 288</div><div class="line">lseek(64, 4096, SEEK_SET)               = 4096</div><div class="line">read(64, &quot;\1\1\0\0\n\0\0\0\4\0\1\0\0\0\1\200\2\0\0\33@\4\0\377PRIMARY\377&quot;..., 33) = 33</div><div class="line">pread64(64, &quot;\0\0\6\0InnoDB\0\0\0\0\0\0\f\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0&quot;, 32, 4616) = 32</div><div class="line">pread64(64, &quot;\377\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0&quot;..., 159, 4457) = 159</div><div class="line">lseek(64, 8480, SEEK_SET)               = 8480</div><div class="line">read(64, &quot;D\0\4\3\2\24)                         &quot;..., 138) = 138</div><div class="line">close(64)                               = 0</div><div class="line">stat(&quot;./mgr1/t1.frm&quot;, &#123;st_mode=S_IFREG|0640, st_size=8618, ...&#125;) = 0</div><div class="line">access(&quot;./mgr1/t1.TRG&quot;, F_OK)           = -1 ENOENT (No such file or directory)</div><div class="line">sendto(53, &quot;$\0\0\1\3def\4mgr1\2t1\2t1\2id\2id\f?\0\v\0\0\0&quot;..., 133, MSG_DONTWAIT, NULL, 0) = 133</div><div class="line">recvfrom(53, 0x7fb0ab488020, 4, MSG_DONTWAIT, NULL, NULL) = -1 EAGAIN (Resource temporarily unavailable)</div><div class="line">poll([&#123;fd=53, events=POLLIN|POLLPRI&#125;], 1, 6000000) = 1 ([&#123;fd=53, revents=POLLIN&#125;])</div><div class="line">recvfrom(53, &quot;\f\0\0\0&quot;, 4, MSG_DONTWAIT, NULL, NULL) = 4</div><div class="line">recvfrom(53, &quot;\3show tables&quot;, 12, MSG_DONTWAIT, NULL, NULL) = 12</div><div class="line">openat(AT_FDCWD, &quot;./mgr1/&quot;, O_RDONLY|O_NONBLOCK|O_DIRECTORY|O_CLOEXEC) = 64</div><div class="line">getdents(64, /* 5 entries */, 32768)    = 144</div><div class="line">getdents(64, /* 0 entries */, 32768)    = 0</div><div class="line">close(64)                               = 0</div><div class="line">madvise(0x7fb0ab743000, 73728, MADV_DONTNEED) = 0</div><div class="line">madvise(0x7fb08a006000, 1679360, MADV_DONTNEED) = 0</div><div class="line">sendto(53, &quot;\1\0\0\1\1V\0\0\2\3def\22information_schema&quot;..., 113, MSG_DONTWAIT, NULL, 0) = 113</div></pre></td></tr></table></figure></p>
+<p>输入SQL3：select * from t1;跟踪输出：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">recvfrom(53, 0x7fb0ab488020, 4, MSG_DONTWAIT, NULL, NULL) = -1 EAGAIN (Resource temporarily unavailable)</div><div class="line">poll([&#123;fd=53, events=POLLIN|POLLPRI&#125;], 1, 6000000) = 1 ([&#123;fd=53, revents=POLLIN&#125;])</div><div class="line">recvfrom(53, &quot;\21\0\0\0&quot;, 4, MSG_DONTWAIT, NULL, NULL) = 4</div><div class="line">recvfrom(53, &quot;\3select * from t1&quot;, 17, MSG_DONTWAIT, NULL, NULL) = 17</div><div class="line">open(&quot;./mgr1/t1.ibd&quot;, O_RDONLY)         = 64</div><div class="line">getcwd(&quot;/data/my4406/data&quot;, 4096)       = 18</div><div class="line">lstat(&quot;/data/my4406/data/mgr1&quot;, &#123;st_mode=S_IFDIR|0750, st_size=4096, ...&#125;) = 0</div><div class="line">lseek(64, 0, SEEK_CUR)                  = 0</div><div class="line">lseek(64, 0, SEEK_END)                  = 98304</div><div class="line">lseek(64, 0, SEEK_SET)                  = 0</div><div class="line">pread64(64, &quot;\374\214\325\326\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0)\36\312\0\10\0\0\0\0\0\0&quot;..., 16384, 0) = 16384</div><div class="line">close(64)                               = 0</div><div class="line">open(&quot;./mgr1/t1.ibd&quot;, O_RDWR)           = 64</div><div class="line">fcntl(64, F_SETFL, O_RDONLY|O_DIRECT)   = 0</div><div class="line">fcntl(64, F_SETLK, &#123;l_type=F_WRLCK, l_whence=SEEK_SET, l_start=0, l_len=0&#125;) = 0</div><div class="line">getcwd(&quot;/data/my4406/data&quot;, 4096)       = 18</div><div class="line">lstat(&quot;/data/my4406/data/mgr1&quot;, &#123;st_mode=S_IFDIR|0750, st_size=4096, ...&#125;) = 0</div><div class="line">pread64(64, &quot;\2554\2157\0\0\0\3\377\377\377\377\377\377\377\377\0\0\0\0\0)\36\312E\277\0\0\0\0\0\0&quot;..., 16384, 49152) = 16384</div><div class="line">pread64(64, &quot;\3408`m\0\0\0\1\0\0\0\0\0\0\0\0\0\0\0\0\0)\21\331\0\5\0\0\0\0\0\0&quot;..., 16384, 16384) = 16384</div><div class="line">sendto(53, &quot;\1\0\0\1\3\&quot;\0\0\2\3def\4mgr1\2t1\2t1\2id\2id\f?&quot;..., 161, MSG_DONTWAIT, NULL, 0) = 161</div><div class="line">recvfrom(53, 0x7fb0ab488020, 4, MSG_DONTWAIT, NULL, NULL) = -1 EAGAIN (Resource temporarily unavailable)</div><div class="line">poll([&#123;fd=53, events=POLLIN|POLLPRI&#125;], 1, 6000000^Cstrace: Process 23933 detached</div><div class="line"> &lt;detached ...&gt;</div></pre></td></tr></table></figure></p>
+<p>以上strace的输出中，可以看到：<br>输入SQL1时，出现多次recvfrom(53和sendto(53：<br>recvfrom(53, “\3SELECT DATABASE()”, 18, MSG_DONTWAIT, NULL, NULL) = 18<br>sendto(53, “\1\0\0\1\1 \0\0\2\3def\0\0\0\nDATABASE()\0\f!\0f”…, 57, MSG_DONTWAIT, NULL, 0) = 57<br>查看proc下面的连接符软连接：<br>[root@mysql-119 ~]# ls -lrt /proc/23933/fd/53<br>lrwx—— 1 root root 64 3月  18 09:30 /proc/23933/fd/53 -&gt; socket:[4524969]<br>可以看到这个53就是我们这次执行SQL命令的连接会话（即mysql -u -p -h -P…创建的socket连接）。<br>从这个53的socket连接接受指令，并向53返回结果，不断进行交互。</p>
+<p>输入SQL2时，可以看到从t1.frm中读取数据字典信息，获取表结构：<br>open(“./mgr1/t1.frm”, O_RDONLY)         = 64<br>getcwd(“/data/my4406/data”, 4096)       = 18<br>lstat(“/data/my4406/data/mgr1”, {st_mode=S_IFDIR|0750, st_size=4096, …}) = 0<br>如果是mysql8.0，将会看到是从mysql.ibd中读取数据字典。<br>read(64, “\376\1\n\f\3\0\0\20\1\0\0000\0\0i\1\237\0\0\0\0\0\0\0\0\0\0\2!\0\t\0”…, 64) = 64<br>lseek(64, 64, SEEK_SET)                 = 64<br>read(64, “//\0\0 \0\0”, 7)              = 7<br>然后出现多次read(64, 和lseek(64，可以看到，64对应的是t1表：<br>[root@mysql-119 ~]# ls -lrt /proc/23933/fd/64<br>lrwx—— 1 root root 64 3月  18 11:32 /proc/23933/fd/64 -&gt; /data/my4406/data/mgr1/t1.ibd</p>
+<p>输入SQL3时，可以看到打开数据文件：open(“./mgr1/t1.ibd”, O_RDONLY) 然后读取64表的数据，返回给53连接。</p>
+<h3 id="利用strace跟踪IO情况"><a href="#利用strace跟踪IO情况" class="headerlink" title="利用strace跟踪IO情况"></a>利用strace跟踪IO情况</h3><p>[root@mysql-119 ~]# strace -T -tt -f -e trace=read,open,write,pwrite64,pread64 -o /tmp/strace1.log -p <code>pidof mysqld</code><br>strace: Process 23821 attached with 67 threads<br>执行SQL：mysql&gt; insert into t1 values(5,’e’,’ee’);<br>Query OK, 1 row affected (0.00 sec)<br>查看跟踪输出：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mysql-119 ~]# vi /tmp/strace1.log</div><div class="line">23933 12:20:03.636326 pwrite64(10, &quot;\200\6\177\371\2\0\0\227\0\4,\235\214\0\36\0\201U\0\220\0\200MySQLXid\2469&quot;..., 1536, 5792768 &lt;unfinished ...&gt;</div><div class="line">23859 12:20:03.636505 pread64(64,  &lt;unfinished ...&gt;</div><div class="line">23933 12:20:03.636545 &lt;... pwrite64 resumed&gt; ) = 1536 &lt;0.000047&gt;</div><div class="line">23933 12:20:03.636614 write(28, &quot;s\34\217\\!\2469\22\0A\0\0\0$\201\354\v\0\0\0&#123;\215\1\356\10\35\21\351\224\241\0P&quot;..., 321) = 321 &lt;0.000023&gt;</div><div class="line">23859 12:20:03.642756 &lt;... pread64 resumed&gt; &quot;\334\211\260b\0\0\0\2\0\0\0\0\0\0\0\0\0\0\0\0\0)\36\312\0\3\0\0\0\0\0\0&quot;..., 16384, 32768) = 16384 &lt;0.006230&gt;</div><div class="line">23859 12:20:03.643204 pwrite64(10, &quot;\200\6\177\373\2\0\0$\0\4,\235\20eee7!\0\0\16./mgr1/t1.i&quot;..., 1024, 5793792) = 1024 &lt;0.000027&gt;</div><div class="line">23859 12:20:03.643559 pwrite64(10, &quot;\200\6\177\374\2\0\0^\0\4,\2352\201\212\2\0\200\350\0006\234q\4\0\200\350\0008\201\212\2&quot;..., 1536, 5794304) = 1536 &lt;0.000084&gt;</div><div class="line">23841 12:20:04.717848 pwrite64(13, &quot;\212\2635\354\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\f\377\363\315\0\10\0\0\0\0\0G&quot;..., 49152, 1966080) = 49152 &lt;0.000259&gt;</div><div class="line">23841 12:20:04.719229 pwrite64(13, &quot;\177\377\23\260\0\0\1V\0\0\0\0\0\0\0\0\0\0\0\0\f\377\364\341\0\2\0\0\0\0\0\0&quot;..., 49152, 5898240) = 49152 &lt;0.000168&gt;</div><div class="line">23841 12:20:04.720440 pwrite64(13, &quot;\3434b\313\0\0\1\212\0\0\0\0\0\0\0\0\0\0\0\0\f\377\366^\0\2\0\0\0\0\0\0&quot;..., 49152, 9830400) = 49152 &lt;0.000166&gt;</div><div class="line">23841 12:20:04.721697 pwrite64(13, &quot;\256:9\22\0\0\0\347\0\0\0\0\0\0\0\0\0\0\0\0\f\377\363\315\0\6\0\0\0\0\0\0&quot;..., 49152, 13762560) = 49152 &lt;0.000143&gt;</div><div class="line">23853 12:20:05.522421 pwrite64(10, &quot;\200\6\177\376\0\270\0S\0\4,\235\4\0\200\351\0008\201\260\2\0\200\351\0&lt;\213\252\4\0\201\260&quot;..., 512, 5795328) = 512 &lt;0.000036&gt;</div><div class="line">23853 12:20:06.523494 pwrite64(10, &quot;\200\6\177\376\0\301\0S\0\4,\236\4\0\200\351\0008\201\260\2\0\200\351\0&lt;\213\252\4\0\201\260&quot;..., 512, 5795328) = 512 &lt;0.000117&gt;</div><div class="line">看下fd对应的具体文件：</div><div class="line">[root@mysql-119 ~]# ls -lrt /proc/23933/fd/10</div><div class="line">lrwx------ 1 root root 64 3月  18 11:32 /proc/23933/fd/10 -&gt; /data/my4406/data/ib_logfile2</div><div class="line">[root@mysql-119 ~]# ls -lrt /proc/23933/fd/64</div><div class="line">lrwx------ 1 root root 64 3月  18 11:32 /proc/23933/fd/64 -&gt; /data/my4406/data/mgr1/t1.ibd</div><div class="line">[root@mysql-119 ~]# ls -lrt /proc/23933/fd/28</div><div class="line">l-wx------ 1 root root 64 3月  18 11:32 /proc/23933/fd/28 -&gt; /data/my4406/log/mysql-bin.000002</div><div class="line">[root@mysql-119 ~]# ls -lrt /proc/23933/fd/13</div><div class="line">lrwx------ 1 root root 64 3月  18 11:32 /proc/23933/fd/13 -&gt; /data/my4406/data/xb_doublewrite</div><div class="line">可以看到先写10是redo，再写28是binlog，最后写undo。</div></pre></td></tr></table></figure></p>
+<p>mysql8.0上执行：insert into a values(4,’aba’);<br>跟踪结果：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[root@mysql-118 ~]# strace -T -tt -f -e trace=read,open,write,pwrite64,pread64 -p 2022</div><div class="line">strace: Process 2022 attached with 39 threads</div><div class="line">[pid  2053] 20:17:43.030704 pread64(38, &quot;;\200\232\230\0\0\0\2\0\0\0\0\0\0\0\0\0\0\0\0\1\&quot;\362\210\0\3\0\0\0\0\0\0&quot;..., 16384, 32768) = 16384 &lt;0.000127&gt;</div><div class="line">[pid  2041] 20:17:43.121801 pwrite64(10, &quot;\200\1\276\366\2\0\0009\0\0\0\337\357\201\3\0\0\1\223\r\2\360\377\377\377\357\201\3\0(\201\20&quot;..., 1024, 8247808) = 1024 &lt;0.000118&gt;</div><div class="line">[pid  2041] 20:17:43.122215 pwrite64(10, &quot;\200\1\276\370\0009\0009\0\0\0\337\357\201;\0x\201;\2\360\377\377\377\357\201;\0|\206\30\4&quot;..., 512, 8248832) = 512 &lt;0.000078&gt;</div><div class="line">[pid  2089] 20:17:43.124133 write(30, &quot;g\214\217\\\&quot;\1\0\0\0K\0\0\0\4\2\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0&quot;..., 286) = 286 &lt;0.000126&gt;</div><div class="line">[pid  2053] 20:17:43.124885 pread64(13, &quot;\223\t\373(\0\0\0\0\0\0018\215\0\0\0\1\0\0\0\0\3&#125;V\241\0\10\0\0\0\0\0\0&quot;..., 16384, 0) = 16384 &lt;0.000253&gt;</div><div class="line">[pid  2053] 20:17:43.125520 pread64(13, &quot;S\325~,\0\0\1\4\0\0\0\0\0\0\0\0\0\0\0\0\3&#125;V\241\0\3\0\0\0\0\0\0&quot;..., 16384, 4259840) = 16384 &lt;0.000133&gt;</div><div class="line">[pid  2053] 20:17:43.125978 pread64(13,  &lt;unfinished ...&gt;</div><div class="line">[pid  2041] 20:17:43.126046 pwrite64(10, &quot;\200\1\276\370\0L\0009\0\0\0\337\357\201;\0x\201;\2\360\377\377\377\357\201;\0|\206\30\4&quot;..., 512, 8248832) = 512 &lt;0.000199&gt;</div><div class="line">[pid  2053] 20:17:43.126417 &lt;... pread64 resumed&gt; &quot;\244\17\203\316\0\0\0\1\0\0\0\0\0\0\0\0\0\0\0\0\0\0q$\0\5\0\0\0\0\0\0&quot;..., 16384, 16384) = 16384 &lt;0.000404&gt;</div><div class="line">[pid  2041] 20:17:43.127282 pwrite64(10, &quot;\200\1\276\370\2\0\0009\0\0\0\337\357\201;\0x\201;\2\360\377\377\377\357\201;\0|\206\30\4&quot;..., 2048, 8248832) = 2048 &lt;0.000348&gt;</div><div class="line">[pid  2041] 20:17:43.127802 pwrite64(10, &quot;\200\1\276\374\0\261\0.\0\0\0\337\200\7\200\4\200\10\0\10\377\377\0\4\2\0\0\0014\2\313\0&quot;..., 512, 8250880) = 512 &lt;0.000156&gt;</div><div class="line">[pid  2037] 20:17:44.775978 pwrite64(9, &quot;\305y\250F\0\0\1\5\0\0\0\0\0\0\0\0\0\0\0\0\3&#125;\356L\0\2\0\0\0\0\0\0&quot;..., 180224, 1048576) = 180224 &lt;0.000385&gt;</div><div class="line">[pid  2039] 20:17:44.789352 pwrite64(4, &quot;\0\0\0\0\0\0\0\337\0\0\0\0\3&#125;\366\261\0\0\0\0\3&#125;\346\261\0\0\0\0\1\0\0\0&quot;..., 512, 1536) = 512 &lt;0.000146&gt;</div></pre></td></tr></table></figure></p>
+<p>依次是：pread64(38–pwrite64(10–write(30–pread64(13–pwrite64(9–pwrite64(4<br>写数据之前先读取buffer pool看是否存在该数据，如果没在，则进行写入：<br>先写redo[pwrite64(10]、再写binlog[write(30]、再写undo[pwrite64(9,将binlog的filename和position写进ibdata]<br>每个fd对应的文件：<br>[root@mysql-118 ~]# ls -lrt /proc/2022/fd/38<br>lrwx—— 1 root root 64 3月  18 20:19 /proc/2022/fd/38 -&gt; /data/mysql/data/testdb/a.ibd<br>[root@mysql-118 ~]# ls -lrt /proc/2022/fd/10<br>lrwx—— 1 root root 64 3月  18 20:19 /proc/2022/fd/10 -&gt; /data/mysql/data/ib_logfile1<br>[root@mysql-118 ~]# ls -lrt /proc/2022/fd/30<br>l-wx—— 1 root root 64 3月  18 20:22 /proc/2022/fd/30 -&gt; /data/mysql/data/binlog.000004<br>[root@mysql-118 ~]# ls -lrt /proc/2022/fd/13<br>lrwx—— 1 root root 64 3月  18 20:22 /proc/2022/fd/13 -&gt; /data/mysql/data/undo_002<br>[root@mysql-118 ~]# ls -lrt /proc/2022/fd/9<br>lrwx—— 1 root root 64 3月  18 20:22 /proc/2022/fd/9 -&gt; /data/mysql/data/ibdata1<br>[root@mysql-118 ~]# ls -lrt /proc/2022/fd/4<br>lrwx—— 1 root root 64 3月  18 20:22 /proc/2022/fd/4 -&gt; /data/mysql/data/ib_logfile0</p>
+</the>
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2019/03/18/strace-mysql/">使用strace跟踪mysql的运行</a></p>
+        <p><span>文章作者:</span><a href="/" title="回到主页">一条大河</a></p>
+        <p><span>发布时间:</span>2019-03-18, 13:48:11</p>
+        <p><span>最后更新:</span>2019-03-19, 11:10:18</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2019/03/18/strace-mysql/" title="使用strace跟踪mysql的运行">http://riverdba.github.io/2019/03/18/strace-mysql/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://riverdba.github.io/2019/03/18/strace-mysql/　　作者: 一条大河" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2019/02/23/mysql-data-safety/">
+                    MySQL数据安全策略
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">文章目录</strong>
+        
+            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Strace简介"><span class="toc-number">1.</span> <span class="toc-text">Strace简介</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#跟踪MySQL启动时，依次读取my-cnf的顺序"><span class="toc-number">2.</span> <span class="toc-text">跟踪MySQL启动时，依次读取my.cnf的顺序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MySQL默认启动的线程数"><span class="toc-number">3.</span> <span class="toc-text">MySQL默认启动的线程数</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#操作系统查看：ps-T-pidof-mysqld"><span class="toc-number">3.1.</span> <span class="toc-text">操作系统查看：ps -T pidof mysqld</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#利用pstack查看：pstack-pidof-mysql"><span class="toc-number">3.2.</span> <span class="toc-text">利用pstack查看：pstack pidof mysql</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#查询performance-schema-threads"><span class="toc-number">3.3.</span> <span class="toc-text">查询performance_schema.threads</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#conn-id和os-thread-id如何对应（mysql5-7以上）"><span class="toc-number">4.</span> <span class="toc-text">conn_id和os_thread_id如何对应（mysql5.7以上）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#利用strace跟踪客户端sql执行"><span class="toc-number">5.</span> <span class="toc-text">利用strace跟踪客户端sql执行</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#利用strace跟踪mysql-server端的sql执行过程"><span class="toc-number">6.</span> <span class="toc-text">利用strace跟踪mysql server端的sql执行过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#利用strace跟踪IO情况"><span class="toc-number">7.</span> <span class="toc-text">利用strace跟踪IO情况</span></a></li></ol>
+        
+    </div>
+    <style>
+        .left-col .switch-btn,
+        .left-col .switch-area {
+            display: none;
+        }
+        .toc-level-6 i,
+        .toc-level-6 ol {
+            display: none !important;
+        }
+    </style>
+
+    <input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+    <script>
+        yiliaConfig.toc = ["隐藏目录", "显示目录", !!"false"];
+    </script>
+
+
+
+    
+<div class="share">
+    
+        <div class="bdsharebuttonbox">
+            <a href="#" class="fa fa-twitter bds_twi" data-cmd="twi" title="分享到推特"></a>
+            <a href="#" class="fa fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+            <a href="#" class="fa fa-qq bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+            <a href="#" class="fa fa-files-o bds_copy" data-cmd="copy" title="复制网址"></a>
+            <a href="#" class="fa fa fa-envelope-o bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+            <a href="#" class="fa fa-weixin bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+            <a href="#" class="fa fa-share-alt bds_more" data-cmd="more"></i></a>
+        </div>
+        <script>
+            window._bd_share_config={
+                "common":{"bdSnsKey":{},"bdText":"使用strace跟踪mysql的运行　| Yangtze River's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+        </script>
+    
+
+    
+</div>
+
+
+
+
+
+
+
+    
+        <section id="comments">
+    <style> aside.comment-bar { margin: auto 30px; }</style>
+    <div id="disqus_thread"></div>
+    <script>
+        var disqus_config = function(){
+            this.page.url = 'http://riverdba.github.io/2019/03/18/strace-mysql/';
+            this.page.identifier = '2019/03/18/strace-mysql/';
+        };
+        var loadComment = function(){
+            var d = document, s = d.createElement('script');
+            s.src = '//https-riverdba-github-io.disqus.com/embed.js';
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        }
+    </script>
+    
+    <script> loadComment(); </script>
+
+</section>
+
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2019/02/23/mysql-data-safety/" title="下一篇: MySQL数据安全策略">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/03/18/strace-mysql/">使用strace跟踪mysql的运行</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/23/mysql-data-safety/">MySQL数据安全策略</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/22/mycat-consul-mgr/">探究MyCat+Consul+MGR高可用架构</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/11/14/mysql57-debug/">MySQL5.7之Debug模式</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/14/mysql-backup/">mysql备份失败</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/09/route-add/">linux路由添加和删除</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/11/17/The-DB-flashback-for-MyFlash/">MySQL闪回工具之MyFlash</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/08/29/sqlite3-install-for-python/">python2.7安装sqlite3模块</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/07/13/mysql-transcation-uncommitted/">mysql事务未提交引发的阻塞</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/07/11/scrapy-install/">Python爬虫框架scrapy的安装</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/06/02/pt-kill/">使用pt-kill实现MySQL的过载保护</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/05/25/mysql-binlog-filename/">mysql binlog文件扩展序号最大是多少</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/05/15/mysql-performance-schema/">mysql5.6之performance schema初探</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/05/04/gdb-debug-mysql/">使用GDB调试mysql源码</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/24/mycat-faq/">mycat常见问题集锦</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/24/select-on-mycat/">在mycat上使用select * 的影响</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/22/mycat-upgrade/">mycat1.4升级到1.5</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/21/mysql-sleep-process-too-many/">mysql sleep连接太多怎么办</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/20/online-ddl-tools-by-oak/">MySQL在线DDL工具之OAK</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/19/hive2mycat/">将hive输出文件导入mycat</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/15/archer-install/">archer安装及使用</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/13/inception-install/">Inception安装及使用</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/11/sysbench-for-mysql/">mysql基准测试</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/06/String-handling-of-mysql/">MySQL字符串处理一则</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/05/Non-SPJ-Optimization-of-mysql/">MySQL查询优化技术之非SPJ优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/01/MVCC-theory-study/">Innodb的MVCC实现原理</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/30/mysql-troubleshooting01/">update大量数据引发的故障</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/29/Deep-comprehend-mysql-replication/">深入理解mysql的主从复制</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/28/Sematic-Optimization-of-mysql/">mysql查询优化技术之语义优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/28/hexo-s-tips/">hexo's tips</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/27/hexo-s-comment/">实现hexo的评论功能</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/27/Performance-tuning-key-points-of-mysql/">mysql性能调优的关键点</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/22/join-elimination-technique-of-mysql/">mysql查询优化技术之连接消除</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/21/hello-world/">Hello World</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2017-2019 一条大河
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题  v3.5">Yelee</a> by MOxFIVE <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" title="本站到访数"><i class="fa fa-user" aria-hidden="true"></i><span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>| </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit"  title="本页阅读量"><i class="fa fa-eye animated infinite pulse" aria-hidden="true"></i><span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+    </div>
+    
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.2.0/require.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" onclick="load$hide();" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    // Open in New Window
+    
+        var oOpenInNew = {
+            
+            
+            
+            
+            
+            
+             archives: ".archive-article-title", 
+             miniArchives: "a.post-list-link", 
+            
+             friends: "#js-friends a", 
+             socail: ".social a" 
+        }
+        for (var x in oOpenInNew) {
+            $(oOpenInNew[x]).attr("target", "_blank");
+        }
+    
+</script>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  </div>
+</body>
+</html>
