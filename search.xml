@@ -4,6 +4,30 @@
   
     
     <entry>
+      <title><![CDATA[SQL优化案例]]></title>
+      <url>http://riverdba.github.io/2019/04/25/mysql-query-optimization-case/</url>
+      <content type="html"><![CDATA[<p><excerpt in="" index="" |="" 首页摘要=""><br>摘要：记录一些日常工作中优化过的案例<a id="more"></a></excerpt></p>
+<the rest="" of="" contents="" |="" 余下全文="">
+
+<h3 id="表字段的字符集和排序规则不一致引起索引失效"><a href="#表字段的字符集和排序规则不一致引起索引失效" class="headerlink" title="表字段的字符集和排序规则不一致引起索引失效"></a>表字段的字符集和排序规则不一致引起索引失效</h3><p>有个朋友说他有个SQL，把left join两边的表换下顺序后，执行计划相差甚大。实际查询耗时第一个是0.03秒，第二个是60秒。执行计划如下：<br><img src="/2019/04/25/mysql-query-optimization-case/001.png" alt="SQL1"><br><img src="/2019/04/25/mysql-query-optimization-case/002.png" alt="SQL2"></p>
+</the>]]></content>
+      
+        <categories>
+            
+            <category> MySQL </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> MySQL查询优化技术 </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
       <title><![CDATA[MySQL高可用探索之orchestrator]]></title>
       <url>http://riverdba.github.io/2019/03/19/orchestrator/</url>
       <content type="html"><![CDATA[<p><excerpt in="" index="" |="" 首页摘要=""><br>摘要：使用orchestrator实现mysql主从自动切换、故障转移、拓扑管理。<a id="more"></a></excerpt></p>
